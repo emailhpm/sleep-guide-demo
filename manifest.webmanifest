@@ -1,0 +1,16 @@
+{
+  "name": "Your Sleep Guide · Sleepwhale",
+  "short_name": "Sleep Guide",
+  "description": "Your nights with Sleepwhale: your amount, your evening ritual, your sleep goal and reordering in time.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#011025",
+  "icons": [
+    { "src": "bilder/app-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "bilder/app-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "bilder/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
