@@ -713,10 +713,8 @@ html.plan-modus #mein-plan { display: grid; }
 .ps-marke b { font-weight: 700; color: var(--weiss); }
 .ps-marke.anfang { left: 0; transform: none; }
 .ps-marke.ende { left: auto; right: 0; transform: none; }
-.ps-marke.vor { left: calc(7 * 100% / 30); transform: translateX(-100%); }
-.ps-marke.nach { left: calc(7 * 100% / 30 + 4px); transform: none; }
-/* Schmal nur Zahlen; die 8 (Gewohnheit) fällt weg, sonst klebt sie an der 7 */
-@container (max-width: 499px) { .ps-lang, .ps-marke.nach { display: none; } }
+/* Schmal nur die Zahlen */
+@container (max-width: 499px) { .ps-lang { display: none; } }
 .ps-heute { padding: 24px; border-radius: 10px; background: var(--tief); }
 .ps-heute-liste { list-style: none; margin-top: 6px; }
 .ps-heute-liste li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 10px 0; }
@@ -744,17 +742,19 @@ html.plan-modus #mein-plan { display: grid; }
 .fertig .rm-knoten { border-color: var(--gold); background: var(--gold); color: var(--nacht); }
 .jetzt .rm-knoten { width: 36px; height: 36px; margin-top: 14px; border: 4px solid var(--gold); background: var(--nacht); color: var(--weiss); font-size: 15px; }
 .rm-karte { grid-column: 3; min-width: 0; }
-.rm-wann { display: none; font-size: 14px; font-weight: 600; color: var(--akzent); font-variant-numeric: tabular-nums; }
+.rm-wann { display: none; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
 .rm-karte h3 { margin-top: 4px; font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
 .rm-liste { display: grid; gap: 6px; margin: 10px 0 0 18px; font-size: 15px; line-height: 1.5; }
 .rm-absatz { margin-top: 8px; font-size: 15px; line-height: 1.55; }
 .rm-klein { margin-top: 10px; font-size: 14px; color: var(--muted); }
 .rm-karte > .rm-teil > .knopf { display: inline-flex; margin-top: 16px; }
-.rm-hier { display: inline-block; margin-bottom: 10px; padding: 3px 8px; border-radius: 4px; background: var(--gold); color: var(--nacht); font-size: 12px; font-weight: 700; line-height: 1.4; letter-spacing: .08em; text-transform: uppercase; }
+/* Kopf der Karte: „You are here“ und die Augenbraue in einer Zeile */
+.rm-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.rm-hier { padding: 3px 8px; border-radius: 4px; background: var(--gold); color: var(--nacht); font-size: 12px; font-weight: 700; line-height: 1.4; letter-spacing: .08em; text-transform: uppercase; }
 .rm-phase .rm-karte { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px; align-items: start; padding: 16px 20px 18px 16px; border: 1px solid var(--linie); border-radius: 12px; }
 .rm-foto { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; background: var(--linie); }
 .rm-check .rm-karte { padding: 20px 24px; border-radius: 10px; background: var(--periwinkle); }
-.rm-kauf .rm-karte { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px 24px; border: 2px solid var(--nacht); border-radius: 12px; scroll-margin-top: 24px; }
+.rm-kauf .rm-karte { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px 24px; border: 1px solid var(--linie); border-radius: 12px; scroll-margin-top: 24px; }
 .rm-kauf .rm-karte:focus { outline: 0; }
 .rm-flasche { width: 96px; height: 160px; object-fit: contain; }
 .rm-abo { margin-top: 14px; font-size: 18px; font-weight: 700; color: var(--nacht); }
@@ -763,7 +763,7 @@ html.plan-modus #mein-plan { display: grid; }
 .rm-karte .plan-knoepfe { margin-top: 16px; }
 .rm-ziel .rm-karte { padding: 28px 28px 30px; border-radius: 12px; background: var(--nacht); color: var(--weiss); }
 .rm-ziel .augenbraue { color: var(--gold); }
-.rm-ziel .rm-wann { color: var(--periwinkle); }
+.rm-ziel .rm-wann { color: var(--auf-nacht); }
 .rm-ziel h3, .rm-ziel .rm-abo, .rm-ziel .rm-einmal b { color: var(--weiss); }
 .rm-ziel .rm-einmal, .rm-ziel .rm-klein { color: var(--auf-nacht); }
 .rm-ziel .text-link { color: var(--weiss); text-decoration-color: var(--nacht-unterstrich); }
@@ -775,23 +775,21 @@ html.plan-modus #mein-plan { display: grid; }
 .jetzt .rm-karte { border: 2px solid var(--gold); }
 .rm-phase.jetzt .rm-karte { padding: 15px 19px 17px 15px; }
 .rm-check.jetzt .rm-karte { padding: 18px 22px; }
+.rm-kauf.jetzt .rm-karte { padding: 21px 23px; }
 .rm-ziel.jetzt .rm-karte { padding: 26px 26px 28px; }
 .fertig .rm-karte, .fertig .rm-karte h3 { color: var(--muted); }
 .fertig .rm-foto { opacity: .75; }
-/* Kalendereinträge in der Roadmap: unter der ganzen Karte „Add to your calendar“, je Termin ein Kalenderblatt mit dem Monat in Gold, Titel und wann,
+/* Kalendereinträge in der Roadmap: unten in der Karte, durch eine Linie getrennt. Je Termin eine Zeile mit Kalender-Ikon, Titel und wann,
    dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
-.ke-liste { grid-column: 1 / -1; clear: both; display: grid; gap: 8px; margin-top: 16px; }
-.ke-kopf { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--nacht); }
-.ke-kopf svg { flex: none; width: 18px; height: 18px; color: var(--akzent); }
-.ke { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--linie); border-radius: 10px; background: var(--weiss); color: var(--text); }
-.ke-blatt { display: grid; overflow: hidden; border: 1px solid var(--linie); border-radius: 8px; text-align: center; background: var(--weiss); }
-.ke-blatt span { padding: 2px 0 1px; background: var(--gold); font-size: 11px; font-weight: 700; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--nacht); }
-.ke-blatt b { padding: 1px 0 3px; font-size: 21px; font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--nacht); }
-.ke-titel { font-size: 16px; font-weight: 650; line-height: 1.35; color: var(--nacht); }
-.ke-wann { margin-top: 2px; font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; color: var(--muted); }
+.ke-liste { grid-column: 1 / -1; clear: both; display: grid; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--linie); }
+.rm-check .ke-liste { border-top-color: var(--weiss); }
+.ke { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; }
+.ke > svg { align-self: start; width: 20px; height: 20px; margin-top: 1px; color: var(--akzent); }
+.ke-titel { font-size: 15px; font-weight: 650; line-height: 1.35; color: var(--nacht); }
+.ke-wann { font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; color: var(--muted); }
 .ke-knoepfe { display: flex; gap: 8px; }
-.ke-knopf { min-height: 40px; padding: 8px 14px; border: 1px solid var(--nacht); border-radius: 8px; background: var(--weiss); font-size: 14px; font-weight: 600; color: var(--nacht); cursor: pointer; }
-.ke-knopf:hover { background: var(--hover); }
+.ke-knopf { min-height: 36px; padding: 6px 14px; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 14px; font-weight: 600; color: var(--nacht); cursor: pointer; }
+.ke-knopf:hover { border-color: var(--nacht); }
 .ps-weg > .plan-quelle { margin-top: 24px; }
 .plan-hinweis { font-size: 15px; color: var(--muted); }
 /* 2 Ergebnis: vier kleine Ringe */
@@ -805,11 +803,12 @@ html.plan-modus #mein-plan { display: grid; }
 .plan-ergebnis > div { display: grid; gap: 14px; padding: 10px 0 0; color: var(--text); }
 /* Kleine Textlinks nebeneinander */
 .plan-links { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 18px; }
-/* 6 Plan B */
-.plan-b { margin-top: 8px; font-size: 22px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--nacht); }
+/* Plan B */
+.plan-b { margin-top: 8px; font-size: 19px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--nacht); }
 .plan-b .text-link { font-size: 16px; }
-/* 7 Hilfe, Quelle */
-.plan-hilfe h3 { font-size: 17px; }
+/* Unter der Roadmap: Ergebnis, Plan B, Plan behalten und Fragen als Raster mit 2 Spalten, je mit Linie oben */
+.ps-mehr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 48px; align-items: start; }
+.ps-mehr > section { padding-top: 20px; border-top: 1px solid var(--linie); }
 .plan-zusatz-art { margin-bottom: 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .plan-knoepfe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 14px; }
 .plan-knoepfe .knopf { margin-top: 0; }
@@ -894,12 +893,13 @@ html.plan-modus #mein-plan { display: grid; }
   .rm-flasche { float: left; width: 56px; height: 96px; margin: 0 14px 8px 0; }
   .rm-ziel .rm-karte { padding: 22px 18px; }
   .rm-phase.jetzt .rm-karte { padding: 11px 11px 15px; }
-  .rm-check.jetzt .rm-karte, .rm-kauf.jetzt .rm-karte { padding: 16px 14px; }
+  .rm-check.jetzt .rm-karte { padding: 16px 14px; }
+  .rm-kauf.jetzt .rm-karte { padding: 17px 15px; }
   .rm-ziel.jetzt .rm-karte { padding: 20px 16px; }
-  .ke { grid-template-columns: 50px minmax(0, 1fr); }
-  .ke-knoepfe { grid-column: 1 / -1; }
+  .ke { grid-template-columns: 20px minmax(0, 1fr); }
+  .ke-knoepfe { grid-column: 2; }
   .ke-knopf { flex: 1; }
-  .plan-b { font-size: 19px; }
+  .ps-mehr { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .plan-knoepfe .knopf { flex: 1 1 100%; }
   .plan-check { padding: 18px 16px; }
   .plan-speichern { padding: 22px 18px; }
@@ -2439,24 +2439,30 @@ body.chat-offen .chat-fenster { display: flex; }
   function zeitraum(t) { return t.ganztags ? icsTag(t.start) + "/" + icsTag(plusTage(t.start, 1)) : icsZeit(t.start) + "/" + icsZeit(new Date(t.start.getTime() + 600000)); }
   /* Titel in der Vorschau: ohne „Sleepwhale: “ oder „Sleepwhale sleep plan, “ davor, groß beginnend */
   function terminTitel(t) { var s = t.titel.replace(/^Sleepwhale(: | sleep plan, )/, ""); return s.charAt(0).toUpperCase() + s.slice(1); }
-  /* Wann ein Termin ist: „10:20 PM, every evening until Dec 11“ als Serie, sonst „9:30 PM“ (mit Wochentag „Thu, 9:30 PM“) oder „all day“ */
-  function terminWann(t, mitTag) {
-    var tag = mitTag ? WOCHENTAGE[t.start.getDay()].slice(0, 3) + ", " : "", uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
-    if (t.ganztags) return tag + "all day";
+  /* Wann ein Termin ist (Vorschau im Kalender-Dialog): „10:20 PM, every evening until Dec 11“ als Serie, sonst „9:30 PM“ oder „all day“ */
+  function terminWann(t) {
+    var uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
+    if (t.ganztags) return "all day";
     if (t.anzahl > 1) return uhr + (t.start.getHours() < 12 ? ", every morning" : ", every evening") + " until " + kurzDatum(plusTage(t.start, t.anzahl - 1));
-    return tag + uhr;
+    return uhr;
   }
-  /* Ein Termin als Kalendereintrag in der Roadmap: Kalenderblatt, Titel, wann; dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
+  /* Wann in der Roadmap, mit Datum: „Every evening at 10:20 PM, Nov 13 to Dec 3“ als Serie, sonst „Wed, Nov 18 at 9:00 AM“ oder „Thu, Nov 26, all day“ */
+  function kalWann(t) {
+    var uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
+    if (t.ganztags) return tagKurz(t.start) + ", all day";
+    if (t.anzahl > 1) return (t.start.getHours() < 12 ? "Every morning at " : "Every evening at ") + uhr + ", " + kurzDatum(t.start) + " to " + kurzDatum(plusTage(t.start, t.anzahl - 1));
+    return tagKurz(t.start) + " at " + uhr;
+  }
+  /* Ein Termin als Zeile unten in der Karte der Station: Kalender-Ikon, Titel und wann, dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
   function kalEintrag(t) {
-    var box = element("div", "ke"), blatt = element("p", "ke-blatt"), text = element("div", "ke-text"), knoepfe = element("div", "ke-knoepfe"), titel = terminTitel(t);
-    blatt.append(element("span", null, MONATE[t.start.getMonth()].slice(0, 3)), " ", element("b", null, String(t.start.getDate())));
-    text.append(element("p", "ke-titel", titel), element("p", "ke-wann", terminWann(t, true)));
+    var box = element("div", "ke"), text = element("div", "ke-text"), knoepfe = element("div", "ke-knoepfe"), titel = terminTitel(t);
+    text.append(element("p", "ke-titel", titel), element("p", "ke-wann", kalWann(t)));
     var apple = knopfMit("Apple", "ke-knopf", function () { kalenderDatei([t], "sleepwhale-" + t.kal); });
     var android = knopfMit("Android", "ke-knopf", function () { window.open(googleLink(t), "_blank", "noopener"); });
     apple.setAttribute("aria-label", "Add " + titel + " to Apple Calendar");
     android.setAttribute("aria-label", "Add " + titel + " to Google Calendar on Android");
     knoepfe.append(apple, android);
-    box.append(blatt, text, knoepfe);
+    box.append(ikon("kalender"), text, knoepfe);
     return box;
   }
   function kalenderDatei(termine, name) {
@@ -3064,7 +3070,7 @@ body.chat-offen .chat-fenster { display: flex; }
     reihe.setAttribute("aria-label", st.titel);
     for (var i = 1; i <= 30; i++) reihe.appendChild(element("span", i < st.nacht ? "fertig" : i === st.nacht ? "heute" : null));
     marken.setAttribute("aria-hidden", "true");
-    [[1, "Night ", "", "anfang"], [7, "", " Check-in", "vor"], [8, "", " Habit", "nach"], [14, "", " Check-in", "mitte"], [30, "", "", "ende"]].forEach(function (m) {
+    [[1, "Night ", "", "anfang"], [7, "", " Check-in", "mitte"], [14, "", " Check-in", "mitte"], [30, "", "", "ende"]].forEach(function (m) {
       var e = element("span", "ps-marke " + m[3]);
       e.style.setProperty("--n", m[0]);
       if (m[1]) e.appendChild(element("span", "ps-lang", m[1]));
@@ -3103,7 +3109,7 @@ body.chat-offen .chat-fenster { display: flex; }
         tun: ["“One week in, it’s time to pay attention. Are you spending less time tossing and turning? Are nighttime wake-ups becoming less disruptive? Even small improvements are worth noticing.”"] },
       { art: "phase", tag: 7, kal: "gewohnheit", woche: 2, augenbraue: "Nights 8 to 14", titel: "Add one habit: " + gw[0], fotos: [HABIT_FOTO[plan.g], "foto-stay", "foto-wind", "foto-fall"],
         tun: [gw[1], "Your ritual stays the same."] },
-      { art: "check", tag: 14, kal: "check14", nachtText: "After night 14", augenbraue: "Morning after night 14", titel: "How are your mornings feeling?", bewerten: 14,
+      { art: "check", tag: 13, kal: "check14", augenbraue: "Night 14, check-in", titel: "How are your mornings feeling?", bewerten: 14,
         tun: ["Rate your sleep: How’d you sleep last night?", "“Better sleep isn’t just about what happens at night.”"] },
       { art: "phase", tag: 14, kal: "beobachten", woche: 3, augenbraue: "Nights 15 to 21", titel: "Watch closely", fotos: ["foto-schlaf", "foto-stay", "ritual-3"],
         tun: [BEOBACHTUNG[plan.f], "Keep your ritual and your habit."], klein: "Sleepwhale says judging whether your sleep is improving “can take longer, sometimes up to several weeks.”" },
@@ -3148,12 +3154,15 @@ body.chat-offen .chat-fenster { display: flex; }
       knoten.setAttribute("aria-hidden", "true");
       if (zustand === "fertig") knoten.appendChild(ikon("haken"));
       else if (x.art === "phase") knoten.textContent = x.woche;
-      else knoten.appendChild(ikon(x.art === "check" ? "haken" : x.art === "kauf" ? "flasche" : "mond"));
+      else knoten.appendChild(ikon(x.art === "check" ? "ziel" : x.art === "kauf" ? "flasche" : "mond"));
+      /* Kopf der Karte: auf dem Handy das Datum, dann „You are here“ und die Augenbraue in einer Zeile */
+      var kopf = element("div", "rm-kopf");
       if (zustand === "jetzt") {
         li.setAttribute("aria-current", "step");
-        text.appendChild(element("p", "rm-hier", x.art === "ziel" ? "You are here" : "You are here, night " + n));
+        kopf.appendChild(element("p", "rm-hier", x.art === "ziel" ? "You are here" : "You are here, night " + n));
       }
-      text.append(element("p", "rm-wann", tagKurz(x.datum) + ", " + x.nachtText.toLowerCase()), augenbraue(x.augenbraue), element("h3", null, x.titel));
+      kopf.appendChild(augenbraue(x.augenbraue));
+      text.append(element("p", "rm-wann", tagKurz(x.datum)), kopf, element("h3", null, x.titel));
       if (x.art === "phase") {
         var ul = element("ul", "rm-liste");
         x.tun.forEach(function (t) { ul.appendChild(element("li", null, t)); });
@@ -3183,9 +3192,7 @@ body.chat-offen .chat-fenster { display: flex; }
       else if (termin) eintraege.push(termin);
       if (zustand === "jetzt") eintraege = laufend.concat(eintraege);
       if (eintraege.length) {
-        var kal = element("div", "ke-liste"), kopf = element("p", "ke-kopf", "Add to your calendar");
-        kopf.prepend(ikon("kalender"));
-        kal.appendChild(kopf);
+        var kal = element("div", "ke-liste");
         eintraege.forEach(function (t) { kal.appendChild(kalEintrag(t)); });
         karte.appendChild(kal);
       }
@@ -3240,7 +3247,7 @@ body.chat-offen .chat-fenster { display: flex; }
     /* Die nächste Station steht links unter dem Streifen, so sind beide Spalten etwa gleich hoch */
     if (naechste) {
       var weiter = element("p", "ps-naechstes");
-      weiter.append("Next: ", element("b", null, naechste.titel), ", " + tagKurz(naechste.datum) + ".");
+      weiter.append("Next on " + tagKurz(naechste.datum) + ": ", element("b", null, naechste.titel));
       heldText.appendChild(weiter);
     }
     held.append(heldText, heuteTafel(plan));
@@ -3252,29 +3259,30 @@ body.chat-offen .chat-fenster { display: flex; }
     /* 3 Roadmap */
     var weg = element("section", "ps-weg");
     weg.append(augenbraue("Your roadmap"), element("h2", null, "30 nights, step by step"), roadmapListe(plan), element("p", "plan-quelle", "“" + DISCLAIMER + "”"));
-    /* 4 Ergebnis: vier kleine Ringe, ausklappbar */
+    /* 4 bis 7 unter der Roadmap als Raster mit 2 Spalten: Ergebnis mit vier kleinen Ringen, Plan B, Plan behalten, Fragen */
     var kurz = element("section", "plan-kurz"), ergebnis = element("details", "plan-ergebnis"), ergebnisInhalt = element("div");
     ergebnisInhalt.append(ergebnisZeilen(plan), ergebnisBalken(plan), element("p", "ergebnis-satz", fokusSatz(plan.f)));
     ergebnis.append(element("summary", "text-link", "See your results"), ergebnisInhalt);
     kurz.append(element("h2", "ps-klein", "Your sleep results"), ringeKompakt(plan), ergebnis);
-    /* 5 Plan B */
     var planB = element("section"), bText = element("p", "plan-b");
     bText.append(WENN[plan.h] + " " + plan.b + " ", knopfMit("Change", "text-link", function () { zumHub(function () { aendern(3); }); }));
-    planB.append(augenbraue("Your Plan B", "h2"), bText);
-    /* 6 Plan behalten: PDF, ändern, neu (die Mail kommt über „Save my plan“) */
+    planB.append(element("h2", "ps-klein", "Your Plan B"), bText);
+    /* Plan behalten: PDF, ändern, neu (die Mail kommt über „Save my plan“) */
     var behalten = element("section"), aktionen = element("div", "plan-knoepfe");
     aktionen.append(knopfMit("Save as PDF", "knopf hell marke", planDrucken),
       knopfMit("Change habit", "text-link", function () { zumHub(function () { aendern(2); }); }), knopfMit("Build a new plan", "text-link", function () { zumHub(neuStarten); }));
-    behalten.append(augenbraue("Keep your plan", "h2"), aktionen);
-    /* 7 Hilfe und Quelle */
-    var hilfe = element("section", "plan-hilfe"), hk = element("div", "plan-knoepfe");
-    hk.append(knopfMit("Ask the assistant", "knopf hell", oeffnen), linkMit("Or email our team", "text-link", "mailto:hello@sleepwhale.com?subject=Question%20about%20my%20sleep%20plan"));
-    hilfe.append(element("h3", null, "Questions about your plan?"), hk);
+    behalten.append(element("h2", "ps-klein", "Keep your plan"), aktionen);
+    /* Fragen und Quelle */
+    var hilfe = element("section"), hk = element("div", "plan-knoepfe");
+    hk.append(knopfMit("Ask the assistant", "knopf hell marke", oeffnen), linkMit("Or email our team", "text-link", "mailto:hello@sleepwhale.com?subject=Question%20about%20my%20sleep%20plan"));
+    hilfe.append(element("h2", "ps-klein", "Questions about your plan?"), hk);
     var quelle = "Your plan uses the questions and tips from Sleepwhale's own sleep quiz and website. It doesn't replace medical advice.";
     if (plan.r === "gesundheit") quelle += " Sleepwhale: “If you take medications or have an ongoing health condition, however, please check with your healthcare provider before making any new supplement like Sleep Drops a part of your nightly routine.”";
     if (plan.r === "hormone") quelle += " Sleepwhale: “Tell your healthcare provider how broken sleep affects you, even if you’ve sought advice before.”";
     hilfe.appendChild(element("p", "plan-quelle", quelle));
-    planSeite.replaceChildren.apply(planSeite, teile.concat([weg, kurz, planB, behalten, hilfe]));
+    var mehr = element("div", "ps-mehr");
+    mehr.append(kurz, planB, behalten, hilfe);
+    planSeite.replaceChildren.apply(planSeite, teile.concat([weg, mehr]));
   }
   staerkeHoerer.push(function () { if (sd.plan && planSeite.querySelector(".roadmap-plan")) planSeiteZeigen(); });
   /* „Change“: zurück zum Schritt im Bauen. Aus einem Link entstehen die festen Bausteine neu, die gewählte Gewohnheit zuerst */
