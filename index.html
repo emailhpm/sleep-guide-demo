@@ -43,8 +43,9 @@ h2 { font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em
 h3 { font-size: 20px; line-height: 1.3; font-weight: 650; color: var(--nacht); }
 h4 { font-size: 17px; line-height: 1.4; font-weight: 650; color: var(--nacht); }
 
-/* Rahmen: Periwinkle-Leinwand, darauf die Seitenleiste und das weiße Blatt. Die Startseite ist sichtbar, bis ein Produkt gewählt ist */
-.rahmen { display: flex; flex-direction: column; width: calc(100% - 40px); max-width: 1480px; min-height: calc(100vh - 40px); margin: 20px auto; }
+/* Rahmen: Periwinkle-Leinwand, darauf die Seitenleiste und das weiße Blatt. Die Startseite ist sichtbar, bis ein Produkt gewählt ist.
+   Bis 1760 px breit, damit große Bildschirme genutzt werden; Texte haben ihre eigene Zeilenbreite */
+.rahmen { display: flex; flex-direction: column; width: calc(100% - 40px); max-width: 1760px; min-height: calc(100vh - 40px); margin: 20px auto; }
 .seite { display: none; flex: 1; }
 #start, .seite:target, .seite:has(:target) { display: grid; }
 body:has(.seite:target:not(#start)) #start, body:has(.seite:not(#start) :target) #start { display: none; }
@@ -132,7 +133,8 @@ body:has(.seite:target:not(#start)) #start, body:has(.seite:not(#start) :target)
 .top-produkt, .tabbar, .hilfe-knopf { display: none; }
 .assistent-knopf { display: inline-flex; align-items: center; gap: 10px; height: 42px; margin-left: auto; padding: 0 16px 0 6px; border: 1px solid var(--linie); border-radius: 10px; background: var(--weiss); font-size: 15px; font-weight: 600; color: var(--nacht); cursor: pointer; }
 .assistent-knopf:hover { border-color: var(--akzent); }
-.app { display: block; max-width: 1140px; padding: 12px 56px 64px; }
+/* Der Inhalt füllt das Blatt, links und rechts gleich viel Rand */
+.app { display: block; padding: 12px 56px 64px; }
 
 /* Kapitel: immer nur eins sichtbar, ohne Ziel „Tonight“. Kein Einblenden */
 .ansicht { display: none; }
