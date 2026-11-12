@@ -242,11 +242,13 @@ button.text-link { padding: 0; border: 0; background: none; cursor: pointer; }
 .reise-unter { margin-top: 8px; max-width: 64ch; color: var(--muted); }
 /* --danach: Breite der Zone „30+“ in Nächten, als Zahl für die Lage der Beschriftung und als fr für das Raster */
 .reise-lineal { --luecke: 3px; --danach: 4; --danach-fr: 4fr; container-type: inline-size; margin-top: 14px; }
-.reise-streifen { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)) minmax(0, var(--danach-fr)); gap: var(--luecke); padding: 10px 0; border-radius: 4px; cursor: pointer; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.reise-streifen { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)) minmax(0, var(--danach-fr)); gap: var(--luecke); align-items: center; height: 42px; border-radius: 4px; cursor: pointer; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
 .reise-streifen span { height: 12px; border-radius: 2px; background: var(--linie); }
+.reise-streifen span:hover { filter: brightness(.93); }
 .reise-streifen .danach { background: repeating-linear-gradient(90deg, var(--linie) 0 5px, transparent 5px 8px); }
 .reise-streifen .fertig { background: var(--gold); }
-.reise-streifen .gewaehlt { background: var(--nacht); }
+/* Die gewählte Nacht steht höher, wie ein Regler zum Anfassen */
+.reise-streifen .gewaehlt { height: 24px; border-radius: 3px; background: var(--nacht); }
 .reise-marken { position: relative; height: 22px; }
 .reise-marke { position: absolute; top: 0; left: calc((var(--n) - .5) * (100% - 30 * var(--luecke)) / (30 + var(--danach)) + (var(--n) - 1) * var(--luecke)); transform: translateX(-50%); padding: 0 2px; border: 0; background: none; font-size: 14px; font-weight: 600; line-height: 22px; font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; cursor: pointer; }
 .reise-marke.anfang { left: 0; transform: none; }
@@ -261,15 +263,46 @@ button.text-link { padding: 0; border: 0; background: none; cursor: pointer; }
   .rs-lang { display: none; }
   .rs-kurz { display: inline; }
 }
-.reise-nacht { margin-top: 24px; }
-.reise-karte { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; grid-template-areas: "titel koerper" "zitat koerper" "link koerper" ". koerper"; gap: 0 40px; margin-top: 4px; }
-.reise-karte h3 { grid-area: titel; }
-.rk-zitat { grid-area: zitat; margin-top: 8px; font-size: 16px; color: var(--muted); }
-.reise-karte .text-link { grid-area: link; justify-self: start; margin-top: 12px; }
-.reise-koerper { grid-area: koerper; padding: 16px 18px; border-radius: 10px; background: var(--periwinkle); font-size: 16px; color: var(--text); }
-.reise-koerper b { display: block; margin-bottom: 2px; font-weight: 700; color: var(--nacht); }
+.reise-nacht { margin-top: 20px; }
+/* Station zur gewählten Nacht: links Überschrift, Zitat und Link, rechts „In your body“ als Nachtkarte mit einer typischen Nacht */
+.reise-stufe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px 40px; align-items: start; margin-top: 4px; }
+.reise-karte > * + * { margin-top: 10px; }
+.rk-zitat { font-size: 16px; color: var(--muted); }
+.reise-karte .text-link { display: inline-block; }
+.reise-koerper { padding: 20px 22px 22px; border-radius: 12px; background: var(--nacht); color: var(--weiss); }
+.reise-koerper .augenbraue { color: var(--gold); }
+.rk-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+.rk-typisch { font-size: 13px; color: var(--auf-nacht); }
+/* Die Nacht: links die Schlafphasen wie in Sleepwhales Artikel (Tiefschlaf eher früh, REM später), rechts die Linie von Licht aus bis morgens.
+   Gold zeigt, worum es in dieser Zeit geht. Die Uhrzeiten kommen aus der Schlafenszeit (data-uhr) */
+.nachtbild { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 0 10px; margin-top: 14px; }
+.nb-stufen { position: relative; height: 112px; font-size: 12px; line-height: 1; color: var(--auf-nacht); }
+.nb-stufen span { position: absolute; right: 0; transform: translateY(-50%); }
+.nb-stufen span:nth-child(1) { top: 8%; }
+.nb-stufen span:nth-child(2) { top: 36%; }
+.nb-stufen span:nth-child(3) { top: 64%; }
+.nb-stufen span:nth-child(4) { top: 92%; }
+.nb-flaeche svg { display: block; width: 100%; height: 112px; overflow: visible; }
+.nb-raster { fill: none; stroke: var(--nacht-linie); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.nb-linie, .nb-gold { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.nb-linie { stroke: var(--periwinkle); stroke-opacity: .5; stroke-width: 2; }
+.nb-gold { stroke: var(--gold); stroke-width: 3; stroke-linecap: round; }
+.nb-band { fill: var(--gold); fill-opacity: .12; }
+.nb-hl { opacity: 0; }
+.nb-hl.an { opacity: 1; }
+.nb-zeiten { position: relative; height: 16px; margin-top: 8px; font-size: 12px; line-height: 16px; font-variant-numeric: tabular-nums; color: var(--auf-nacht); white-space: nowrap; }
+.nb-zeiten span { position: absolute; top: 0; }
+.nb-zeiten span:nth-child(1) { left: 0; }
+.nb-zeiten span:nth-child(2) { left: 52%; transform: translateX(-50%); }
+.nb-zeiten span:nth-child(3) { right: 0; }
+.nachtbild.bett .nb-zeiten span:first-child { font-weight: 700; color: var(--gold); }
+.nb-fokus { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--gold); }
+.nb-fokus::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 2px; background: var(--gold); }
+.rk-koerper { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--nacht-linie); font-size: 15px; }
 @media (prefers-reduced-motion: no-preference) {
-  .reise-karte.blenden { animation: reise-blenden .25s ease-out; }
+  .reise-streifen span { transition: background-color .2s, height .2s; }
+  .nb-hl { transition: opacity .35s ease; }
+  .reise-karte.blenden, .rk-koerper.blenden { animation: reise-blenden .25s ease-out; }
   @keyframes reise-blenden { from { opacity: 0; } }
 }
 .reise-fuss { margin-top: 20px; max-width: 80ch; font-size: 13px; line-height: 1.5; color: var(--muted); }
@@ -743,6 +776,20 @@ html.plan-modus #mein-plan { display: grid; }
 .rm-ziel.jetzt .rm-karte { padding: 26px 26px 28px; }
 .fertig .rm-karte, .fertig .rm-karte h3 { color: var(--muted); }
 .fertig .rm-foto { opacity: .75; }
+/* Kalendereinträge in der Roadmap: unter der ganzen Karte „Add to your calendar“, je Termin ein Kalenderblatt mit dem Monat in Gold, Titel und wann,
+   dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
+.ke-liste { grid-column: 1 / -1; clear: both; display: grid; gap: 8px; margin-top: 16px; }
+.ke-kopf { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--nacht); }
+.ke-kopf svg { flex: none; width: 18px; height: 18px; color: var(--akzent); }
+.ke { display: grid; grid-template-columns: 50px minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--linie); border-radius: 10px; background: var(--weiss); color: var(--text); }
+.ke-blatt { display: grid; overflow: hidden; border: 1px solid var(--linie); border-radius: 8px; text-align: center; background: var(--weiss); }
+.ke-blatt span { padding: 2px 0 1px; background: var(--gold); font-size: 11px; font-weight: 700; line-height: 1.3; letter-spacing: .08em; text-transform: uppercase; color: var(--nacht); }
+.ke-blatt b { padding: 1px 0 3px; font-size: 21px; font-weight: 700; line-height: 1.25; font-variant-numeric: tabular-nums; color: var(--nacht); }
+.ke-titel { font-size: 16px; font-weight: 650; line-height: 1.35; color: var(--nacht); }
+.ke-wann { margin-top: 2px; font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; color: var(--muted); }
+.ke-knoepfe { display: flex; gap: 8px; }
+.ke-knopf { min-height: 40px; padding: 8px 14px; border: 1px solid var(--nacht); border-radius: 8px; background: var(--weiss); font-size: 14px; font-weight: 600; color: var(--nacht); cursor: pointer; }
+.ke-knopf:hover { background: var(--hover); }
 .ps-weg > .plan-quelle { margin-top: 24px; }
 .plan-hinweis { font-size: 15px; color: var(--muted); }
 /* 2 Ergebnis: vier kleine Ringe */
@@ -847,6 +894,9 @@ html.plan-modus #mein-plan { display: grid; }
   .rm-phase.jetzt .rm-karte { padding: 11px 11px 15px; }
   .rm-check.jetzt .rm-karte, .rm-kauf.jetzt .rm-karte { padding: 16px 14px; }
   .rm-ziel.jetzt .rm-karte { padding: 20px 16px; }
+  .ke { grid-template-columns: 50px minmax(0, 1fr); }
+  .ke-knoepfe { grid-column: 1 / -1; }
+  .ke-knopf { flex: 1; }
   .plan-b { font-size: 19px; }
   .plan-knoepfe .knopf { flex: 1 1 100%; }
   .plan-check { padding: 18px 16px; }
@@ -1047,8 +1097,12 @@ body.chat-offen .chat-fenster { display: flex; }
   .pk-wochen li { padding: 10px 12px; }
   .pk-wochen li.jetzt { padding: 9px 11px; }
   .pk-wochen b { font-size: 15px; }
-  .reise-karte { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "titel" "koerper" "zitat" "link"; }
-  .reise-koerper { margin-top: 12px; }
+  .reise-stufe { grid-template-columns: minmax(0, 1fr); grid-template-areas: "titel" "koerper" "zitat" "link"; gap: 0; }
+  .reise-text, .reise-karte { display: contents; }
+  .reise-karte h3 { grid-area: titel; }
+  .reise-koerper { grid-area: koerper; margin-top: 12px; padding: 18px 16px 20px; }
+  .rk-zitat { grid-area: zitat; margin-top: 14px; }
+  .reise-karte .text-link { grid-area: link; justify-self: start; margin-top: 12px; }
   .n7-frage { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; }
   .n7-nr { width: 28px; height: 28px; font-size: 14px; }
   .n7-frage p { padding-top: 1px; font-size: 16px; }
@@ -1371,35 +1425,60 @@ body.chat-offen .chat-fenster { display: flex; }
             </div>
           </div>
           <p class="augenbraue reise-nacht" data-reise-nacht>Night 1</p>
-          <div class="reise-karte" data-reise-panel>
-            <h3>A calmer way to wind down</h3>
-            <p class="reise-koerper"><b>In your body</b>Your drops are water-soluble, so Sleepwhale says “you should feel the effects within 10-15 minutes.” Broad Spectrum Nano Hemp “Reduces physical tension, lowers cortisol, and brings the nervous system into a parasympathetic (rest-and-digest) state”.</p>
-            <p class="rk-zitat">“Your first drops introduce Sleepwhale’s fast-absorbing formula into your bedtime routine, designed to help your mind and body settle down and prepare for rest.”</p>
-            <a class="text-link" href="#drops-ritual">How the ritual works</a>
-          </div>
-          <div class="reise-karte" data-reise-panel hidden>
-            <h3>Start noticing the little wins</h3>
-            <p class="reise-koerper"><b>In your body</b>“Your stress hormone is meant to rise just before morning, but stress, hormone shifts and blood sugar dips can make it spike hours early.” Your drops are “built to keep working through the second half of the night, when cortisol starts rising.”</p>
-            <p class="rk-zitat">“One week in, it’s time to pay attention. Are you spending less time tossing and turning? Are nighttime wake-ups becoming less disruptive? Even small improvements are worth noticing.”</p>
-            <a class="text-link" href="#drops-n7">Check your serving</a>
-          </div>
-          <div class="reise-karte" data-reise-panel hidden>
-            <h3>How are your mornings feeling?</h3>
-            <p class="reise-koerper"><b>In your body</b>Sleepwhale's formula puts “an emphasis in optimizing the 2 most critical stages of sleep: deep and REM.” This takes longest to judge: whether your sleep itself is improving “can take longer, sometimes up to several weeks.”</p>
-            <p class="rk-zitat">“Better sleep isn’t just about what happens at night. When your nights feel more restful, your mornings may start feeling easier, too.”</p>
-            <a class="text-link" href="#drops-plan">Your sleep plan</a>
-          </div>
-          <div class="reise-karte" data-reise-panel hidden>
-            <h3>Look how far you’ve come</h3>
-            <p class="reise-koerper"><b>In your body</b>Sleepwhale's formula is “created to support all 4 stages of the sleep cycle”, from light sleep to deep sleep and REM.</p>
-            <p class="rk-zitat">“Thirty nights give you a chance to look at the bigger picture. Are you falling asleep more comfortably? Waking up less often? Feeling better rested when the alarm goes off? That’s what really matters: how your sleep affects everyday life.”</p>
-            <a class="text-link" href="#drops-reorder">Reorder</a>
-          </div>
-          <div class="reise-karte" data-reise-panel hidden>
-            <h3>Make better nights part of your routine</h3>
-            <p class="reise-koerper"><b>In your body</b>Sleepwhale’s approach is meant “to support your body’s natural circadian rhythm”, your sleep-wake cycle. That’s why your bedtime stays the same.</p>
-            <p class="rk-zitat">“Keep the simple bedtime ritual that works for you and continue giving your nights the attention they deserve.”</p>
-            <a class="text-link" href="#drops-reorder">Subscribe &amp; Save</a>
+          <div class="reise-stufe">
+            <div class="reise-text">
+              <div class="reise-karte" data-reise-panel>
+                <h3>A calmer way to wind down</h3>
+                <p class="rk-zitat">“Your first drops introduce Sleepwhale’s fast-absorbing formula into your bedtime routine, designed to help your mind and body settle down and prepare for rest.”</p>
+                <a class="text-link" href="#drops-ritual">How the ritual works</a>
+              </div>
+              <div class="reise-karte" data-reise-panel hidden>
+                <h3>Start noticing the little wins</h3>
+                <p class="rk-zitat">“One week in, it’s time to pay attention. Are you spending less time tossing and turning? Are nighttime wake-ups becoming less disruptive? Even small improvements are worth noticing.”</p>
+                <a class="text-link" href="#drops-n7">Check your serving</a>
+              </div>
+              <div class="reise-karte" data-reise-panel hidden>
+                <h3>How are your mornings feeling?</h3>
+                <p class="rk-zitat">“Better sleep isn’t just about what happens at night. When your nights feel more restful, your mornings may start feeling easier, too.”</p>
+                <a class="text-link" href="#drops-plan">Your sleep plan</a>
+              </div>
+              <div class="reise-karte" data-reise-panel hidden>
+                <h3>Look how far you’ve come</h3>
+                <p class="rk-zitat">“Thirty nights give you a chance to look at the bigger picture. Are you falling asleep more comfortably? Waking up less often? Feeling better rested when the alarm goes off? That’s what really matters: how your sleep affects everyday life.”</p>
+                <a class="text-link" href="#drops-reorder">Reorder</a>
+              </div>
+              <div class="reise-karte" data-reise-panel hidden>
+                <h3>Make better nights part of your routine</h3>
+                <p class="rk-zitat">“Keep the simple bedtime ritual that works for you and continue giving your nights the attention they deserve.”</p>
+                <a class="text-link" href="#drops-reorder">Subscribe &amp; Save</a>
+              </div>
+            </div>
+            <section class="reise-koerper" aria-labelledby="reise-koerper-titel">
+              <div class="rk-kopf"><p class="augenbraue" id="reise-koerper-titel">In your body</p><p class="rk-typisch">A typical night</p></div>
+              <div class="nachtbild" role="img" aria-label="A typical night from lights out to morning. Highlighted: your drops and the first minutes in bed" data-nachtbild>
+                <div class="nb-stufen" aria-hidden="true"><span>Awake</span><span>REM</span><span>Light</span><span>Deep</span></div>
+                <div class="nb-flaeche" aria-hidden="true">
+                  <svg viewBox="0 0 500 100" preserveAspectRatio="none" focusable="false">
+                    <path class="nb-raster" d="M0 8H500M0 36H500M0 64H500M0 92H500"/>
+                    <rect class="nb-hl nb-band" data-hl="0" x="10" y="0" width="25" height="100"/>
+                    <rect class="nb-hl nb-band" data-hl="1" x="260" y="0" width="240" height="100"/>
+                    <path class="nb-linie" d="M0 8H32V64H50V92H95V64H110V36H120V64H140V92H180V64H200V36H225V64H250V92H265V64H290V36H325V64H350V8H358V64H390V36H430V64H460V36H490V8H500"/>
+                    <path class="nb-hl nb-gold" data-hl="0" d="M10 0V100M10 8H32V64H35"/>
+                    <path class="nb-hl nb-gold" data-hl="1" d="M260 92H265V64H290V36H325V64H350V8H358V64H390V36H430V64H460V36H490V8H500"/>
+                    <path class="nb-hl nb-gold" data-hl="2" d="M50 92H95M110 36H120M140 92H180M200 36H225M250 92H265M290 36H325M390 36H430M460 36H490"/>
+                    <path class="nb-hl nb-gold" data-hl="3" d="M0 8H32V64H50V92H95V64H110V36H120V64H140V92H180V64H200V36H225V64H250V92H265V64H290V36H325V64H350V8H358V64H390V36H430V64H460V36H490V8H500"/>
+                    <path class="nb-hl nb-gold" data-hl="4" d="M20 0V100"/>
+                  </svg>
+                  <div class="nb-zeiten"><span data-uhr="0">10:30 PM</span><span data-uhr="240">2:30 AM</span><span data-uhr="480">6:30 AM</span></div>
+                </div>
+              </div>
+              <p class="nb-fokus" data-reise-fokus>Your drops and the first minutes in bed</p>
+              <p class="rk-koerper" data-reise-koerper>Your drops are water-soluble, so Sleepwhale says “you should feel the effects within 10-15 minutes.” Broad Spectrum Nano Hemp “Reduces physical tension, lowers cortisol, and brings the nervous system into a parasympathetic (rest-and-digest) state”.</p>
+              <p class="rk-koerper" data-reise-koerper hidden>“Your stress hormone is meant to rise just before morning, but stress, hormone shifts and blood sugar dips can make it spike hours early.” Your drops are “built to keep working through the second half of the night, when cortisol starts rising.”</p>
+              <p class="rk-koerper" data-reise-koerper hidden>Sleepwhale's formula puts “an emphasis in optimizing the 2 most critical stages of sleep: deep and REM.” This takes longest to judge: whether your sleep itself is improving “can take longer, sometimes up to several weeks.”</p>
+              <p class="rk-koerper" data-reise-koerper hidden>Sleepwhale's formula is “created to support all 4 stages of the sleep cycle”, from light sleep to deep sleep and REM.</p>
+              <p class="rk-koerper" data-reise-koerper hidden>Sleepwhale’s approach is meant “to support your body’s natural circadian rhythm”, your sleep-wake cycle. That’s why your bedtime stays the same.</p>
+            </section>
           </div>
           <p class="reise-fuss">Everyone sleeps differently — these milestones are moments to check in, not promises of specific results. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease. <a class="text-link" href="#lib-30-naechte">Read the full article</a></p>
         </section>
@@ -2358,6 +2437,26 @@ body.chat-offen .chat-fenster { display: flex; }
   function zeitraum(t) { return t.ganztags ? icsTag(t.start) + "/" + icsTag(plusTage(t.start, 1)) : icsZeit(t.start) + "/" + icsZeit(new Date(t.start.getTime() + 600000)); }
   /* Titel in der Vorschau: ohne „Sleepwhale: “ oder „Sleepwhale sleep plan, “ davor, groß beginnend */
   function terminTitel(t) { var s = t.titel.replace(/^Sleepwhale(: | sleep plan, )/, ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  /* Wann ein Termin ist: „10:20 PM, every evening until Dec 11“ als Serie, sonst „9:30 PM“ (mit Wochentag „Thu, 9:30 PM“) oder „all day“ */
+  function terminWann(t, mitTag) {
+    var tag = mitTag ? WOCHENTAGE[t.start.getDay()].slice(0, 3) + ", " : "", uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
+    if (t.ganztags) return tag + "all day";
+    if (t.anzahl > 1) return uhr + (t.start.getHours() < 12 ? ", every morning" : ", every evening") + " until " + kurzDatum(plusTage(t.start, t.anzahl - 1));
+    return tag + uhr;
+  }
+  /* Ein Termin als Kalendereintrag in der Roadmap: Kalenderblatt, Titel, wann; dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
+  function kalEintrag(t) {
+    var box = element("div", "ke"), blatt = element("p", "ke-blatt"), text = element("div", "ke-text"), knoepfe = element("div", "ke-knoepfe"), titel = terminTitel(t);
+    blatt.append(element("span", null, MONATE[t.start.getMonth()].slice(0, 3)), " ", element("b", null, String(t.start.getDate())));
+    text.append(element("p", "ke-titel", titel), element("p", "ke-wann", terminWann(t, true)));
+    var apple = knopfMit("Apple", "ke-knopf", function () { kalenderDatei([t], "sleepwhale-" + t.kal); });
+    var android = knopfMit("Android", "ke-knopf", function () { window.open(googleLink(t), "_blank", "noopener"); });
+    apple.setAttribute("aria-label", "Add " + titel + " to Apple Calendar");
+    android.setAttribute("aria-label", "Add " + titel + " to Google Calendar on Android");
+    knoepfe.append(apple, android);
+    box.append(blatt, text, knoepfe);
+    return box;
+  }
   function kalenderDatei(termine, name) {
     var stempel = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
     var zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Sleepwhale//Sleep Guide//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH"];
@@ -2996,26 +3095,26 @@ body.chat-offen .chat-fenster { display: flex; }
   function stationenVon(plan) {
     var s = ausIso(plan.s), bett = minutenAus(plan.t), gw = gewohnheitText(plan.g, plan.t), benutzt = [];
     var liste = [
-      { art: "phase", tag: 0, woche: 1, augenbraue: "Nights 1 to 7", titel: "Same time, every night", fotos: ["ritual-1"],
+      { art: "phase", tag: 0, kal: "drops", woche: 1, augenbraue: "Nights 1 to 7", titel: "Same time, every night", fotos: ["ritual-1"],
         tun: ["Drops at " + uhrText(bett - 10) + ", lights out at " + uhrText(bett) + ".", "Keep the bottle where you brush your teeth at night.", "Missed a night? Take your drops the next night at your usual time."] },
-      { art: "check", tag: 6, augenbraue: "Night 7, check-in", titel: "Start noticing the little wins", n7: true,
+      { art: "check", tag: 6, kal: "check7", augenbraue: "Night 7, check-in", titel: "Start noticing the little wins", n7: true,
         tun: ["“One week in, it’s time to pay attention. Are you spending less time tossing and turning? Are nighttime wake-ups becoming less disruptive? Even small improvements are worth noticing.”"] },
-      { art: "phase", tag: 7, woche: 2, augenbraue: "Nights 8 to 14", titel: "Add one habit: " + gw[0], fotos: [HABIT_FOTO[plan.g], "foto-stay", "foto-wind", "foto-fall"],
+      { art: "phase", tag: 7, kal: "gewohnheit", woche: 2, augenbraue: "Nights 8 to 14", titel: "Add one habit: " + gw[0], fotos: [HABIT_FOTO[plan.g], "foto-stay", "foto-wind", "foto-fall"],
         tun: [gw[1], "Your ritual stays the same."] },
-      { art: "check", tag: 14, nachtText: "After night 14", augenbraue: "Morning after night 14", titel: "How are your mornings feeling?", bewerten: 14,
+      { art: "check", tag: 14, kal: "check14", nachtText: "After night 14", augenbraue: "Morning after night 14", titel: "How are your mornings feeling?", bewerten: 14,
         tun: ["Rate your sleep: How’d you sleep last night?", "“Better sleep isn’t just about what happens at night.”"] },
-      { art: "phase", tag: 14, woche: 3, augenbraue: "Nights 15 to 21", titel: "Watch closely", fotos: ["foto-schlaf", "foto-stay", "ritual-3"],
+      { art: "phase", tag: 14, kal: "beobachten", woche: 3, augenbraue: "Nights 15 to 21", titel: "Watch closely", fotos: ["foto-schlaf", "foto-stay", "ritual-3"],
         tun: [BEOBACHTUNG[plan.f], "Keep your ritual and your habit."], klein: "Sleepwhale says judging whether your sleep is improving “can take longer, sometimes up to several weeks.”" },
-      { art: "phase", tag: 21, woche: 4, augenbraue: "Nights 22 to 30", titel: "Make it stick", fotos: ["foto-recover", "foto-wind", "foto-fall"],
+      { art: "phase", tag: 21, kal: "festigen", woche: 4, augenbraue: "Nights 22 to 30", titel: "Make it stick", fotos: ["foto-recover", "foto-wind", "foto-fall"],
         tun: ["Keep your ritual and your habit, same time every night."] },
-      { art: "check", tag: 29, augenbraue: "Night 30, check-in", titel: "Look how far you’ve come", bewerten: 30,
+      { art: "check", tag: 29, kal: "check30", augenbraue: "Night 30, check-in", titel: "Look how far you’ve come", bewerten: 30,
         tun: ["“Thirty nights give you a chance to look at the bigger picture. Are you falling asleep more comfortably? Waking up less often? Feeling better rested when the alarm goes off?”", "Morning after night 30: rate your sleep again."] },
       { art: "ziel", tag: 30, nachtText: "After night 30", augenbraue: "After night 30", titel: "Make better nights part of your routine",
         tun: ["“Keep the simple bedtime ritual that works for you and continue giving your nights the attention they deserve.”"] }
     ];
     if (plan.n) {
       var t = Math.max(0, Math.round((ausIso(plan.n) - s) / 864e5));
-      liste.push({ art: "kauf", tag: t, augenbraue: "Night " + (t + 1), titel: "Order your next bottle", tun: ["About 7 nights left in your bottle."] });
+      liste.push({ art: "kauf", tag: t, kal: "kauf", augenbraue: "Night " + (t + 1), titel: "Order your next bottle", tun: ["About 7 nights left in your bottle."] });
     }
     liste.forEach(function (x, i) { x.nr = i; x.nacht = x.tag + 1; x.datum = plusTage(s, x.tag); x.nachtText = x.nachtText || "Night " + x.nacht; });
     liste.sort(function (a, b) { return a.tag - b.tag || a.nr - b.nr; });
@@ -3035,9 +3134,10 @@ body.chat-offen .chat-fenster { display: flex; }
     k.scrollIntoView({ behavior: "instant", block: "start" });
     k.focus({ preventScroll: true });
   }
-  /* Die Roadmap als Weg: links das Datum, in der Mitte die Linie mit Knoten (Gold bis heute), rechts die Karte der Station */
+  /* Die Roadmap als Weg: links das Datum, in der Mitte die Linie mit Knoten (Gold bis heute), rechts die Karte der Station.
+     Jede Station trägt ihren Kalendereintrag; Serien aus erledigten Stationen (Drops, Gewohnheit) stehen bei der Station von heute */
   function roadmapListe(plan) {
-    var stationen = stationenVon(plan), n = tageSeit(plan.s) + 1, jetzt = aktuelleStation(stationen, n), ol = element("ol", "roadmap-plan");
+    var stationen = stationenVon(plan), n = tageSeit(plan.s) + 1, jetzt = aktuelleStation(stationen, n), ol = element("ol", "roadmap-plan"), termine = planTermine(plan), laufend = [];
     ol.setAttribute("aria-label", "Your roadmap");
     stationen.forEach(function (x, i) {
       var zustand = i < jetzt ? "fertig" : i === jetzt ? "jetzt" : "spaeter";
@@ -3075,6 +3175,17 @@ body.chat-offen .chat-fenster { display: flex; }
         }
         if (x.art === "ziel" && plan.n) { var weiter = element("p", "rm-absatz"); weiter.appendChild(knopfMit("Keep your ritual going", "text-link", zurKaufStation)); text.appendChild(weiter); }
         karte.appendChild(text);
+      }
+      var termin = x.kal ? termine.filter(function (t) { return t.kal === x.kal; })[0] : null, eintraege = [];
+      if (termin && zustand === "fertig") { if (termin.anzahl > 1) laufend.push(termin); }
+      else if (termin) eintraege.push(termin);
+      if (zustand === "jetzt") eintraege = laufend.concat(eintraege);
+      if (eintraege.length) {
+        var kal = element("div", "ke-liste"), kopf = element("p", "ke-kopf", "Add to your calendar");
+        kopf.prepend(ikon("kalender"));
+        kal.appendChild(kopf);
+        eintraege.forEach(function (t) { kal.appendChild(kalEintrag(t)); });
+        karte.appendChild(kal);
       }
       li.append(datum, knoten, karte);
       ol.appendChild(li);
@@ -3275,24 +3386,37 @@ body.chat-offen .chat-fenster { display: flex; }
     karte.append(raster, ergebnis);
     return karte;
   }
-  /* Alle Termine des Plans. Was schon vorbei ist, fällt weg */
+  /* Uhrzeit der Gewohnheit im Kalender, in Minuten zu Licht aus: wie im Abend, spätestens mit den Drops.
+     „Earlier in the evening“ 2 Stunden vorher, „During the night“ mit den Drops */
+  function gewohnheitMin(g) {
+    var z = HABIT_ZEIT[g];
+    if (!z) return -60;
+    if (z.min === null) return z.etikett === "Earlier in the evening" ? -120 : -15;
+    return Math.min(z.min, -10);
+  }
+  /* Alle Termine des Plans, einer je Station (kal): Drops jeden Abend, Serving-Check an Nacht 7, die Gewohnheit jeden Abend ab Nacht 8, Bewerten nach Nacht 14,
+     „Watch closely“ in den Nächten 15 bis 21, Start von Woche 4, Bewerten nach Nacht 30, Nachbestellen. Was vorbei ist, fällt weg, Serien beginnen frühestens heute */
   function planTermine(plan) {
-    var jetzt = new Date(), s = ausIso(plan.s), bett = minutenAus(plan.t), link = planLink(plan), gw = gewohnheitText(plan.g, plan.t), liste = [];
-    function um(tag, min) { var d = new Date(tag); d.setHours(Math.floor(tagMin(min) / 60), tagMin(min) % 60, 0, 0); return d; }
-    var drops = naechsterTermin(bett - 10), tropfenStart = new Date(drops), anzahl;
-    tropfenStart.setHours(0, 0, 0, 0);
-    anzahl = 30 - Math.round((tropfenStart - s) / 864e5);
-    if (anzahl > 0) liste.push({ name: "Your drops, every evening", titel: "Sleepwhale: take your Sleep Drops", text: "Shake well, 1 mL under your tongue, hold, then swallow. Lights out at " + uhrText(bett) + ". Your plan: " + link, start: drops, anzahl: anzahl });
-    [
-      { name: "Nights 8 to 14", tag: 7, min: bett - 60, titel: "Sleepwhale sleep plan, nights 8 to 14: " + gw[0], text: gw[1] + " Check your serving: " + hubAdresse("#drops-n7") + " Your plan: " + link },
-      { name: "Rate on night 14", tag: 14, min: 540, titel: "Sleepwhale: how did you sleep?", text: "How’d you sleep last night? Tap your answer: " + planLink(plan, 14) + ". From tonight, nights 15 to 21: " + BEOBACHTUNG[plan.f] },
-      { name: "Nights 22 to 30", tag: 21, min: bett - 60, titel: "Sleepwhale sleep plan, nights 22 to 30: make it stick", text: "Ritual and habit continue. On " + datumText(plusTage(s, 30)) + " you rate one last time. Your plan: " + link },
-      { name: "Rate on night 30", tag: 30, min: 540, titel: "Sleepwhale: your 30 nights", text: "How’d you sleep last night? Tap your answer and see what changed: " + planLink(plan, 30) }
-    ].forEach(function (e) {
-      var d = um(plusTage(s, e.tag), e.min);
-      if (d > jetzt) liste.push({ name: e.name, titel: e.titel, text: e.text, start: d, anzahl: 1 });
-    });
-    if (plan.n && ausIso(plan.n) >= heute0()) liste.push({ name: "Reorder", titel: "Sleepwhale: reorder your Sleep Drops", text: "About 7 nights left in your bottle. Reorder now: " + hubAdresse("#drops-reorder"), start: ausIso(plan.n), ganztags: true, anzahl: 1 });
+    var jetzt = new Date(), s = ausIso(plan.s), bett = minutenAus(plan.t), link = planLink(plan), gw = gewohnheitText(plan.g, plan.t), morgens = plan.f !== "wind", liste = [];
+    function um(tag, min) { var d = plusTage(s, tag); d.setHours(Math.floor(tagMin(min) / 60), tagMin(min) % 60, 0, 0); return d; }
+    /* Jeden Tag von Tag „von“ bis „bis“ (ab Start gezählt) zur selben Uhrzeit, ab dem nächsten Termin */
+    function serie(kal, name, titel, text, von, bis, min) {
+      var tag = Math.max(von, tageSeit(plan.s)), d = um(tag, min);
+      if (d <= jetzt) d = um(++tag, min);
+      if (tag <= bis) liste.push({ kal: kal, name: name, titel: titel, text: text, start: d, anzahl: bis - tag + 1 });
+    }
+    function einmal(kal, name, titel, text, tag, min) {
+      var d = um(tag, min);
+      if (d > jetzt) liste.push({ kal: kal, name: name, titel: titel, text: text, start: d, anzahl: 1 });
+    }
+    serie("drops", "Your drops, every evening", "Sleepwhale: take your Sleep Drops", "Shake well, 1 mL under your tongue, hold, then swallow. Lights out at " + uhrText(bett) + ". Your plan: " + link, 0, 29, bett - 10);
+    einmal("check7", "Check your serving", "Sleepwhale: check your serving", "One week in. Three questions show whether to stay at your serving or fine-tune by 0.25 mL: " + hubAdresse("#drops-n7") + " Your plan: " + link, 6, bett - 60);
+    serie("gewohnheit", "Your habit, every evening", "Sleepwhale: " + gw[0], gw[1] + " Your plan: " + link, 7, 29, bett + gewohnheitMin(plan.g));
+    einmal("check14", "Rate on night 14", "Sleepwhale: rate your sleep", "How’d you sleep last night? Tap your answer: " + planLink(plan, 14) + ". From tonight, nights 15 to 21: " + BEOBACHTUNG[plan.f], 14, 540);
+    serie("beobachten", "Watch closely, nights 15 to 21", "Sleepwhale: watch closely", BEOBACHTUNG[plan.f] + " Your plan: " + link, morgens ? 15 : 14, morgens ? 21 : 20, morgens ? 540 : bett - 20);
+    einmal("festigen", "Nights 22 to 30", "Sleepwhale sleep plan, nights 22 to 30: make it stick", "Ritual and habit continue. On " + datumText(plusTage(s, 30)) + " you rate one last time. Your plan: " + link, 21, bett - 60);
+    einmal("check30", "Rate on night 30", "Sleepwhale: rate your 30 nights", "How’d you sleep last night? Tap your answer and see what changed: " + planLink(plan, 30), 30, 540);
+    if (plan.n && ausIso(plan.n) >= heute0()) liste.push({ kal: "kauf", name: "Reorder", titel: "Sleepwhale: reorder your Sleep Drops", text: "About 7 nights left in your bottle. Reorder now: " + hubAdresse("#drops-reorder"), start: ausIso(plan.n), ganztags: true, anzahl: 1 });
     return liste.sort(function (a, b) { return a.start - b.start; });
   }
   function planKalender(plan) {
@@ -3301,7 +3425,7 @@ body.chat-offen .chat-fenster { display: flex; }
     kalDialog.querySelector("[data-kal-felder]").replaceChildren();
     vorschau.replaceChildren.apply(vorschau, termine.map(function (t) {
       var li = element("li");
-      li.append(element("b", null, tagKurz(t.start) + (t.ganztags ? "" : ", " + uhrText(t.start.getHours() * 60 + t.start.getMinutes()))), " " + terminTitel(t) + (t.anzahl > 1 ? ", every evening for " + t.anzahl + " nights" : ""));
+      li.append(element("b", null, tagKurz(t.start)), " " + terminTitel(t) + ", " + terminWann(t));
       return li;
     }));
     var ics = knopfMit(istAndroid ? "Use another calendar" : "Add all to my calendar", istAndroid ? "knopf hell" : "knopf gold", function () { kalenderDatei(termine, "sleepwhale-plan"); kalDialog.close(); });
@@ -3411,8 +3535,11 @@ body.chat-offen .chat-fenster { display: flex; }
     reiseZeigen();
   }
   /* Tonight: deine ersten 30 Nächte als Streifen wie im Plan (30 Nächte und „30+“). Tippen, Ziehen, Pfeiltasten oder die Stationen darunter wählen die Nacht.
-     Start ist die bekannte Nacht (?night= oder Plan-Nacht), sonst Nacht 1. Darunter Sleepwhales Station für diese Nacht mit „In your body“ */
-  var reise = { streifen: document.querySelector("[data-reise-streifen]"), marken: alle("[data-reise-ab]"), panels: alle("[data-reise-panel]"), nachtText: document.querySelector("[data-reise-nacht]"), wert: 0, stufe: -1 };
+     Start ist die bekannte Nacht (?night= oder Plan-Nacht), sonst Nacht 1. Darunter Sleepwhales Station für diese Nacht, rechts „In your body“ mit einer typischen Nacht,
+     in der Gold zeigt, worum es in dieser Zeit geht */
+  var NACHT_FOKUS = ["Your drops and the first minutes in bed", "The second half of the night", "Deep sleep and REM", "All 4 stages of the sleep cycle", "Same bedtime, every night"];
+  var reise = { streifen: document.querySelector("[data-reise-streifen]"), marken: alle("[data-reise-ab]"), panels: alle("[data-reise-panel]"), koerper: alle("[data-reise-koerper]"), hl: alle("[data-nachtbild] .nb-hl"),
+    bild: document.querySelector("[data-nachtbild]"), fokus: document.querySelector("[data-reise-fokus]"), nachtText: document.querySelector("[data-reise-nacht]"), wert: 0, stufe: -1 };
   var REISE_AB = reise.marken.map(function (m) { return +m.dataset.reiseAb; });
   for (var rn = 1; rn <= 31; rn++) reise.streifen.appendChild(element("span", rn > 30 ? "danach" : null));
   reise.marken.forEach(function (m) { m.style.setProperty("--n", m.dataset.reiseAb); });
@@ -3433,6 +3560,11 @@ body.chat-offen .chat-fenster { display: flex; }
     if (s === reise.stufe) return;
     reise.stufe = s;
     reise.panels.forEach(function (p, i) { p.hidden = i !== s; p.classList.toggle("blenden", i === s && !!blenden); });
+    reise.koerper.forEach(function (p, i) { p.hidden = i !== s; p.classList.toggle("blenden", i === s && !!blenden); });
+    reise.hl.forEach(function (h) { h.classList.toggle("an", +h.getAttribute("data-hl") === s); });
+    reise.fokus.textContent = NACHT_FOKUS[s];
+    reise.bild.classList.toggle("bett", s === 4);
+    reise.bild.setAttribute("aria-label", "A typical night from lights out to morning. Highlighted: " + NACHT_FOKUS[s].charAt(0).toLowerCase() + NACHT_FOKUS[s].slice(1));
   }
   function reiseZeigen() {
     var n = nachtBekannt ? nacht : sd.plan ? planNacht(sd.plan) : 1, stand = document.querySelector("[data-reise-stand]");
