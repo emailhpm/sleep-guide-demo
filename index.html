@@ -2680,7 +2680,7 @@ body.chat-offen .chat-fenster { display: flex; }
 
   /* Quiz-Ablauf: Navigation über das Kürzel der Frage. „Seit wann“ fällt weg, wenn der Nacht-Regler die Nacht kennt */
   /* schluessel: Code und saved der zuletzt gezeigten Landingpage (#plan=…), leer = neu lesen. wahl: Zeiten im Bauen { t, u }.
-     ausMail: Code aus einem Link mit &saved=1 (aus der Klaviyo-Mail), gespeichert: { email, code, live } nach „Save my plan“, nur im Speicher.
+     ausMail: Code aus einem Link mit &saved=1 (aus der Klaviyo-Mail), gespeichert: { email, code, art } nach „Save my plan“ (art wie bei planSpeichern), nur im Speicher.
      notizNacht: die Nacht, die das Notizbuch gerade zeigt */
   var sd = { box: document.querySelector('[data-quiz-box="sd"]'), id: null, antworten: {}, plan: null, wahl: null, geaendert: false, lauf: 0, schluessel: "", ausMail: null, gespeichert: null, notizNacht: 0 };
   function sdTeil(n) { return sd.box.querySelector("[data-q-" + n + "]"); }
@@ -3455,16 +3455,37 @@ body.chat-offen .chat-fenster { display: flex; }
   /* Plan speichern: auf sleepwhale.com legt Klaviyos Onsite-Skript (klaviyo.js, öffentlicher Schlüssel) das Profil über die E-Mail direkt aus dem Browser an
      oder ergänzt es. Es schreibt nur Eigenschaften, Kennungen lassen sich clientseitig nicht ändern. Die Mails verlinken
      #plan={{ person|lookup:'sleep_plan_code' }}&saved=1. Datensparsam nur diese Felder: der Code enthält die Quiz-Antworten codiert, nicht verschlüsselt,
-     das Notizbuch bleibt auf dem Gerät. Ohne klaviyo.js (Prototyp, öffentliche Demo) wird nur simuliert: false */
-  function planSpeichern(email, plan) {
-    var code = planKodieren(plan), habits = plan.g.map(function (x) { return HABITS[x.i].titel; });
-    var daten = { email: email, sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_wake_time: plan.u, sleep_habits: habits };
+     das Notizbuch bleibt auf dem Gerät. Das Ereignis „Sleep Plan Created“ trägt alles, was die Mail braucht (Link, Uhrzeiten, die 4 Wochen mit Text und Bild).
+     Ohne klaviyo.js (Prototyp, öffentliche Demo) gehen nur Testadressen (TEST_ADRESSEN) über Klaviyos Client-API mit Sleepwhales öffentlichem Schlüssel
+     (steht im Quelltext von sleepwhale.com) in Sleepwhales Klaviyo, dort schickt der Test-Flow die Mail. Alle anderen Adressen: nichts wird gesendet.
+     fertig(art): "live" (klaviyo.js), "test" (Client-API angenommen), "fehler" (Client-API nicht erreicht), "" (nur nachgestellt) */
+  var KLAVIYO_SITE = "VCPGP7";
+  var TEST_ADRESSEN = /@(get-your-leads\.de|high-performance-mail\.com)$/i;
+  function planDaten(plan) {
+    var code = planKodieren(plan), habits = plan.g.map(function (x) { return HABITS[x.i].titel; }), s = ausIso(plan.s), bett = minutenAus(plan.t);
+    var wochen = WOCHEN.map(function (w, j) {
+      var bild = j ? HABIT_BILD[plan.g[j - 1].i] : ROUTINE_BILD;
+      return { week: j + 1, nights: w[0] + " to " + w[1], from: kurzDatum(plusTage(s, w[0] - 1)), title: j ? habits[j - 1] : "Your Sleepwhale routine", text: j ? habitText(plan, j - 1) : routineText(plan), image: /^data:/.test(bild[0]) ? "" : new URL(bild[0], location.href).href };
+    });
+    return {
+      profil: { sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_wake_time: plan.u, sleep_habits: habits },
+      ereignis: { plan_code: code, plan_url: planLink(plan) + "&saved=1", start: plan.s, start_text: datumText(s), bedtime: plan.t, bedtime_text: uhrText(bett), drops_text: uhrText(bett - 10), wake_time: plan.u, wake_text: uhrText(minutenAus(plan.u)), habits: habits, weeks: wochen, written_by_ai: !!plan.k, reorder_date: plan.n }
+    };
+  }
+  function planSpeichern(email, plan, fertig) {
+    var d = planDaten(plan);
     if (window.klaviyo && typeof window.klaviyo.identify === "function" && typeof window.klaviyo.track === "function") {
-      window.klaviyo.identify(daten);
-      window.klaviyo.track("Sleep Plan Created", { plan_code: code, plan_url: planLink(plan) + "&saved=1", start: plan.s, bedtime: plan.t, wake_time: plan.u, habits: habits, written_by_ai: !!plan.k, reorder_date: plan.n });
-      return true;
+      d.profil.email = email;
+      window.klaviyo.identify(d.profil);
+      window.klaviyo.track("Sleep Plan Created", d.ereignis);
+      fertig("live");
+      return;
     }
-    return false;
+    if (!TEST_ADRESSEN.test(email)) { fertig(""); return; }
+    var anfrage = { data: { type: "event", attributes: { properties: d.ereignis, metric: { data: { type: "metric", attributes: { name: "Sleep Plan Created" } } }, profile: { data: { type: "profile", attributes: { email: email, properties: d.profil } } } } } };
+    fetch("https://a.klaviyo.com/client/events?company_id=" + KLAVIYO_SITE, { method: "POST", headers: { "Content-Type": "application/vnd.api+json", "revision": "2026-10-15" }, body: JSON.stringify(anfrage) })
+      .then(function (r) { fertig(r.status === 202 ? "test" : "fehler"); })
+      .catch(function () { fertig("fehler"); });
   }
   /* Karte „Save your plan“: Formular, gespeichert (gleicher Code) oder aus der Mail (&saved=1) nur eine ruhige Zeile.
      Nach einer Änderung (anderer Code) wieder das Formular mit der E-Mail und „Save my changes“ */
@@ -3503,8 +3524,18 @@ body.chat-offen .chat-fenster { display: flex; }
           falsch.focus();
           return;
         }
-        sd.gespeichert = { email: email, code: code, live: planSpeichern(email, plan) };
-        erfolgZeigen();
+        senden.disabled = true;
+        senden.textContent = "Saving …";
+        planSpeichern(email, plan, function (art) {
+          if (art === "fehler") {
+            senden.disabled = false;
+            senden.textContent = g && g.code !== code ? "Save my changes" : "Save my plan";
+            meldung.textContent = "That didn't work. Please try again in a moment.";
+            return;
+          }
+          sd.gespeichert = { email: email, code: code, art: art };
+          erfolgZeigen();
+        });
       });
       karte.className = "plan-speichern";
       karte.replaceChildren(augenbraue("Save your plan"), element("h2", null, "Get your plan in your inbox"), element("p", "sp-text", "Save it once and every email from us links to your own plan, with your habit for each week."), form);
@@ -3515,7 +3546,8 @@ body.chat-offen .chat-fenster { display: flex; }
       titel.tabIndex = -1;
       satz.append("We'll send the link to ", element("b", null, g.email), ", with your habit for each week.");
       karte.replaceChildren(augenbraue("Save your plan"), titel, satz, knopfMit("Use a different email", "text-link", function () { formZeigen(true); }));
-      if (!g.live) karte.appendChild(element("p", "sp-fuss", "Prototype: nothing was sent. On sleepwhale.com this saves the plan to the customer's Klaviyo profile."));
+      if (g.art === "test") karte.appendChild(element("p", "sp-fuss", "Demo with a test address: your plan went to Sleepwhale's Klaviyo, the test flow sends the email."));
+      else if (!g.art) karte.appendChild(element("p", "sp-fuss", "Prototype: nothing was sent. On sleepwhale.com this saves the plan to the customer's Klaviyo profile."));
       if (karte.isConnected) titel.focus();
     }
     function ruhigZeigen() {
