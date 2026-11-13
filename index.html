@@ -16,9 +16,10 @@
 <meta name="apple-mobile-web-app-title" content="Sleep Guide">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- Chat: Für Sleepwhale bewusst leer. Der Assistent antwortet mit festen Antworten aus WISSEN (Konzept: erst feste Antworten, KI-Chat später mit freigegebenen Aussagen).
-     Später: https://hub-chat.hub-chat.workers.dev/chat/sleepwhale, sobald Schlüssel und englische Antworten im Chat-Server da sind. -->
-<meta name="hub-chat-api" content="">
+<!-- ChatGPT über den Worker hub-chat (chat/server.js, Schlüssel als Secret OPENAI_API_KEY_SLEEPWHALE): Chat auf Englisch und der 30-Nächte-Plan.
+     Leer = feste Antworten aus WISSEN und fester Plan. Lokal schreibt chat/testen.js beide auf /chat/sleepwhale und /plan/sleepwhale um -->
+<meta name="hub-chat-api" content="https://hub-chat.hub-chat.workers.dev/chat/sleepwhale">
+<meta name="hub-plan-api" content="https://hub-chat.hub-chat.workers.dev/plan/sleepwhale">
 <style>
 /* CI von sleepwhale.com: Schrift Onest, Nachtblau mit Gold, Königsblau für Links, Periwinkle nur als Leinwand um das Blatt und für die Seitenleiste.
    Prinzip: ein ruhiger Leitfaden auf Weiß, pro Seite ein Nachtband für den wichtigsten Moment. Karten nur für Auswahl */
@@ -214,8 +215,10 @@ button.text-link { padding: 0; border: 0; background: none; cursor: pointer; }
 .rh-schritte .rh-uhr { font-size: 28px; line-height: 1.15; font-weight: 650; letter-spacing: -.02em; color: var(--gold); }
 .rh-schritte b { margin-top: 4px; font-size: 17px; font-weight: 600; line-height: 1.35; }
 .rh-schritte small { font-size: 15px; line-height: 1.45; color: var(--auf-nacht); }
-/* Ab Plan-Nacht 8: die Gewohnheit als eigene Zeile über den drei Schritten */
-.rh-schritte li[data-plan-gewohnheit] { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 16px; padding-bottom: 20px; border-bottom: 1px solid var(--nacht-linie); }
+/* Ab Plan-Nacht 8: die Habits von heute als eigene Zeilen über den drei Schritten, mit Uhrzeit in Gold */
+.rh-schritte li[data-plan-gewohnheit] { grid-column: 1 / -1; display: grid; gap: 8px; padding-bottom: 20px; border-bottom: 1px solid var(--nacht-linie); }
+.rh-plan-liste { list-style: none; display: grid; gap: 6px; }
+.rh-plan-liste li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 16px; }
 .rh-fuss { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-top: 28px; }
 .rh-fuss .knopf { margin-top: 0; }
 
@@ -573,14 +576,11 @@ button.hilfe-zeile { width: 100%; border: 0; background: none; text-align: left;
 .quiz-kopf h2 { max-width: 34ch; }
 .quiz-antworten, .quiz-chips { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; max-width: 720px; padding-top: 24px; }
 .quiz-antwort, .quiz-chip { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; padding: 15px 16px; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 17px; font-weight: 500; line-height: 1.4; text-align: left; color: var(--text); cursor: pointer; }
-.quiz-antwort:hover, .quiz-chip:hover, .bau-karte:hover { border-color: var(--akzent); background: var(--hover); }
-.quiz-antwort[aria-pressed="true"], .quiz-chip[aria-pressed="true"], .bau-karte[aria-pressed="true"] { border-color: var(--nacht); background: var(--nacht); color: var(--weiss); }
+.quiz-antwort:hover, .quiz-chip:hover { border-color: var(--akzent); background: var(--hover); }
+.quiz-antwort[aria-pressed="true"], .quiz-chip[aria-pressed="true"] { border-color: var(--nacht); background: var(--nacht); color: var(--weiss); }
 /* Mehrfachwahl: gewählte Zeilen tragen rechts einen Haken */
 .quiz-chip::after { content: ""; flex: none; width: 20px; height: 20px; }
 .quiz-chip[aria-pressed="true"]::after { background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 6.8' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 6.8' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
-.quiz-freitext { max-width: 720px; padding-top: 20px; }
-.quiz-freitext textarea { display: block; width: 100%; padding: 12px 14px; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 17px; line-height: 1.5; color: var(--text); resize: vertical; }
-.quiz-freitext textarea:focus { outline: 2px solid var(--akzent); outline-offset: 1px; border-color: var(--akzent); }
 .quiz-hinweis { margin-top: 8px; font-size: 15px; line-height: 1.5; color: var(--muted); }
 .quiz-fuss { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-top: 24px; }
 .quiz-fuss:empty { display: none; }
@@ -595,24 +595,14 @@ button.hilfe-zeile { width: 100%; border: 0; background: none; text-align: left;
 .plan-laden-liste li.fertig { color: var(--text); }
 .plan-laden-liste li.fertig .plan-laden-zeichen { border: 0; }
 .plan-laden-zeichen svg { display: block; width: 20px; height: 20px; }
-/* Bau dir deinen Plan: Schlafenszeit, Gewohnheit, Plan B */
+/* Bau dir deinen Plan: ein Schritt mit Schlafenszeit und Aufstehzeit, darunter die Uhrzeiten als Satz */
 .bau-unter { max-width: 64ch; padding-top: 12px; color: var(--muted); }
-.bau-unten { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 8px 24px; align-items: end; padding-top: 20px; }
+.bau-zeiten { display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: 12px 20px; padding-top: 20px; }
 .bau-zeit { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .bau-zeit input { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 17px; font-variant-numeric: tabular-nums; color: var(--text); }
 .bau-zeit input:focus { outline: 2px solid var(--akzent); outline-offset: 1px; border-color: var(--akzent); }
-.bau-live { font-size: 15px; font-weight: 600; color: var(--nacht); font-variant-numeric: tabular-nums; }
-.bau-unten .quiz-hinweis { margin-top: 0; padding-bottom: 30px; }
-.bau-karten { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-top: 20px; }
-.bau-karte { display: grid; align-content: start; gap: 6px; padding: 18px; border: 1px solid var(--linie); border-radius: 12px; background: var(--weiss); text-align: left; color: var(--text); cursor: pointer; }
-.bau-karte b { font-size: 17px; line-height: 1.35; }
-.bau-karte span { font-size: 15px; line-height: 1.5; color: var(--muted); }
-.bau-karte small { margin-top: 4px; font-size: 13px; line-height: 1.45; color: var(--akzent); }
-.bau-karte[aria-pressed="true"] span { color: var(--auf-nacht); }
-.bau-karte[aria-pressed="true"] small { color: var(--gold); }
-.bau-wenn { padding-top: 20px; font-size: 20px; font-weight: 650; color: var(--nacht); }
-.bau-dann .quiz-antwort { font-size: 16px; }
-.bau-feld-titel { margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.bau-live { margin-top: 14px; font-size: 15px; font-weight: 600; color: var(--nacht); font-variant-numeric: tabular-nums; }
+.plan-laden-hinweis { margin-top: 14px; font-size: 14px; color: var(--muted); }
 /* Dein Ergebnis als gedruckter Bericht: weißes Blatt, Zeilen mit Haarlinien, goldene Symbole, Ringe in Königsblau, der Fokus in Nachtblau */
 .ergebnis { display: grid; gap: 20px; margin-top: 20px; padding: 28px 32px; border: 1px solid var(--linie); border-radius: 12px; background: var(--weiss); }
 .ergebnis-unter { color: var(--muted); }
@@ -703,96 +693,98 @@ html.plan-modus #mein-plan { display: grid; }
 .ps-woche-titel { margin-top: 2px; font-size: 20px; font-weight: 650; line-height: 1.3; color: var(--weiss); }
 .ps-fehler { grid-template-columns: minmax(0, 1fr); }
 .ps-fehler .knopf { display: inline-flex; margin-top: 24px; }
-.ps-streifen-box { container-type: inline-size; margin-top: 28px; }
-.ps-streifen { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)); gap: 3px; }
-.ps-streifen span { height: 10px; border-radius: 2px; background: var(--tief); }
-.ps-streifen .fertig { background: var(--gold); }
-.ps-streifen .heute { background: var(--weiss); outline: 2px solid var(--gold); }
-.ps-marken { position: relative; height: 20px; margin-top: 8px; font-size: 12px; line-height: 20px; color: var(--auf-nacht); white-space: nowrap; }
-.ps-marke { position: absolute; top: 0; left: calc((var(--n) - .5) * 100% / 30); transform: translateX(-50%); }
-.ps-marke b { font-weight: 700; color: var(--weiss); }
-.ps-marke.anfang { left: 0; transform: none; }
-.ps-marke.ende { left: auto; right: 0; transform: none; }
-/* Schmal nur die Zahlen */
-@container (max-width: 499px) { .ps-lang { display: none; } }
+.ps-einleitung { max-width: 58ch; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--nacht-linie); font-size: 16px; line-height: 1.55; color: var(--auf-nacht); }
+/* Dein Tag rechts im Kopf: Today, Tonight, During the night, Tomorrow morning, darunter die Sleepwhale-Erinnerung */
 .ps-heute { padding: 24px; border-radius: 10px; background: var(--tief); }
-.ps-heute-liste { list-style: none; margin-top: 6px; }
-.ps-heute-liste li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 10px 0; }
+.ps-heute-liste { list-style: none; margin-top: 4px; }
+.ps-heute-liste + .augenbraue { margin-top: 16px; }
+.ps-heute-liste li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 8px 0; }
 .ps-heute-liste li + li { border-top: 1px solid var(--nacht-linie); }
-.ps-uhr { font-size: 20px; line-height: 1.2; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ps-heute-liste li.ohne-uhr { grid-template-columns: minmax(0, 1fr); }
+.ps-uhr { font-size: 18px; line-height: 1.2; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ps-tun { font-size: 15px; line-height: 1.45; color: var(--weiss); }
-.ps-heute-ohne { margin-top: 6px; font-size: 14px; line-height: 1.45; color: var(--auf-nacht); }
 .ps-heute .knopf { width: 100%; margin-top: 20px; padding: 12px 16px; font-size: 15px; }
 .ps-heute .text-link { display: inline-block; margin-top: 14px; font-size: 15px; }
-.ps-naechstes { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--nacht-linie); font-size: 17px; color: var(--auf-nacht); }
-.ps-naechstes b { font-weight: 650; color: var(--weiss); }
-/* 3 Roadmap als Weg: Datum, Linie mit Knoten, Karte. Die Linie ist Gold bis zum Knoten der Station von heute */
-.roadmap-plan { list-style: none; margin-top: 32px; }
-.rm-station { --mitte: 164px; position: relative; display: grid; grid-template-columns: 140px 48px minmax(0, 1fr); padding-bottom: 28px; }
-.rm-station:last-child { padding-bottom: 0; }
-.rm-station::before, .rm-station::after { content: ""; position: absolute; left: calc(var(--mitte) - 2px); width: 4px; background: var(--linie); }
-.rm-station::before { top: 0; height: 32px; }
-.rm-station::after { top: 32px; bottom: 0; }
-.rm-station:first-child::before, .rm-station:last-child::after { display: none; }
-.rm-station.fertig::before, .rm-station.fertig::after, .rm-station.jetzt::before { background: var(--gold); }
-.rm-datum { grid-column: 1; padding: 20px 16px 0 0; text-align: right; font-size: 14px; line-height: 1.4; color: var(--muted); }
-.rm-datum b { display: block; font-size: 16px; font-weight: 700; color: var(--nacht); font-variant-numeric: tabular-nums; }
-.rm-knoten { grid-column: 2; position: relative; z-index: 1; justify-self: center; display: grid; place-items: center; width: 28px; height: 28px; margin-top: 18px; border: 2px solid var(--linie); border-radius: 50%; background: var(--weiss); font-size: 13px; font-weight: 700; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
-.rm-knoten svg { width: 16px; height: 16px; }
-.fertig .rm-knoten { border-color: var(--gold); background: var(--gold); color: var(--nacht); }
-.jetzt .rm-knoten { width: 36px; height: 36px; margin-top: 14px; border: 4px solid var(--gold); background: var(--nacht); color: var(--weiss); font-size: 15px; }
-.rm-karte { grid-column: 3; min-width: 0; }
-.rm-wann { display: none; margin-bottom: 4px; font-size: 14px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
-.rm-karte h3 { margin-top: 4px; font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
-.rm-liste { display: grid; gap: 6px; margin: 10px 0 0 18px; font-size: 15px; line-height: 1.5; }
-.rm-absatz { margin-top: 8px; font-size: 15px; line-height: 1.55; }
-.rm-klein { margin-top: 10px; font-size: 14px; color: var(--muted); }
-.rm-karte > .rm-teil > .knopf { display: inline-flex; margin-top: 16px; }
-/* Kopf der Karte: „You are here“ und die Augenbraue in einer Zeile */
-.rm-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
-.rm-hier { padding: 3px 8px; border-radius: 4px; background: var(--gold); color: var(--nacht); font-size: 12px; font-weight: 700; line-height: 1.4; letter-spacing: .08em; text-transform: uppercase; }
-.rm-phase .rm-karte { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px; align-items: start; padding: 16px 20px 18px 16px; border: 1px solid var(--linie); border-radius: 12px; }
-.rm-foto { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; background: var(--linie); }
-.rm-check .rm-karte { padding: 20px 24px; border-radius: 10px; background: var(--periwinkle); }
-.rm-kauf .rm-karte { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px 24px; border: 1px solid var(--linie); border-radius: 12px; scroll-margin-top: 24px; }
-.rm-kauf .rm-karte:focus { outline: 0; }
-.rm-flasche { width: 96px; height: 160px; object-fit: contain; }
-.rm-abo { margin-top: 14px; font-size: 18px; font-weight: 700; color: var(--nacht); }
-.rm-einmal { margin-top: 2px; color: var(--muted); }
-.rm-einmal b { color: var(--nacht); }
-.rm-karte .plan-knoepfe { margin-top: 16px; }
-.rm-ziel .rm-karte { padding: 28px 28px 30px; border-radius: 12px; background: var(--nacht); color: var(--weiss); }
-.rm-ziel .augenbraue { color: var(--gold); }
-.rm-ziel .rm-wann { color: var(--auf-nacht); }
-.rm-ziel h3, .rm-ziel .rm-abo, .rm-ziel .rm-einmal b { color: var(--weiss); }
-.rm-ziel .rm-einmal, .rm-ziel .rm-klein { color: var(--auf-nacht); }
-.rm-ziel .text-link { color: var(--weiss); text-decoration-color: var(--nacht-unterstrich); }
-.rm-ziel .text-link:hover, .rm-ziel .text-link:focus-visible { text-decoration-color: var(--weiss); }
-.rm-ziel :focus-visible { outline-color: var(--gold); }
-.rm-angebot { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--nacht-linie); }
-.rm-angebot .rm-abo { margin-top: 0; }
-/* Station von heute: 2 px Gold (Polster 1 bis 2 px kleiner), erledigte Stationen ruhiger */
-.jetzt .rm-karte { border: 2px solid var(--gold); }
-.rm-phase.jetzt .rm-karte { padding: 15px 19px 17px 15px; }
-.rm-check.jetzt .rm-karte { padding: 18px 22px; }
-.rm-kauf.jetzt .rm-karte { padding: 21px 23px; }
-.rm-ziel.jetzt .rm-karte { padding: 26px 26px 28px; }
-.fertig .rm-karte, .fertig .rm-karte h3 { color: var(--muted); }
-.fertig .rm-foto { opacity: .75; }
-/* Kalendereinträge in der Roadmap: unten in der Karte, durch eine Linie getrennt. Je Termin eine Zeile mit Kalender-Ikon, Titel und wann,
-   dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
-.ke-liste { grid-column: 1 / -1; clear: both; display: grid; gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--linie); }
-.rm-check .ke-liste { border-top-color: var(--weiss); }
-.ke { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; }
-.ke > svg { align-self: start; width: 20px; height: 20px; margin-top: 1px; color: var(--akzent); }
-.ke-titel { font-size: 15px; font-weight: 650; line-height: 1.35; color: var(--nacht); }
-.ke-wann { font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; color: var(--muted); }
-.ke-knoepfe { display: flex; gap: 8px; }
-.ke-knopf { min-height: 36px; padding: 6px 14px; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 14px; font-weight: 600; color: var(--nacht); cursor: pointer; }
-.ke-knopf:hover { border-color: var(--nacht); }
-.ps-weg > .plan-quelle { margin-top: 24px; }
+/* 2 Deine 30 Nächte: Kopf mit Schnitt, das Notizbuch (0 bis 10), darunter die Timeline */
+.ps-naechte { display: grid; gap: 20px; }
+.ps-naechte-kopf { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; }
+.ps-naechte-schnitt { font-size: 15px; color: var(--muted); }
+.ps-naechte-schnitt b { font-weight: 700; color: var(--nacht); font-variant-numeric: tabular-nums; }
+.notiz { display: grid; gap: 12px; padding: 20px 22px; border: 1px solid var(--linie); border-radius: 12px; }
+.notiz-kopf { display: flex; align-items: center; gap: 12px; }
+.notiz-frage { font-size: 19px; font-weight: 650; line-height: 1.3; color: var(--nacht); }
+.notiz-datum { font-size: 14px; color: var(--muted); }
+.notiz-hinweis { max-width: 64ch; color: var(--muted); }
+.notiz-skala { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 6px; max-width: 660px; }
+.notiz-skala button { min-height: 44px; padding: 0; border: 1px solid var(--linie); border-radius: 8px; background: var(--weiss); font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--nacht); cursor: pointer; }
+.notiz-skala button:hover { border-color: var(--akzent); background: var(--hover); }
+.notiz-skala button[aria-pressed="true"] { border-color: var(--nacht); background: var(--nacht); color: var(--weiss); }
+.notiz-enden { display: flex; justify-content: space-between; gap: 12px; max-width: 660px; font-size: 13px; color: var(--muted); }
+.notiz-gespeichert { font-size: 15px; font-weight: 600; color: var(--akzent); }
+.notiz-fuss { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; font-size: 14px; color: var(--muted); }
+.notiz-fuss .text-link { font-size: 14px; }
+/* Die Timeline: 30 Spalten. Marken oben, Balken je Nacht (Höhe = Zahl aus dem Notizbuch, Linie bei 5), Nummern, darunter die 4 Wochen.
+   Heute mit Goldrand, die gewählte Nacht in Nachtblau, Nächte ohne Zahl als flacher Strich */
+.zl-marken, .zl-naechte, .zl-zahlen, .zl-wochen { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)); column-gap: 3px; }
+.zl-marken { height: 22px; align-items: end; }
+.zl-marke { grid-row: 1; justify-self: center; font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; color: var(--nacht); }
+.zl-marke svg { display: block; width: 18px; height: 18px; color: var(--gold-tief); }
+.zl-naechte { height: 96px; padding-top: 4px; border-bottom: 1px solid var(--linie); background: linear-gradient(var(--linie), var(--linie)) 0 50% / 100% 1px no-repeat; }
+.zl-nacht { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 4px 4px 0 0; background: none; color: inherit; }
+button.zl-nacht { cursor: pointer; }
+.zl-balken { display: block; height: calc(var(--wert) * 10%); min-height: 3px; border-radius: 3px 3px 0 0; background: var(--linie); }
+.zl-nacht.hat .zl-balken { background: var(--akzent); }
+.zl-nacht.spaeter .zl-balken { background: none; }
+button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: var(--nacht); }
+.zl-nacht.heute { outline: 2px solid var(--gold); outline-offset: -2px; }
+.zl-zahlen { margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.zl-zahl { grid-row: 1; justify-self: center; }
+.zl-wochen { list-style: none; margin-top: 10px; }
+.zl-woche { grid-row: 1; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 0 8px; align-items: start; min-width: 0; padding-top: 10px; border-top: 3px solid var(--linie); font-size: 13px; line-height: 1.35; color: var(--muted); }
+.zl-woche svg { width: 20px; height: 20px; color: var(--gold-tief); }
+.zl-woche b { display: block; font-size: 13px; font-weight: 700; color: var(--nacht); }
+.zl-woche.fertig { border-top-color: var(--gold); }
+.zl-woche.jetzt { border-top-color: var(--nacht); }
+/* 3 Deine 4 Wochen: Karten im Raster, die Woche von heute mit 2 px Gold, erledigte ruhiger */
+.wk-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.wk { display: grid; align-content: start; gap: 10px; padding: 20px 22px; border: 1px solid var(--linie); border-radius: 12px; }
+.wk.jetzt { padding: 19px 21px; border: 2px solid var(--gold); }
+.wk-kopf { display: flex; align-items: center; gap: 12px; }
+.wk-ikon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 10px; background: var(--periwinkle); color: var(--akzent); }
+.wk-ikon svg { width: 22px; height: 22px; }
+.wk.jetzt .wk-ikon { background: var(--nacht); color: var(--gold); }
+.wk-jetzt { margin-left: auto; padding: 3px 8px; border-radius: 4px; background: var(--gold); font-size: 12px; font-weight: 700; line-height: 1.4; letter-spacing: .08em; text-transform: uppercase; color: var(--nacht); }
+.wk h3 { font-size: 20px; line-height: 1.3; }
+.wk-text { font-size: 16px; line-height: 1.55; color: var(--text); }
+.wk-wann { font-size: 15px; font-weight: 600; color: var(--nacht); font-variant-numeric: tabular-nums; }
+.wk-schnitt { font-size: 14px; color: var(--muted); }
+.wk-links { margin-top: 2px; gap: 6px 22px; }
+.wk-links .text-link { font-size: 15px; }
+.wk-frage { display: inline-flex; align-items: center; gap: 6px; }
+.wk-frage svg { width: 18px; height: 18px; }
+.wk.fertig h3, .wk.fertig .wk-text, .wk.fertig .wk-wann { color: var(--muted); }
+.ps-wochen > .plan-quelle { margin-top: 16px; }
+/* 4 Nachbestellen: Flasche links, Preise und die beiden Knöpfe */
+.kauf-karte { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px 24px; border: 1px solid var(--linie); border-radius: 12px; }
+.kk-flasche { width: 96px; height: 160px; object-fit: contain; }
+.kk-text { margin-top: 4px; color: var(--muted); }
+.kk-abo { margin-top: 12px; font-size: 18px; font-weight: 700; color: var(--nacht); }
+.kk-einmal { margin-top: 2px; color: var(--muted); }
+.kk-einmal b { color: var(--nacht); }
+.kk-klein { margin-top: 10px; font-size: 14px; color: var(--muted); }
+.kauf-karte .plan-knoepfe { margin-top: 16px; }
+/* 5 Rückblick nach Nacht 30: Periwinkle, die 4 Wochen als Säulen (Höhe = Schnitt) */
+.bilanz { display: grid; gap: 12px; padding: 24px 26px; border-radius: 12px; background: var(--periwinkle); }
+.bilanz .wk-ikon { background: var(--weiss); }
+.bilanz-text { max-width: 64ch; }
+.bilanz-saeulen { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; max-width: 520px; height: 170px; margin-top: 8px; }
+.bilanz-saeule { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; justify-items: stretch; text-align: center; }
+.bilanz-balken { align-self: end; height: calc(var(--wert) * 10%); min-height: 3px; border-radius: 4px 4px 0 0; background: var(--akzent); }
+.bilanz-saeule b { margin-top: 6px; font-size: 17px; font-weight: 700; color: var(--nacht); font-variant-numeric: tabular-nums; }
+.bilanz-saeule.leer b { font-size: 13px; font-weight: 600; color: var(--muted); }
+.bilanz-saeule small { font-size: 13px; color: var(--muted); }
 .plan-hinweis { font-size: 15px; color: var(--muted); }
-/* 2 Ergebnis: vier kleine Ringe */
+/* 6 Ergebnis: vier kleine Ringe */
 .plan-kurz { display: grid; gap: 8px; }
 .ringe-kompakt { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 520px; }
 .ring-klein { display: grid; justify-items: center; gap: 4px; text-align: center; }
@@ -803,22 +795,13 @@ html.plan-modus #mein-plan { display: grid; }
 .plan-ergebnis > div { display: grid; gap: 14px; padding: 10px 0 0; color: var(--text); }
 /* Kleine Textlinks nebeneinander */
 .plan-links { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 18px; }
-/* Plan B */
-.plan-b { margin-top: 8px; font-size: 19px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--nacht); }
-.plan-b .text-link { font-size: 16px; }
-/* Unter der Roadmap: Ergebnis, Plan B, Plan behalten und Fragen als Raster mit 2 Spalten, je mit Linie oben */
+/* Unten als Raster: links das Ergebnis, rechts Plan behalten und Fragen, je mit Linie oben */
 .ps-mehr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 48px; align-items: start; }
-.ps-mehr > section { padding-top: 20px; border-top: 1px solid var(--linie); }
-.plan-zusatz-art { margin-bottom: 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.ps-mehr-rechts { display: grid; gap: 40px; }
+.ps-mehr section { padding-top: 20px; border-top: 1px solid var(--linie); }
 .plan-knoepfe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 14px; }
 .plan-knoepfe .knopf { margin-top: 0; }
 .plan-quelle { margin-top: 12px; font-size: 13px; color: var(--muted); }
-.plan-check { padding: 20px 24px; border: 1px solid var(--linie); border-radius: 12px; }
-.plan-check .quiz-antworten { grid-template-columns: repeat(5, minmax(0, 1fr)); max-width: none; padding-top: 14px; }
-.plan-check .quiz-antwort { justify-content: center; min-height: 52px; padding: 10px; font-size: 15px; text-align: center; }
-.plan-check-ergebnis:not(:empty) { margin-top: 12px; color: var(--muted); }
-.plan-check-ergebnis > p + p { margin-top: 4px; }
-.plan-check-zahlen { font-weight: 650; color: var(--nacht); }
 /* 1b Plan speichern: weiße Karte mit 2 px Gold unter dem Kopf. Feld wächst, Knopf rechts; darunter Einwilligung, Meldung, Hinweis */
 .plan-speichern { padding: 28px 32px 26px; border: 2px solid var(--gold); border-radius: 12px; background: var(--weiss); }
 .plan-speichern h2 { margin-top: 6px; }
@@ -875,38 +858,32 @@ html.plan-modus #mein-plan { display: grid; }
   .ps-held { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .ps-held h1 { font-size: 32px; }
   .ps-hallo, .ps-unter { font-size: 16px; }
-  .ps-streifen-box { margin-top: 24px; }
   .ps-heute { padding: 20px 18px; }
-  .ps-naechstes { font-size: 16px; }
-  .rm-station { --mitte: 18px; grid-template-columns: 36px minmax(0, 1fr); column-gap: 12px; padding-bottom: 20px; }
-  .rm-datum { display: none; }
-  .rm-knoten { grid-column: 1; }
-  .rm-karte { grid-column: 2; }
-  .rm-wann { display: block; }
-  .rm-karte h3 { font-size: 19px; }
-  .rm-phase .rm-karte { display: block; padding: 12px 12px 16px; }
-  .rm-phase .rm-teil { padding: 0 4px; }
-  .rm-foto { aspect-ratio: 16 / 7; margin-bottom: 14px; }
-  .rm-check .rm-karte { padding: 18px 16px; }
-  .rm-kauf .rm-karte, .rm-angebot { display: block; }
-  .rm-kauf .rm-karte { padding: 18px 16px; }
-  .rm-flasche { float: left; width: 56px; height: 96px; margin: 0 14px 8px 0; }
-  .rm-ziel .rm-karte { padding: 22px 18px; }
-  .rm-phase.jetzt .rm-karte { padding: 11px 11px 15px; }
-  .rm-check.jetzt .rm-karte { padding: 16px 14px; }
-  .rm-kauf.jetzt .rm-karte { padding: 17px 15px; }
-  .rm-ziel.jetzt .rm-karte { padding: 20px 16px; }
-  .ke { grid-template-columns: 20px minmax(0, 1fr); }
-  .ke-knoepfe { grid-column: 2; }
-  .ke-knopf { flex: 1; }
+  .ps-einleitung { font-size: 15px; }
+  .bau-zeiten { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .notiz { padding: 18px 16px; }
+  .notiz-skala { gap: 4px; }
+  .notiz-skala button { min-height: 40px; font-size: 15px; }
+  .zl-naechte { height: 80px; column-gap: 2px; }
+  .zl-marken, .zl-zahlen, .zl-wochen { column-gap: 2px; }
+  .zl-woche { grid-template-columns: minmax(0, 1fr); font-size: 12px; }
+  .zl-woche svg { width: 18px; height: 18px; margin-bottom: 4px; }
+  .zl-woche b { font-size: 12px; }
+  .wk-raster { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .wk { padding: 18px 16px; }
+  .wk.jetzt { padding: 17px 15px; }
+  .wk h3 { font-size: 19px; }
+  .kauf-karte { display: block; padding: 18px 16px; }
+  .kk-flasche { float: left; width: 56px; height: 96px; margin: 0 14px 8px 0; }
+  .kauf-karte .plan-knoepfe { clear: both; }
+  .bilanz { padding: 20px 18px; }
   .ps-mehr { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .ps-mehr-rechts { gap: 32px; }
   .plan-knoepfe .knopf { flex: 1 1 100%; }
-  .plan-check { padding: 18px 16px; }
   .plan-speichern { padding: 22px 18px; }
   .plan-speichern h3 { font-size: 21px; }
   .sp-form { grid-template-columns: minmax(0, 1fr); grid-template-areas: "feld" "haken" "knopf" "meldung" "fuss"; }
   .sp-knopf { width: 100%; }
-  .plan-check .quiz-antworten { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Sleep library: Karten mit Foto, ein Artikel nur, wenn sein Anker gewählt ist */
@@ -940,6 +917,12 @@ html.plan-modus #mein-plan { display: grid; }
 .blase { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--gold); color: var(--nacht); display: flex; align-items: center; justify-content: center; }
 .blase svg { width: 16px; height: 16px; }
 .chat-schleier { position: fixed; inset: 0; z-index: 25; display: none; background: var(--schleier); }
+/* Der Assistent immer erreichbar: unten rechts, auf dem Handy über der Tab-Leiste. Ist der Chat offen, ist der Knopf weg */
+.chat-fab { position: fixed; z-index: 22; right: 28px; bottom: 28px; display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 18px 0 8px; border: 0; border-radius: 12px; background: var(--nacht); font-size: 16px; font-weight: 650; color: var(--weiss); cursor: pointer; }
+.chat-fab:hover { background: var(--tief); }
+.chat-fab:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.chat-fab .blase { width: 36px; height: 36px; }
+body.chat-offen .chat-fab { display: none; }
 .chat-fenster { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; height: 84vh; max-height: 720px; display: none; flex-direction: column; background: var(--weiss); border-radius: 12px 12px 0 0; box-shadow: 0 -20px 50px -20px var(--schatten); overflow: hidden; }
 body.chat-offen .chat-schleier { display: block; }
 body.chat-offen .chat-fenster { display: flex; }
@@ -1051,6 +1034,10 @@ body.chat-offen .chat-fenster { display: flex; }
   .hilfe-knopf svg { width: 20px; height: 20px; }
   .assistent-knopf { flex: none; height: 40px; margin-left: 0; padding: 0 12px 0 5px; font-size: 14px; }
   .app { padding: 20px 16px 104px; }
+  .chat-fab { right: 14px; bottom: calc(78px + env(safe-area-inset-bottom)); width: 52px; height: 52px; justify-content: center; padding: 0; }
+  .chat-fab-wort { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  html.plan-modus .chat-fab { bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .plan-seite-fuss { padding-bottom: 72px; }
   .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 2px calc(8px + env(safe-area-inset-bottom)); background: var(--weiss); border-top: 1px solid var(--linie); }
   .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 2px 0; font-size: 12px; font-weight: 500; color: var(--muted); }
   .tab svg { width: 24px; height: 24px; }
@@ -1089,8 +1076,7 @@ body.chat-offen .chat-fenster { display: flex; }
   .rh-schritte .rh-uhr { font-size: 22px; }
   .rh-schritte b { margin-top: 0; font-size: 16px; }
   .rh-schritte small { font-size: 14px; }
-  .rh-schritte li[data-plan-gewohnheit] { display: grid; grid-template-columns: minmax(0, 1fr); padding-bottom: 16px; }
-  .rh-schritte li[data-plan-gewohnheit] > * { grid-column: 1; }
+  .rh-plan-liste li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
   .rh-fuss { gap: 14px 24px; margin-top: 22px; }
   .rh-fuss .knopf { width: 100%; }
   .plan-karte { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; }
@@ -1159,9 +1145,6 @@ body.chat-offen .chat-fenster { display: flex; }
   .ergebnis-balken { flex-direction: column; }
   .ergebnis-balken span { padding: 0; }
   .ergebnis-balken span + span { padding: 6px 0 0; border-left: 0; border-top: 1px solid var(--nacht-linie); }
-  .bau-karten { grid-template-columns: minmax(0, 1fr); }
-  .bau-unten { grid-template-columns: minmax(0, 1fr); }
-  .bau-unten .quiz-hinweis { padding-bottom: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -1204,7 +1187,10 @@ body.chat-offen .chat-fenster { display: flex; }
   #plan-druck .druck-weg th:nth-child(2) { width: 24%; }
   #plan-druck .druck-weg td p + p { margin-top: 3px; }
   #plan-druck .druck-fokus { font-weight: 600; }
-  #plan-druck .druck-b { font-weight: 600; }
+  #plan-druck .druck-notiz { list-style: none; display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 3px; margin-top: 4px; }
+  #plan-druck .druck-notiz li { display: grid; justify-items: center; padding: 2px 0 3px; border: 1px solid #999; border-radius: 3px; }
+  #plan-druck .druck-notiz small { font-size: 6.5pt; color: #444; }
+  #plan-druck .druck-notiz b { min-height: 11pt; font-size: 9.5pt; }
   #plan-druck .druck-link { word-break: break-all; font-size: 7.5pt; line-height: 1.3; }
   #plan-druck .druck-klein { margin-top: 3px; font-size: 7.5pt; }
 }
@@ -1239,6 +1225,21 @@ body.chat-offen .chat-fenster { display: flex; }
   <symbol id="p-stay" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18.5 14.5A7.5 7.5 0 0 1 9.5 5.5a7.5 7.5 0 1 0 9 9z"/><path d="M17.5 3.2l.8 1.8 1.8.8-1.8.8-.8 1.8-.8-1.8-1.8-.8 1.8-.8z"/></g></symbol>
   <symbol id="p-recover" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M7 16.5a5 5 0 0 1 10 0"/><path d="M3 19.5h18"/><path d="M12 5v3M5.6 9.6l1.6 1.6M18.4 9.6l-1.6 1.6"/></g></symbol>
   <symbol id="buch" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.2 5 7.8 4.5 4 4.5v13c3.8 0 6.2.5 8 2 1.8-1.5 4.2-2 8-2v-13c-3.8 0-6.2.5-8 2z"/><path d="M12 6.5v13"/></g></symbol>
+  <!-- Habits im Plan -->
+  <symbol id="h-bildschirm" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 17.5h2"/><path d="M4 4l16 16"/></g></symbol>
+  <symbol id="h-teller" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12.5" cy="12" r="5.5"/><path d="M4 4v5a1.5 1.5 0 0 0 3 0V4M5.5 10.5V20"/><path d="M21 4c-1.4.8-2 2.6-2 5.5h2V20"/></g></symbol>
+  <symbol id="h-glas" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12l-1.6 15.6a2 2 0 0 1-2 1.9H9.6a2 2 0 0 1-2-1.9z"/><path d="M6.7 9.5h10.6"/></g></symbol>
+  <symbol id="h-sonne" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></g></symbol>
+  <symbol id="h-tasse" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 9h11.5v5a5 5 0 0 1-5 5h-1.5a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c0 1 1 1.5 1 2.5M11.5 3.5c0 1 1 1.5 1 2.5"/></g></symbol>
+  <symbol id="h-wecker" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5"/><path d="M4 6l3-2.5M20 6l-3-2.5"/></g></symbol>
+  <symbol id="h-notiz" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="13" height="17" rx="2"/><path d="M8.5 8h6M8.5 11.5h6M8.5 15h3.5"/><path d="M5 7H3.5M5 12H3.5M5 17H3.5"/></g></symbol>
+  <symbol id="h-thermo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4.5a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0z"/><path d="M12 9v7"/><path d="M17.5 5h2.5M17.5 8.5h2"/></g></symbol>
+  <symbol id="h-ohr" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.5a5 5 0 0 1 10 0c0 2.6-1.6 3.6-2.6 4.6S13 16.2 13 17.5a3 3 0 0 1-5.6 1.5"/><path d="M9.8 10a2.2 2.2 0 0 1 4.4 0c0 1.2-1 1.6-1.6 2"/></g></symbol>
+  <symbol id="h-uhr" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
+  <symbol id="h-bett" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19v-7h18v7M3 16h18M6 12V9.5h5V12"/><path d="M17 3.5v6M14.8 5.7L17 3.5l2.2 2.2"/></g></symbol>
+  <symbol id="h-gehen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="4.5" r="1.8"/><path d="M10.5 21l2-6.5L15.5 17v4M12.5 14.5L13 9l3 3 2.5 1M13 9l-3 1.5-1.5 3"/></g></symbol>
+  <symbol id="h-sofa" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13v-2.5A2.5 2.5 0 0 1 7.5 8h9a2.5 2.5 0 0 1 2.5 2.5V13"/><path d="M3 13h18v5H3zM5 18v2M19 18v2"/><path d="M15 2.5h3.5L15 6h3.5"/></g></symbol>
+  <symbol id="h-flagge" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V3.5"/><path d="M6 4h11.5l-2.2 4 2.2 4H6"/></g></symbol>
 </svg>
 
 <div class="rahmen">
@@ -1314,7 +1315,7 @@ body.chat-offen .chat-fenster { display: flex; }
 </section>
 
 <!-- Dein 30-Nächte-Plan als eigene Landingpage: jede Adresse mit #plan=… (Klaviyo „Open my plan“, Kalender, PDF), aus Klaviyo-Mails mit &saved=1.
-     Sichtbar nur mit html.plan-modus, der Inhalt entsteht in planSeiteZeigen(). Der Hub selbst speichert nichts; „Save my plan“ schreibt live nur ins Klaviyo-Profil -->
+     Sichtbar nur mit html.plan-modus, der Inhalt entsteht in planSeiteZeigen(). Der Hub speichert nur das Notizbuch, im Browser des Kunden (localStorage); „Save my plan“ schreibt live nur ins Klaviyo-Profil -->
 <section class="seite plan-seite" id="mein-plan" aria-label="Your 30-night sleep plan">
   <header class="abo-kopf"><img src="bilder/sleepwhale-logo.svg" alt="Sleepwhale"><a class="text-link plan-seite-guide" href="#drops-tonight">Your Sleep Guide</a><button class="assistent-knopf" type="button" data-chat><span class="blase"><svg><use href="#chat"/></svg></span><span class="assistent-wort">Assistant</span></button></header>
   <main class="abo-blatt plan-blatt" data-plan-seite></main>
@@ -1377,7 +1378,7 @@ body.chat-offen .chat-fenster { display: flex; }
           <div class="pk-text">
             <p class="augenbraue" data-pk-augenbraue>Start here</p>
             <h2 id="drops-plankarte-titel" data-pk-titel>Your 30-night sleep plan</h2>
-            <p class="pk-unter" data-pk-unter>8 short questions, then 3 choices, about 3 minutes. Then you get your plan: your evening with times, one step per week and Sleepwhale's check-ins at night 7, 14 and 30, all in your calendar.</p>
+            <p class="pk-unter" data-pk-unter>8 short questions and your times, about 3 minutes. Then your plan: your Sleepwhale routine, one new habit per week chosen for your answers, and a notebook for your nights.</p>
             <div class="pk-stand" data-pk-stand hidden>
               <div class="plan-balken" role="progressbar" aria-label="Nights of your sleep plan" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0"><span></span></div>
               <p class="pk-woche" data-pk-woche></p>
@@ -1385,10 +1386,10 @@ body.chat-offen .chat-fenster { display: flex; }
             <a class="knopf gold marke" href="#drops-plan" data-pk-link>Build my sleep plan</a>
           </div>
           <ol class="pk-wochen" aria-label="Your plan, week by week">
-            <li data-pk-wnr="1"><small>Week 1</small><b>Same time, every night</b></li>
-            <li data-pk-wnr="2"><small>Week 2</small><b>Add one habit</b></li>
-            <li data-pk-wnr="3"><small>Week 3</small><b>Watch closely</b></li>
-            <li data-pk-wnr="4"><small>Week 4</small><b>Make it stick</b></li>
+            <li data-pk-wnr="1"><small>Week 1</small><b>Your Sleepwhale routine</b></li>
+            <li data-pk-wnr="2"><small>Week 2</small><b>+ one habit</b></li>
+            <li data-pk-wnr="3"><small>Week 3</small><b>+ one habit</b></li>
+            <li data-pk-wnr="4"><small>Week 4</small><b>+ one habit</b></li>
           </ol>
         </section>
 
@@ -1402,7 +1403,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <label class="zeit-feld">Your bedtime<input type="time" value="22:30" data-schlafenszeit></label>
           </div>
           <ol class="rh-schritte">
-            <li data-plan-gewohnheit hidden><span class="rh-uhr"></span><b></b><small>From your sleep plan</small></li>
+            <li data-plan-gewohnheit hidden><small>From your sleep plan</small><ul class="rh-plan-liste" data-plan-habits></ul></li>
             <li><img src="bilder/ritual-1.webp" alt="" loading="lazy"><span class="rh-uhr" data-uhr="-10">10:20 PM</span><b>Take your drops</b><small>Shake well, 1&nbsp;mL under your tongue</small></li>
             <li><img src="bilder/ritual-2.webp" alt="" loading="lazy"><span class="rh-uhr">1 minute</span><b>Hold, then swallow</b><small>No water needed</small></li>
             <li><img src="bilder/ritual-3.webp" alt="" loading="lazy"><span class="rh-uhr" data-uhr="0">10:30 PM</span><b>Lights out</b><small>Get cozy, close eyes, and drift off</small></li>
@@ -1491,8 +1492,8 @@ body.chat-offen .chat-fenster { display: flex; }
         <section class="block" aria-label="Your 6 steps">
           <ol class="roadmap">
             <li class="rm-schritt"><a class="rm-zeile" href="#drops-ritual"><span class="rm-nr">1</span><span class="rm-inhalt"><span class="rm-titel">How to take your drops</span><span class="rm-text">1 mL under your tongue, 10 minutes before bed, at the same time every night.</span></span><span class="rm-los">Your ritual</span></a></li>
-            <li class="rm-schritt"><a class="rm-zeile" href="#drops-plan"><span class="rm-nr">2</span><span class="rm-inhalt"><span class="rm-titel" data-ziel-wert>Build your 30-night sleep plan</span><span class="rm-text" data-ziel-text>Sleepwhale's sleep quiz, then your plan for the next 30 nights, with every date for your calendar.</span></span><span class="rm-los">Your sleep plan</span></a></li>
-            <li class="rm-schritt"><button class="rm-zeile" type="button" data-erinnerung="drops-abend"><span class="rm-nr">3</span><span class="rm-inhalt"><span class="rm-titel">Let your calendar remind you</span><span class="rm-text">Every evening, 10 minutes before bed. The guide saves nothing.</span></span><span class="rm-los">Set a reminder</span></button></li>
+            <li class="rm-schritt"><a class="rm-zeile" href="#drops-plan"><span class="rm-nr">2</span><span class="rm-inhalt"><span class="rm-titel" data-ziel-wert>Build your 30-night sleep plan</span><span class="rm-text" data-ziel-text>Sleepwhale's sleep quiz, then your plan for the next 30 nights: one new habit per week and a notebook for your nights.</span></span><span class="rm-los">Your sleep plan</span></a></li>
+            <li class="rm-schritt"><button class="rm-zeile" type="button" data-erinnerung="drops-abend"><span class="rm-nr">3</span><span class="rm-inhalt"><span class="rm-titel">Let your calendar remind you</span><span class="rm-text">Every evening, 10 minutes before bed, in your own calendar.</span></span><span class="rm-los">Set a reminder</span></button></li>
             <li class="rm-schritt"><a class="rm-zeile" href="#drops-inside"><span class="rm-nr">4</span><span class="rm-inhalt"><span class="rm-titel">What's inside and how it's tested</span><span class="rm-text">Six ingredients for the Four Pillars of Sleep, and what Light Labs found: 190 of 190 tests passed.</span></span><span class="rm-los">Inside &amp; lab</span></a></li>
             <li class="rm-schritt"><a class="rm-zeile" href="#drops-n7"><span class="rm-nr">5</span><span class="rm-inhalt"><span class="rm-titel">Check your serving</span><span class="rm-text">After your first week and whenever your nights change: three questions show whether to stay at your serving or fine-tune by 0.25 mL.</span></span><span class="rm-los">Serving check</span></a></li>
             <li class="rm-schritt"><a class="rm-zeile" href="#drops-reorder"><span class="rm-nr">6</span><span class="rm-inhalt"><span class="rm-titel">Reorder in time</span><span class="rm-text">See when your bottle runs out, and reorder once or with Subscribe &amp; Save.</span></span><span class="rm-los">Reorder</span></a></li>
@@ -1669,16 +1670,16 @@ body.chat-offen .chat-fenster { display: flex; }
         <header class="plan-start" data-plan-start>
           <p class="augenbraue">Start here</p>
           <h1>Your 30-night sleep plan</h1>
-          <p class="plan-start-unter">Build your sleep routine in 30 nights, with Sleepwhale's check-ins at night 7, 14 and 30.</p>
+          <p class="plan-start-unter">Build your sleep routine in 30 nights: your Sleepwhale ritual, one new habit per week and a notebook for your nights.</p>
           <div class="plan-start-mehr">
             <h2>What you get</h2>
             <ul class="plan-start-liste">
               <li><span class="vorschau" aria-hidden="true"><svg viewBox="0 0 36 36"><circle class="vorschau-spur" cx="18" cy="18" r="15.915"/><circle class="vorschau-wert" cx="18" cy="18" r="15.915"/></svg><b>3 of 4</b></span><b>Your sleep results</b><span>Your answers, pillar by pillar, across Sleepwhale's Four Pillars of Sleep.</span></li>
-              <li><span class="vorschau vorschau-zeit" aria-hidden="true"><span><b>10:20 PM</b><small>your drops</small></span></span><b>Your evening, timed</b><span>Your drops, lights out and one habit, set to your bedtime.</span></li>
-              <li><span class="vorschau vorschau-wochen" aria-hidden="true"><i>W1</i><i>W2</i><i>W3</i><i>W4</i></span><b>One step per week</b><span>Same time, every night. Add one habit. Watch closely. Make it stick.</span></li>
-              <li><span class="vorschau vorschau-kalender" aria-hidden="true"><svg><use href="#kalender"/></svg><span><b>3 check-ins</b><small>Night 7, 14 and 30</small></span></span><b>Everything in your calendar</b><span>Every date with a link back to your plan, plus email and PDF.</span></li>
+              <li><span class="vorschau vorschau-zeit" aria-hidden="true"><span><b>10:20 PM</b><small>your drops</small></span></span><b>Your day, timed</b><span>Your drops, lights out and your habits, set to your bedtime and wake-up time.</span></li>
+              <li><span class="vorschau vorschau-wochen" aria-hidden="true"><i>W1</i><i>W2</i><i>W3</i><i>W4</i></span><b>One new habit per week</b><span>Chosen for your answers and explained for you, week by week.</span></li>
+              <li><span class="vorschau vorschau-kalender" aria-hidden="true"><svg><use href="#h-notiz"/></svg><span><b>0 to 10</b><small>every morning</small></span></span><b>Your notebook</b><span>Rate each night and see your 30 nights at a glance.</span></li>
             </ul>
-            <p class="plan-start-info">8 short questions, then 3 choices, about 3 minutes.</p>
+            <p class="plan-start-info">8 short questions and your times, about 3 minutes.</p>
             <button class="knopf marke" type="button" data-plan-start-los>Build my sleep plan</button>
           </div>
         </header>
@@ -1904,6 +1905,8 @@ body.chat-offen .chat-fenster { display: flex; }
 </section>
 </div>
 
+<!-- Der Assistent ist immer erreichbar: unten rechts, offen ist der Chat, dann ausgeblendet -->
+<button class="chat-fab" type="button" data-chat><span class="blase"><svg><use href="#chat"/></svg></span><span class="chat-fab-wort">Ask the assistant</span></button>
 <div class="chat-schleier" data-chat-zu></div>
 <div class="chat-fenster" role="dialog" aria-label="Sleepwhale assistant">
   <div class="chat-kopf"><img class="chat-avatar" src="bilder/app-icon-192.png" alt=""><div><b>Sleepwhale assistant</b><small id="chat-thema">Questions about your Sleep Drops</small></div><button class="chat-zu" type="button" data-chat-zu aria-label="Close"><svg><use href="#x"/></svg></button></div>
@@ -1923,7 +1926,7 @@ body.chat-offen .chat-fenster { display: flex; }
     <div class="kal-felder" data-kal-felder></div>
     <ul class="kal-vorschau" data-kal-vorschau></ul>
     <div class="kal-knoepfe" data-kal-knoepfe></div>
-    <p class="kal-hinweis">The guide saves nothing. Your reminders live only in your calendar, and you can delete them anytime.</p>
+    <p class="kal-hinweis">Your reminders live only in your calendar, and you can delete them anytime.</p>
   </div>
 </dialog>
 
@@ -2416,7 +2419,7 @@ body.chat-offen .chat-fenster { display: flex; }
     });
   });
 
-  /* ---------- Kalender: Der Guide speichert nichts, die Erinnerung liegt nur im Kalender ----------
+  /* ---------- Kalender: Die Erinnerung liegt nur im Kalender, der Guide speichert sie nicht ----------
      iPhone und Computer bekommen eine Kalenderdatei (ohne Zeitzone, gilt also zur Ortszeit), Android zuerst Google Kalender. */
   var istIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   var istAndroid = /android/i.test(navigator.userAgent);
@@ -2437,33 +2440,15 @@ body.chat-offen .chat-fenster { display: flex; }
   function hubAdresse(anker) { var u = location.href.split("#")[0].split("?")[0]; return u + (/^#(drops|plan=)/.test(anker) && staerke === "extra" ? "?bottle=extra" : "") + anker; }
   function naechsterTermin(min) { var d = new Date(); d.setHours(Math.floor(tagMin(min) / 60), tagMin(min) % 60, 0, 0); if (d <= new Date()) d.setDate(d.getDate() + 1); return d; }
   function zeitraum(t) { return t.ganztags ? icsTag(t.start) + "/" + icsTag(plusTage(t.start, 1)) : icsZeit(t.start) + "/" + icsZeit(new Date(t.start.getTime() + 600000)); }
-  /* Titel in der Vorschau: ohne „Sleepwhale: “ oder „Sleepwhale sleep plan, “ davor, groß beginnend */
-  function terminTitel(t) { var s = t.titel.replace(/^Sleepwhale(: | sleep plan, )/, ""); return s.charAt(0).toUpperCase() + s.slice(1); }
-  /* Wann ein Termin ist (Vorschau im Kalender-Dialog): „10:20 PM, every evening until Dec 11“ als Serie, sonst „9:30 PM“ oder „all day“ */
+  /* Titel in der Vorschau: ohne „Sleepwhale: “ oder „Sleepwhale sleep plan: “ davor, groß beginnend */
+  function terminTitel(t) { var s = t.titel.replace(/^Sleepwhale( sleep plan)?: /, ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  /* Wann ein Termin ist (Vorschau im Kalender-Dialog): „10:20 PM, every evening until Dec 11“ als Serie, sonst „9:30 PM“ oder „all day“.
+     Nach Mitternacht „every night“, mittags „every day“ */
   function terminWann(t) {
-    var uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
+    var std = t.start.getHours(), uhr = uhrText(std * 60 + t.start.getMinutes());
     if (t.ganztags) return "all day";
-    if (t.anzahl > 1) return uhr + (t.start.getHours() < 12 ? ", every morning" : ", every evening") + " until " + kurzDatum(plusTage(t.start, t.anzahl - 1));
+    if (t.anzahl > 1) return uhr + (std < 4 ? ", every night" : std < 12 ? ", every morning" : std < 17 ? ", every day" : ", every evening") + " until " + kurzDatum(plusTage(t.start, t.anzahl - 1));
     return uhr;
-  }
-  /* Wann in der Roadmap, mit Datum: „Every evening at 10:20 PM, Nov 13 to Dec 3“ als Serie, sonst „Wed, Nov 18 at 9:00 AM“ oder „Thu, Nov 26, all day“ */
-  function kalWann(t) {
-    var uhr = uhrText(t.start.getHours() * 60 + t.start.getMinutes());
-    if (t.ganztags) return tagKurz(t.start) + ", all day";
-    if (t.anzahl > 1) return (t.start.getHours() < 12 ? "Every morning at " : "Every evening at ") + uhr + ", " + kurzDatum(t.start) + " to " + kurzDatum(plusTage(t.start, t.anzahl - 1));
-    return tagKurz(t.start) + " at " + uhr;
-  }
-  /* Ein Termin als Zeile unten in der Karte der Station: Kalender-Ikon, Titel und wann, dazu Apple (Kalenderdatei für iPhone und Mac) und Android (Google Kalender) */
-  function kalEintrag(t) {
-    var box = element("div", "ke"), text = element("div", "ke-text"), knoepfe = element("div", "ke-knoepfe"), titel = terminTitel(t);
-    text.append(element("p", "ke-titel", titel), element("p", "ke-wann", kalWann(t)));
-    var apple = knopfMit("Apple", "ke-knopf", function () { kalenderDatei([t], "sleepwhale-" + t.kal); });
-    var android = knopfMit("Android", "ke-knopf", function () { window.open(googleLink(t), "_blank", "noopener"); });
-    apple.setAttribute("aria-label", "Add " + titel + " to Apple Calendar");
-    android.setAttribute("aria-label", "Add " + titel + " to Google Calendar on Android");
-    knoepfe.append(apple, android);
-    box.append(ikon("kalender"), text, knoepfe);
-    return box;
   }
   function kalenderDatei(termine, name) {
     var stempel = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
@@ -2542,9 +2527,10 @@ body.chat-offen .chat-fenster { display: flex; }
     var b = e.target.closest("[data-erinnerung]");
     if (b) kalenderOeffnen(b.dataset.erinnerung);
   });
-  /* ---------- Dein Schlafziel: Sleepwhales Schlaf-Quiz, dann baust du deinen 30-Nächte-Plan ----------
-     Fragen wörtlich aus dem Schlaf-Quiz von sleepwhale.com, Bausteine fest (kein Plan-Server). Gespeichert wird nichts:
-     der Plan steckt nur im Link (#plan=…), im Kalender, in der Mail und im PDF. */
+  /* ---------- Dein Schlafplan: Sleepwhales Schlaf-Quiz, dann schreibt ChatGPT deinen 30-Nächte-Plan ----------
+     Fragen wörtlich aus dem Schlaf-Quiz von sleepwhale.com. Woche 1 ist die Sleepwhale-Routine, ab Woche 2 kommt jede Woche ein Habit dazu.
+     ChatGPT (Worker hub-chat, meta hub-plan-api) wählt die 3 Habits aus HABITS und schreibt die Texte; fällt die API aus, kommen feste Texte.
+     Der Plan steckt nur im Link (#plan=…), das Notizbuch nur im Browser des Kunden (localStorage). */
   var SAEULEN_SD = { wind: ["Wind Down", "p-wind", 1], fall: ["Fall Asleep", "p-fall", 2], stay: ["Stay Asleep", "p-stay", 3], recover: ["Recover Fully", "p-recover", 4] };
   var SAEULEN_REIHE = ["wind", "fall", "stay", "recover"];
   var NACHT_TEXT = ["", "Terribly", "Kinda rough", "OK", "Pretty well", "Amazing"];
@@ -2568,50 +2554,47 @@ body.chat-offen .chat-fenster { display: flex; }
   ];
   /* Flaschen-Nacht aus „Seit wann“, wenn der Nacht-Regler sie nicht kennt. null = unbekannt, dann kein Nachbestell-Datum */
   var SEIT_NACHT = { neu: 1, wochen: 12, fast_leer: 26, laenger: null };
-  var GRUND_GEWOHNHEIT = { arbeit: "spaet", pflege: "unregel", menschen: "rasen", gesundheit: "nachts", hormone: "nachts" };
-  /* Gewohnheiten ab Nacht 8: [Titel, Aufgabe, Woran du es merkst]. {drops} und {bed} werden zur Uhrzeit */
-  var GEWOHNHEIT = {
-    wired: ["10 minutes to wind down", "Before your drops, take 10 minutes for one of the ways to wind down in Sleepwhale's sleep quiz: meditation, breathing exercises, stretching or reading before bed.", "You took your 10 minutes on at least 5 of 7 nights."],
-    spaet: ["Finish earlier", "End work, dinner and workouts a little earlier, so there's a gap before your drops. Sleepwhale says “how close you eat before bed time” can make the drops take a bit longer.", "Work and dinner were done before your ritual on most nights."],
-    unregel: ["One bedtime, every night", "Go to bed at {bed} every night, weekends too. Sleepwhale is “designed as a single, consistent nightly ritual.”", "7 of 7 nights at the same time."],
-    screens: ["Screens off an hour before bed", "Put your phone and screens away an hour before bed. Sleepwhale's sleep quiz asks how close to bedtime you use a screen, and its first answer is “I stop an hour before bed”.", "Screens were off an hour before bed on most nights."],
-    "15min": ["Drops right on time", "Take your drops exactly 10 minutes before bed, hold them under your tongue for a minute, then swallow. Lights out right after.", "Lights out 10 minutes after your drops, every night."],
-    rasen: ["Breathe before bed", "Take 5 minutes for breathing exercises or meditation, both ways to wind down from Sleepwhale's sleep quiz, then take your drops.", "You did your 5 minutes on most nights."],
-    unruhig: ["Stretch before bed", "5 to 10 minutes of gentle stretching before your drops, one of the ways to wind down in Sleepwhale's sleep quiz.", "You stretched on most nights."],
-    nachts: ["Drops at bedtime, not at night", "“Take your drops 10 minutes before bed, not in the middle of the night.” And: “Use only the labeled serving, without adding extra during nighttime waking.”", "No extra drops at night, 7 of 7 nights."],
-    zurueck: ["Stay calm when you wake", "If you wake up, keep the lights off and try the breathing exercises from Sleepwhale's sleep quiz. Sleepwhale's advice: “Don’t worry, just be aware of your body and mind state.”", "In the morning you noted how quickly you fell back asleep."],
-    geraeusche: ["Make it quiet", "Reduce the noise in your bedroom, for example with earplugs. From Sleepwhale's sleep kit: “Premium Earplugs: Block all the sounds that could wake you up.”", "Less noise in your bedroom on most nights."],
-    leicht: ["Make it dark", "Darken your room, or wear a sleep mask. From Sleepwhale's sleep kit: “Sleep Mask: Blocks all the light that could wake you up.”", "Your room was dark on most nights."]
+  /* Habits für Woche 2 bis 4, dieselben ids wie im Worker (kunden/sleepwhale/chat/plan.js).
+     teil: tag (min = Uhrzeit in Minuten), abend (min zu Licht aus), nacht (ohne Uhrzeit), morgen (min zum Aufstehen). erinnern: false = kein Kalendereintrag.
+     tun = Zeile im Tagesplan, text = fester Text, wenn ChatGPT nichts liefert, passt = angekreuzte Antworten für den festen Weg */
+  var HABITS = {
+    blaulicht: { titel: "Screens off an hour before bed", kurz: "Screens off", ikon: "h-bildschirm", teil: "abend", min: -60, tun: "Screens off: phone, laptop and TV away",
+      text: "Put your phone, laptop and TV away an hour before lights out and switch to something without a screen. A book, a shower or getting things ready for tomorrow all work. If you can, charge your phone outside the bedroom.", passt: ["screens", "wired", "rasen", "15min"] },
+    essen: { titel: "Dinner three hours before bed", kurz: "Early dinner", ikon: "h-teller", teil: "abend", min: -180, tun: "Dinner done for the day",
+      text: "Plan dinner so it's done about three hours before bed, and keep bigger snacks out of that window too. Sleepwhale says “how close you eat before bed time” can make the drops take a bit longer. If an evening runs late, keep it light.", passt: ["spaet", "unruhig", "nachts"] },
+    wasser: { titel: "A glass of water when you wake up", kurz: "Morning water", ikon: "h-glas", teil: "morgen", min: 0, tun: "A glass of water",
+      text: "Put a glass or bottle of water where you'll see it in the morning and drink it right after you get up. It's an easy first step that marks the start of your day. Pair it with opening the curtains.", passt: ["muede", "energie", "nebel"] },
+    tageslicht: { titel: "Daylight in the morning", kurz: "Morning light", ikon: "h-sonne", teil: "morgen", min: 30, tun: "10 minutes of daylight",
+      text: "Within an hour of waking, get about 10 minutes of daylight, outside or at an open window. A short walk, coffee by the window or the way to work all count. It gives your day a clear start.", passt: ["muede", "energie", "nebel", "unregel", "15min"] },
+    koffein: { titel: "No caffeine after 2 PM", kurz: "Caffeine by 2 PM", ikon: "h-tasse", teil: "tag", min: 810, tun: "Last coffee or tea of the day, before 2 PM",
+      text: "Have your last coffee, black tea, energy drink or cola before 2 PM. After that, switch to water, herbal tea or decaf. Caffeine stays with you for hours, so the afternoon cup still counts at bedtime.", passt: ["15min", "rasen", "unruhig", "nachts", "mittag"] },
+    weckzeit: { titel: "Same wake-up time every day", kurz: "Same wake-up", ikon: "h-wecker", teil: "morgen", min: 0, tun: "Up at your usual time",
+      text: "Get up at the same time every day, weekends included, even after a short night. Set one alarm and get up with it instead of snoozing. A steady morning makes your evening ritual easier to keep.", passt: ["unregel", "muede", "energie", "15min"] },
+    abschalten: { titel: "10 minutes to wind down", kurz: "Wind down", ikon: "p-wind", teil: "abend", min: -30, tun: "10 minutes to wind down: breathing, stretching or reading",
+      text: "Before your drops, take 10 calm minutes: slow breathing, gentle stretching or reading on paper. Sleepwhale's sleep quiz lists meditation, breathing exercises, stretching and reading as ways to wind down. Same spot, same order, every night.", passt: ["wired", "rasen"] },
+    gedanken: { titel: "Park your thoughts on paper", kurz: "Thoughts on paper", ikon: "h-notiz", teil: "abend", min: -60, tun: "Write down what's on your mind",
+      text: "An hour before bed, write down what's on your mind and the first three things for tomorrow. Then close the notebook and put it away. If a thought comes back later, it's already on paper.", passt: ["rasen", "zurueck"] },
+    dunkel: { titel: "A dark bedroom", kurz: "Dark room", ikon: "mond", teil: "abend", min: -5, tun: "Bedroom dark: curtains closed, standby lights covered",
+      text: "Make your bedroom as dark as you can: curtains closed, standby lights covered, phone face down. If the room doesn't get dark, try a sleep mask. Keep a dim light for the way to the bathroom.", passt: ["leicht", "nachts", "zurueck"] },
+    kuehl: { titel: "A cool bedroom", kurz: "Cool room", ikon: "h-thermo", teil: "abend", min: -45, tun: "Air out the bedroom",
+      text: "Open the window for a few minutes before bed and keep the bedroom on the cool side. A lighter blanket or breathable sleepwear can make a difference too. Find the setting that feels comfortable for you.", passt: ["nachts", "unruhig", "leicht"] },
+    ruhe: { titel: "A quiet bedroom", kurz: "Quiet room", ikon: "h-ohr", teil: "abend", min: -5, tun: "Bedroom quiet, earplugs ready",
+      text: "Cut down noise before lights out: close windows and doors and keep earplugs on your nightstand. A fan or a steady background sound can cover sudden noises. Ask others at home about quiet hours.", passt: ["geraeusche", "leicht", "nachts"] },
+    uhr: { titel: "Turn the clock away", kurz: "Clock away", ikon: "h-uhr", teil: "abend", min: -5, tun: "Clock turned away, phone face down",
+      text: "Turn your clock to the wall and put your phone face down, out of reach. If you wake up, skip the look at the time and keep the lights off. Whatever the time is, the morning will tell you.", passt: ["nachts", "zurueck", "rasen"] },
+    aufstehen: { titel: "Awake for a while? Get up", kurz: "Get up if awake", ikon: "h-bett", teil: "nacht", erinnern: false, tun: "Awake for about 20 minutes? Get up, keep the light dim, go back when you feel sleepy",
+      text: "If you've been lying awake for about 20 minutes, get up and do something calm in dim light, like reading on paper. Go back to bed when you feel sleepy. That way your bed stays the place for sleeping, not for lying awake.", passt: ["15min", "zurueck", "rasen", "unruhig"] },
+    bewegung: { titel: "Move earlier in the day", kurz: "Move earlier", ikon: "h-gehen", teil: "abend", min: -180, tun: "Workouts done for the day",
+      text: "Get some movement into your day, a walk counts, and finish harder workouts at least three hours before bed. Morning or lunchtime works well. In the evening, keep it to gentle stretching.", passt: ["unruhig", "energie", "mittag", "spaet"] },
+    nickerchen: { titel: "Short, early naps only", kurz: "Short naps", ikon: "h-sofa", teil: "tag", min: 780, erinnern: false, tun: "If you nap: 20 minutes at most, before 3 PM",
+      text: "If you need a nap, keep it under 20 minutes and before 3 PM. Set an alarm so it stays short. On days without a nap, a short walk or some daylight can carry you through the afternoon.", passt: ["mittag", "nebel", "15min"] }
   };
-  /* Die Gewohnheit im Abend: min = Minuten vor Licht aus, null = ohne Uhrzeit (dann das Etikett). statt = ersetzt eine Zeile statt einer neuen */
-  var HABIT_ZEIT = {
-    wired: { min: -20, text: "10 minutes to wind down: meditation, breathing exercises, stretching or reading before bed" },
-    spaet: { min: null, etikett: "Earlier in the evening", text: "Finish work, dinner and workouts" },
-    unregel: { min: 0, statt: "licht", text: "Lights out, every night, weekends too" },
-    screens: { min: -60, text: "Phone and screens away" },
-    "15min": { min: -10, statt: "drops", text: "Drops right on time: shake well, 1 mL under your tongue, hold for a minute, then swallow" },
-    rasen: { min: -15, text: "5 minutes of breathing exercises or meditation" },
-    unruhig: { min: -20, text: "5 to 10 minutes of gentle stretching" },
-    nachts: { min: null, etikett: "During the night", text: "If you wake up: no extra drops" },
-    zurueck: { min: null, etikett: "During the night", text: "If you wake up: lights off, slow breathing" },
-    geraeusche: { min: -5, text: "Earplugs in" },
-    leicht: { min: -5, text: "Room dark, or sleep mask on" }
-  };
-  var WENN = { vergessen: "If I forget my drops,", abende: "If my evening runs late,", schnell: "If I don't notice much after a few nights,", geschmack: "If the taste bothers me,", keine: "If a night goes differently than planned," };
-  var DANN = {
-    vergessen: ["I take them as soon as I remember, as long as it's before bed, never in the middle of the night.", "I put the bottle where I brush my teeth at night.", "I let my calendar remind me 10 minutes before bed."],
-    abende: ["I still take my drops 10 minutes before I go to bed.", "I keep the three steps, even if the evening is short.", "I go back to my bedtime the next night."],
-    schnell: ["I check the basics: 10 minutes before bed, under my tongue, after a good shake.", "I do the serving check before I change anything.", "I remember that it “can take longer, sometimes up to several weeks.”"],
-    geschmack: ["I shake the bottle well before every serving.", "I hold it for the minute, then swallow, no water needed.", "I ask the Sleepwhale team for tips."],
-    keine: ["I keep my bedtime and my drops, and skip only the habit.", "I take my drops 10 minutes before whenever I do go to bed.", "I start fresh the next night."]
-  };
-  var BEOBACHTUNG = {
-    wind: "Every evening before your drops, note how calm you feel, from 1 to 5.",
-    fall: "Every morning, note how easily you fell asleep, from 1 to 5.",
-    stay: "Every morning, note “how often you wake, how easily you get back to sleep”.",
-    recover: "Every morning, note how you feel, from 1 to 5. Sleepwhale's advice: pay attention to “how you feel the next morning and throughout the day.”"
-  };
-  BEOBACHTUNG[""] = BEOBACHTUNG.recover;
+  var HABIT_REIHE = Object.keys(HABITS);
+  /* Fester Weg: Habits, die zum größten Einfluss passen */
+  var GRUND_HABITS = { arbeit: ["gedanken", "abschalten", "blaulicht"], pflege: ["abschalten", "gedanken"], menschen: ["gedanken", "abschalten"], hormone: ["kuehl", "dunkel", "abschalten"], gesundheit: ["dunkel", "kuehl", "abschalten"] };
+  /* Woche 1 ohne ChatGPT: das Ritual und ein Satz zur Hürde aus dem Quiz */
+  var ROUTINE_TIPP = { vergessen: "Keep the bottle where you brush your teeth at night, so you see it every evening.", abende: "If an evening runs late, still take your drops 10 minutes before you go to bed.", schnell: "Keep it steady and give it time, your notebook shows how your nights go.", geschmack: "Shake the bottle well and hold the drops under your tongue for the full minute, then swallow.", keine: "Same time, same order, every night. That's your ritual." };
+  var GRUND_SATZ = { arbeit: "your work or money", pflege: "caring for loved ones", gesundheit: "a health issue or injury", hormone: "hormones or midlife changes", menschen: "what's going on with people in your life" };
   /* Welche Antwort gehört zu welcher Säule: für den Link und den Fokus */
   var OPTION_SAEULE = {};
   SAEULEN_REIHE.forEach(function (k) { frageSd(k).antworten.forEach(function (o) { OPTION_SAEULE[o.wert] = k; }); });
@@ -2638,18 +2621,27 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function saeuleName(f) { return f ? SAEULEN_SD[f][0] : ""; }
   function fokusTitel(f) { return f ? SAEULEN_SD[f][0] : "Keep your nights steady"; }
-  function gewohnheitText(k, t) {
-    var bett = minutenAus(t);
-    return GEWOHNHEIT[k].map(function (s) { return s.replace("{drops}", uhrText(bett - 10)).replace("{bed}", uhrText(bett)); });
+  /* Fester Weg ohne ChatGPT: je Habit Punkte für passende Antworten (Fokus-Säule doppelt) und den größten Einfluss, die besten 3.
+     Bei Gleichstand die Reihenfolge in HABITS, aufgefüllt mit festen Klassikern */
+  function habitsWaehlen(a) {
+    var f = fokusVon(a), tick = angekreuzt(a), punkte = {};
+    HABIT_REIHE.forEach(function (id) {
+      var p = 0;
+      HABITS[id].passt.forEach(function (w) { if (tick.indexOf(w) > -1) p += OPTION_SAEULE[w] === f ? 2 : 1; });
+      if ((GRUND_HABITS[a.grund] || []).indexOf(id) > -1) p += 1;
+      punkte[id] = p;
+    });
+    var liste = HABIT_REIHE.filter(function (id) { return punkte[id] > 0; }).sort(function (x, y) { return punkte[y] - punkte[x] || HABIT_REIHE.indexOf(x) - HABIT_REIHE.indexOf(y); });
+    return liste.concat(["weckzeit", "blaulicht", "tageslicht"]).filter(function (id, i, l) { return l.indexOf(id) === i; }).slice(0, 3);
   }
-  /* Gewohnheiten zur Wahl: Fokus-Säule, andere angekreuzte, der Grund, dann die Abend-Klassiker. Höchstens 3 */
-  function gewohnheitReihe(a, f, zuerst) {
-    var liste = zuerst ? [zuerst] : [];
-    if (f) liste = liste.concat(getickt(a, f));
-    SAEULEN_REIHE.forEach(function (k) { if (k !== f) liste = liste.concat(getickt(a, k)); });
-    if (GRUND_GEWOHNHEIT[a.grund]) liste.push(GRUND_GEWOHNHEIT[a.grund]);
-    liste = liste.concat(["unregel", "screens", "wired"]);
-    return liste.filter(function (k, i) { return hat(GEWOHNHEIT, k) && liste.indexOf(k) === i; }).slice(0, 3);
+  /* Texte im Plan: von ChatGPT aus dem Link, sonst fest */
+  function planFokus(plan) { return fokusVon(antwortenAus(plan)); }
+  function routineText(plan) { return plan.o || "This week is about one thing: your drops, 10 minutes before bed, at the same time every night. Shake well, 1 mL under your tongue, hold for a minute, then swallow. " + ROUTINE_TIPP[plan.h]; }
+  function habitText(plan, j) { return plan.g[j].x || HABITS[plan.g[j].i].text; }
+  function einleitungText(plan) {
+    if (plan.e) return plan.e;
+    var f = planFokus(plan), g = GRUND_SATZ[plan.r];
+    return (f ? "You ticked the most for " + saeuleName(f) + (g ? ", and right now " + g + " has the biggest impact on your sleep" : "") + ". " : "") + "Your plan starts with your Sleepwhale routine and adds one habit per week, chosen for your answers.";
   }
   function antwortenAus(plan) {
     var a = { nacht: plan.w, grund: plan.r, huerde: plan.h };
@@ -2658,9 +2650,10 @@ body.chat-offen .chat-fenster { display: flex; }
   }
 
   /* Quiz-Ablauf: Navigation über das Kürzel der Frage. „Seit wann“ fällt weg, wenn der Nacht-Regler die Nacht kennt */
-  /* schluessel: Code, check und saved der zuletzt gezeigten Landingpage (#plan=…), leer = neu lesen.
-     ausMail: Code aus einem Link mit &saved=1 (aus der Klaviyo-Mail), gespeichert: { email, code, live } nach „Save my plan“, nur im Speicher */
-  var sd = { box: document.querySelector('[data-quiz-box="sd"]'), id: null, antworten: {}, plan: null, wahl: null, bauSchritt: 1, check: 0, geaendert: false, lauf: 0, schluessel: "", ausMail: null, gespeichert: null };
+  /* schluessel: Code und saved der zuletzt gezeigten Landingpage (#plan=…), leer = neu lesen. wahl: Zeiten im Bauen { t, u }.
+     ausMail: Code aus einem Link mit &saved=1 (aus der Klaviyo-Mail), gespeichert: { email, code, live } nach „Save my plan“, nur im Speicher.
+     notizNacht: die Nacht, die das Notizbuch gerade zeigt */
+  var sd = { box: document.querySelector('[data-quiz-box="sd"]'), id: null, antworten: {}, plan: null, wahl: null, geaendert: false, lauf: 0, schluessel: "", ausMail: null, gespeichert: null, notizNacht: 0 };
   function sdTeil(n) { return sd.box.querySelector("[data-q-" + n + "]"); }
   /* Start des Kapitels: offen ein Nachtband mit „What you get“, die Quiz-Box versteckt. Sobald Quiz, Ergebnis, Bauen oder Plan laufen, schmale Kopfzeile */
   var planStart = document.querySelector("[data-plan-start]");
@@ -2696,7 +2689,7 @@ body.chat-offen .chat-fenster { display: flex; }
   function zurBox(nachKlick) {
     if (!nachKlick) return;
     if (sd.box.getBoundingClientRect().top < 0) sd.box.scrollIntoView({ behavior: bewegungAus ? "auto" : "smooth", block: "start" });
-    var erste = sd.box.querySelector(".quiz-antwort, .quiz-chip, .bau-karte, .bau-zeit input");
+    var erste = sd.box.querySelector(".quiz-antwort, .quiz-chip, .bau-zeit input");
     if (erste) erste.focus({ preventScroll: true });
   }
   function quizRendern(nachKlick) {
@@ -2752,15 +2745,13 @@ body.chat-offen .chat-fenster { display: flex; }
     zurBox(nachKlick);
   }
 
-  /* Kurzes Laden (fest 1,2 Sekunden, keine Anfrage): Flasche füllt sich, Liste hakt sich ab, dann dein Ergebnis */
+  /* Kurzes Laden vor dem Ergebnis (fest 1,2 Sekunden, keine Anfrage): die Liste hakt sich ab, dann dein Ergebnis */
   function planLaden() {
     var nr = ++sd.lauf, a = sd.antworten, f = fokusVon(a), name = saeuleName(f);
     kopfSetzen("", "", 1);
-    sdTeil("titel").textContent = "Your plan is coming together …";
+    sdTeil("titel").textContent = "Your results are coming together …";
     sd.box.classList.add("laedt");
-    var punkteText = [f ? "Your focus: " + name : "Your nights: no problems ticked", "Your situation: " + antwortText("grund", a.grund)];
-    if (f) punkteText.push("The ingredients for " + name + " in your drops");
-    punkteText.push("Habits from Sleepwhale's sleep quiz to choose from", { vergessen: "Your Plan B for nights you forget your drops", abende: "Your Plan B for evenings that run late", schnell: "Your Plan B for when you don't notice much yet", geschmack: "Your Plan B for the taste" }[a.huerde] || "Your Plan B, in case a night goes differently");
+    var punkteText = [f ? "Your focus: " + name : "Your nights: no problems ticked", "Your situation: " + antwortText("grund", a.grund), "Your answers, pillar by pillar"];
     var laden = element("div", "plan-laden"), liste = element("ol", "plan-laden-liste");
     laden.setAttribute("role", "status");
     var punkte = punkteText.map(function (text) {
@@ -2820,7 +2811,7 @@ body.chat-offen .chat-fenster { display: flex; }
     balken.append(eins, zwei);
     return balken;
   }
-  function fokusSatz(f) { return f ? saeuleName(f) + " has the most issues you ticked, so your plan adds one habit for it from night 8." : "You ticked no issues, so your plan keeps your nights steady."; }
+  function fokusSatz(f) { return f ? saeuleName(f) + " has the most issues you ticked. Your plan adds one habit per week, chosen for your answers." : "You ticked no issues, so your plan keeps your nights steady, with one habit per week."; }
   function ringeKompakt(q) {
     var a = ergebnisAntworten(q), f = fokusVon(a), reihe = element("div", "ringe-kompakt");
     SAEULEN_REIHE.forEach(function (k) {
@@ -2841,92 +2832,128 @@ body.chat-offen .chat-fenster { display: flex; }
     zurBox(nachKlick);
   }
 
-  /* Bau dir deinen Plan: Schlafenszeit, Gewohnheit ab Nacht 8, Plan B */
+  /* Bau dir deinen Plan: ein Schritt mit Schlafenszeit und Aufstehzeit, dann schreibt ChatGPT den Plan.
+     Mit Plan („Change my times“) bleiben Start und Texte, nur die Zeiten ändern sich */
   function bauenStarten() {
-    var a = sd.antworten;
-    sd.wahl = { t: zeitWert(schlafenszeit), g: null, b: null, reihe: gewohnheitReihe(a, fokusVon(a)) };
-    sd.bauSchritt = 1;
+    sd.wahl = { t: sd.plan ? sd.plan.t : zeitWert(schlafenszeit), u: sd.plan ? sd.plan.u : zeitWert(schlafenszeit + 480) };
     bauenRendern(true);
   }
   function bauenRendern(nachKlick) {
-    var a = sd.antworten, w = sd.wahl, koerper = sdTeil("koerper"), fuss = sdTeil("fuss"), los;
+    var a = sd.antworten, w = sd.wahl, koerper = sdTeil("koerper"), fuss = sdTeil("fuss"), nurZeiten = !!sd.plan;
     sd.box.classList.remove("laedt");
-    kopfSetzen("Build your plan", "Step " + sd.bauSchritt + " of 3", sd.bauSchritt / 3);
-    koerper.replaceChildren();
-    fuss.replaceChildren();
-    if (sd.bauSchritt === 1) {
-      sdTeil("titel").textContent = "When do you go to bed?";
-      var zeit = element("label", "bau-zeit"), eingabe = element("input"), live = element("span", "bau-live"), unten = element("div", "bau-unten");
+    kopfSetzen("Build your plan", "", 0);
+    sdTeil("titel").textContent = "When do you go to bed and get up?";
+    var zeiten = element("div", "bau-zeiten"), live = element("p", "bau-live");
+    function zeitFeld(text, k) {
+      var feld = element("label", "bau-zeit"), eingabe = element("input");
       eingabe.type = "time";
-      eingabe.value = w.t;
-      var liveSetzen = function () { var m = minutenAus(w.t); live.textContent = "Drops at " + uhrText(m - 10) + ", lights out at " + uhrText(m); };
+      eingabe.value = w[k];
       eingabe.addEventListener("input", function () {
         if (!eingabe.value) return;
-        w.t = eingabe.value;
-        schlafenszeit = minutenAus(w.t);
-        abendZeigen();
+        w[k] = eingabe.value;
+        if (k === "t") { schlafenszeit = minutenAus(w.t); abendZeigen(); }
         liveSetzen();
       });
-      liveSetzen();
-      zeit.append(element("span", null, "Your bedtime"), eingabe, live);
-      unten.append(zeit, element("p", "quiz-hinweis", (a.wind || []).indexOf("unregel") > -1 ? "You said your bedtime changes. Sleepwhale is “designed as a single, consistent nightly ritual.” Start with a time you can keep on most nights." : "Same time every night: that's your ritual."));
-      koerper.append(element("p", "bau-unter", "Pick a bedtime you can keep every night, weekends too. Your drops come 10 minutes before."), unten);
-      fuss.appendChild(knopfMit("Next", "knopf", function () { sd.bauSchritt = 2; bauenRendern(true); }));
-    } else if (sd.bauSchritt === 2) {
-      sdTeil("titel").textContent = "What do you add to your evenings?";
-      var f = fokusVon(a);
-      koerper.appendChild(element("p", "bau-unter", "One small change for " + (f ? saeuleName(f) : "your nights") + ", from Sleepwhale's own sleep quiz. It starts on night 8, after your first week with the ritual."));
-      var karten = element("div", "bau-karten");
-      los = knopfMit("Next", "knopf", function () { sd.bauSchritt = 3; bauenRendern(true); });
-      var stand2 = function () {
-        Array.prototype.forEach.call(karten.children, function (c) { c.setAttribute("aria-pressed", String(c.dataset.wert === w.g)); });
-        los.disabled = !w.g;
-      };
-      w.reihe.forEach(function (k) {
-        var g = gewohnheitText(k, w.t), karte = knopfMit("", "bau-karte", function () { w.g = k; stand2(); });
-        karte.dataset.wert = k;
-        karte.append(element("b", null, g[0]), element("span", null, g[1]), element("small", null, "Check: " + g[2]));
-        karten.appendChild(karte);
-      });
-      koerper.appendChild(karten);
-      stand2();
-      fuss.appendChild(los);
-    } else {
-      sdTeil("titel").textContent = "What do you do when it gets hard?";
-      var optionen = element("div", "quiz-antworten bau-dann"), text = element("textarea"), freitext = element("div", "quiz-freitext");
-      text.rows = 2;
-      text.maxLength = 120;
-      text.setAttribute("aria-label", "Your Plan B, the part after “then”");
-      text.value = w.b || "";
-      los = knopfMit("My plan is ready", "knopf gold", planFertig);
-      var stand3 = function () {
-        Array.prototype.forEach.call(optionen.children, function (c) { c.setAttribute("aria-pressed", String(c.dataset.wert === w.b)); });
-        los.disabled = !zeichen(w.b, 120);
-      };
-      DANN[a.huerde].forEach(function (s) {
-        var k = knopfMit(s, "quiz-antwort ohne-ikon", function () { w.b = s; text.value = s; stand3(); });
-        k.dataset.wert = s;
-        optionen.appendChild(k);
-      });
-      text.addEventListener("input", function () { w.b = text.value.trim(); stand3(); });
-      freitext.append(element("p", "bau-feld-titel", "Your sentence, you can still change it:"), text);
-      koerper.append(element("p", "bau-unter", "One sentence is enough. If you know what you'll do, it's easier to stay with it."), element("p", "bau-wenn", WENN[a.huerde] + " then …"), optionen, freitext);
-      stand3();
-      fuss.appendChild(los);
+      feld.append(element("span", null, text), eingabe);
+      return feld;
     }
-    if (sd.bauSchritt > 1) fuss.appendChild(knopfMit("Back", "text-link", function () { sd.bauSchritt--; bauenRendern(true); }));
-    else fuss.appendChild(knopfMit("Back to your results", "text-link", function () { sd.wahl = null; ergebnisZeigen(true); }));
+    function liveSetzen() {
+      var b = minutenAus(w.t), dauer = tagMin(minutenAus(w.u) - b);
+      live.textContent = "Drops at " + uhrText(b - 10) + ", lights out at " + uhrText(b) + ", up at " + uhrText(minutenAus(w.u)) + ". That's " + Math.floor(dauer / 60) + " h" + (dauer % 60 ? " " + dauer % 60 + " min" : "") + " in bed.";
+    }
+    zeiten.append(zeitFeld("Your bedtime", "t"), zeitFeld("Your wake-up time", "u"));
+    liveSetzen();
+    koerper.replaceChildren(element("p", "bau-unter", "Pick times you can keep every day, weekends too. Your drops come 10 minutes before lights out, your notebook waits for you in the morning."), zeiten, live,
+      element("p", "quiz-hinweis", (a.wind || []).indexOf("unregel") > -1 ? "You said your bedtime changes. Sleepwhale is “designed as a single, consistent nightly ritual.” Start with times you can keep on most days." : "Same times every day: that's your ritual."));
+    fuss.replaceChildren(knopfMit(nurZeiten ? "Save my times" : "Build my plan", "knopf gold", nurZeiten ? zeitenSpeichern : planErstellen),
+      knopfMit(nurZeiten ? "Back to my plan" : "Back to your results", "text-link", nurZeiten ? function () { location.hash = planAnker(sd.plan); } : function () { sd.wahl = null; ergebnisZeigen(true); }));
     zurBox(nachKlick);
   }
-  /* Aus Antworten und Entscheidungen wird der Plan: dieselben Felder wie im Link. Danach öffnet die Landingpage mit dem neuen Code */
-  function planFertig() {
-    var a = sd.antworten, w = sd.wahl, start = heute0(), flascheNacht = nachtBekannt ? nacht : SEIT_NACHT[a.seit], bis;
+  /* ChatGPT schreibt den Plan (meta hub-plan-api). Gesendet werden nur die Antworten und die Zeiten, nie Name oder E-Mail.
+     Ohne API, bei Fehler oder nach 32 Sekunden kommt der feste Plan. Eine späte Antwort zählt nicht mehr (lauf) */
+  var PLAN_API = (document.querySelector('meta[name="hub-plan-api"]') || {}).content || "";
+  function planAnfrage(a, w) {
+    var antworten = { nacht: a.nacht, grund: a.grund, huerde: a.huerde };
+    SAEULEN_REIHE.forEach(function (k) { antworten[k] = getickt(a, k); });
+    if (a.seit) antworten.seit = a.seit;
+    return { antworten: antworten, bett: w.t, auf: w.u };
+  }
+  /* Antwort von ChatGPT prüfen: genau 3 verschiedene Habits aus HABITS. Texte gekürzt, leer = fester Text */
+  function kiPlan(p) {
+    if (!p || !Array.isArray(p.habits) || p.habits.length !== 3) return null;
+    var g = [];
+    for (var j = 0; j < 3; j++) {
+      var x = p.habits[j];
+      if (!x || !hat(HABITS, x.id) || g.some(function (y) { return y.i === x.id; })) return null;
+      g.push({ i: x.id, x: zeichen(x.text, 420) });
+    }
+    return { e: zeichen(p.einleitung, 220), o: zeichen(p.routine, 420), g: g };
+  }
+  function planErstellen() {
+    var nr = ++sd.lauf, a = sd.antworten, w = sd.wahl, f = fokusVon(a), fertig = false;
+    kopfSetzen("", "", 1);
+    sdTeil("titel").textContent = "Your plan is coming together …";
+    sd.box.classList.add("laedt");
+    var punkteText = [f ? "Your focus: " + saeuleName(f) : "Your nights: no problems ticked", "Your times: lights out " + uhrText(minutenAus(w.t)) + ", up " + uhrText(minutenAus(w.u)), "Week 1: your Sleepwhale routine", "Weeks 2 to 4: one habit each, chosen for your answers", "Your notebook for 30 nights"];
+    var laden = element("div", "plan-laden"), liste = element("ol", "plan-laden-liste"), schritt = 0;
+    laden.setAttribute("role", "status");
+    var punkte = punkteText.map(function (text) {
+      var li = element("li");
+      li.append(element("span", "plan-laden-zeichen"), element("span", null, text));
+      liste.appendChild(li);
+      return li;
+    });
+    laden.append(liste, element("p", "plan-laden-hinweis", "This takes a few seconds."));
+    sdTeil("koerper").replaceChildren(laden);
+    sdTeil("fuss").replaceChildren();
+    function setzen() {
+      punkte.forEach(function (li, i) {
+        li.className = i < schritt ? "fertig" : i === schritt ? "aktiv" : "";
+        if (i < schritt && !li.firstChild.firstChild) li.firstChild.appendChild(ikon("haken"));
+      });
+    }
+    setzen();
+    /* Bis zum letzten Punkt alle 2,5 Sekunden einer, der letzte wartet auf die Antwort */
+    var takt = setInterval(function () {
+      if (nr !== sd.lauf || !laden.isConnected) { clearInterval(takt); return; }
+      if (schritt < punkte.length - 1) { schritt++; setzen(); }
+    }, 2500);
+    function ende(ki) {
+      if (fertig || nr !== sd.lauf) return;
+      fertig = true;
+      clearInterval(takt);
+      schritt = punkte.length;
+      setzen();
+      setTimeout(function () { if (nr === sd.lauf) planFertig(planAusDaten(a, w, ki)); }, 400);
+    }
+    if (!PLAN_API) { setTimeout(function () { ende(null); }, 1800); return; }
+    var ab = new AbortController(), uhr = setTimeout(function () { ab.abort(); }, 32000);
+    fetch(PLAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(planAnfrage(a, w)), signal: ab.signal })
+      .then(function (r) { if (!r.ok) throw new Error("Status " + r.status); return r.json(); })
+      .then(function (d) { ende(kiPlan(d && d.plan)); })
+      .catch(function () { ende(null); })
+      .then(function () { clearTimeout(uhr); });
+  }
+  /* Aus Antworten, Zeiten und den Texten von ChatGPT (ki, sonst null) wird der Plan: dieselben Felder wie im Link */
+  function planAusDaten(a, w, ki) {
+    var start = heute0(), flascheNacht = nachtBekannt ? nacht : SEIT_NACHT[a.seit], bis;
     if (flascheNacht === undefined) bis = sd.plan ? sd.plan.n : "";
     else bis = flascheNacht === null ? "" : isoTag(plusTage(start, Math.max(0, rest(flascheNacht) - 7)));
-    var plan = { v: 1, p: "sd", s: isoTag(start), f: fokusVon(a), w: a.nacht, a: angekreuzt(a), r: a.grund, h: a.huerde, t: w.t, g: w.g, b: zeichen(w.b, 120), n: bis };
+    var g = ki ? ki.g : habitsWaehlen(a).map(function (id) { return { i: id, x: "" }; });
+    return { v: 2, p: "sd", s: isoTag(start), w: a.nacht, a: angekreuzt(a), r: a.grund, h: a.huerde, t: w.t, u: w.u, k: ki ? 1 : 0, e: ki ? ki.e : "", o: ki ? ki.o : "", g: g, n: bis };
+  }
+  /* Neue Zeiten für den bestehenden Plan: Start, Habits und Texte bleiben */
+  function zeitenSpeichern() {
+    var plan = JSON.parse(JSON.stringify(sd.plan));
+    plan.t = sd.wahl.t;
+    plan.u = sd.wahl.u;
+    planFertig(plan);
+  }
+  /* Der Plan wird aktiv, die Landingpage öffnet mit dem neuen Code */
+  function planFertig(plan) {
     sd.geaendert = !!sd.plan;
-    planUebernehmen(plan, 0);
-    sd.schluessel = planKodieren(plan) + "|0|" + (sd.ausMail === planKodieren(plan) ? 1 : 0);
+    planUebernehmen(plan);
+    sd.schluessel = planKodieren(plan) + "|" + (sd.ausMail === planKodieren(plan) ? 1 : 0);
     if (location.hash !== planAnker(plan)) location.hash = planAnker(plan);
     planModus();
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -2938,10 +2965,12 @@ body.chat-offen .chat-fenster { display: flex; }
     bytes.forEach(function (x) { bin += String.fromCharCode(x); });
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
-  /* Anker für die Adresse im Hub: &saved=1 bleibt stehen, solange derselbe Plan gezeigt wird. Der Link nach außen (Kalender, PDF, Klaviyo) kommt ohne */
-  function planAnker(plan, check) { var code = planKodieren(plan); return "#plan=" + code + (check ? "&check=" + check : "") + (sd.ausMail === code ? "&saved=1" : ""); }
-  function planLink(plan, check) { return hubAdresse("#plan=" + planKodieren(plan) + (check ? "&check=" + check : "")); }
-  var PLAN_FELDER = ["v", "p", "s", "f", "w", "a", "r", "h", "t", "g", "b", "n"];
+  /* Anker für die Adresse im Hub: &saved=1 bleibt stehen, solange derselbe Plan gezeigt wird. Der Link nach außen (Kalender, PDF, Klaviyo) kommt ohne.
+     Version 2 (seit 13.11.): e Einleitung, o Woche 1, g die 3 Habits mit Text von ChatGPT („“ = fester Text), k 1 = mit ChatGPT, u Aufstehzeit */
+  function planAnker(plan) { var code = planKodieren(plan); return "#plan=" + code + (sd.ausMail === code ? "&saved=1" : ""); }
+  function planLink(plan) { return hubAdresse("#plan=" + planKodieren(plan)); }
+  var PLAN_FELDER = ["v", "p", "s", "w", "a", "r", "h", "t", "u", "k", "e", "o", "g", "n"];
+  var ZEIT_MUSTER = /^([01]\d|2[0-3]):[0-5]\d$/;
   function planLesen(daten) {
     try {
       var bin = atob(daten.replace(/-/g, "+").replace(/_/g, "/")), bytes = new Uint8Array(bin.length);
@@ -2950,95 +2979,90 @@ body.chat-offen .chat-fenster { display: flex; }
       if (!r || typeof r !== "object" || Array.isArray(r)) return null;
       var felder = Object.keys(r);
       if (felder.length !== PLAN_FELDER.length || felder.some(function (k) { return PLAN_FELDER.indexOf(k) < 0; })) return null;
-      if (r.v !== 1 || r.p !== "sd" || !gueltigesDatum(r.s) || (r.f !== "" && !hat(SAEULEN_SD, r.f)) || [1, 2, 3, 4, 5].indexOf(r.w) < 0) return null;
+      if (r.v !== 2 || r.p !== "sd" || !gueltigesDatum(r.s) || [1, 2, 3, 4, 5].indexOf(r.w) < 0) return null;
       if (!Array.isArray(r.a) || r.a.some(function (k, j) { return !hat(OPTION_SAEULE, k) || r.a.indexOf(k) !== j; })) return null;
-      if (!antwortText("grund", r.r) || !hat(WENN, r.h) || !antwortText("huerde", r.h) || !hat(GEWOHNHEIT, r.g)) return null;
-      if (typeof r.t !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(r.t) || typeof r.b !== "string" || (r.n !== "" && !gueltigesDatum(r.n))) return null;
-      var plan = { v: 1, p: "sd", s: r.s, f: r.f, w: r.w, a: r.a.slice(), r: r.r, h: r.h, t: r.t, g: r.g, b: zeichen(r.b, 120), n: r.n };
-      if (!plan.b || fokusVon(antwortenAus(plan)) !== plan.f) return null;
-      return plan;
+      if (!antwortText("grund", r.r) || !antwortText("huerde", r.h) || typeof r.t !== "string" || !ZEIT_MUSTER.test(r.t) || typeof r.u !== "string" || !ZEIT_MUSTER.test(r.u)) return null;
+      if ((r.k !== 0 && r.k !== 1) || typeof r.e !== "string" || typeof r.o !== "string" || (r.n !== "" && !gueltigesDatum(r.n)) || !Array.isArray(r.g) || r.g.length !== 3) return null;
+      var g = [];
+      for (var j = 0; j < 3; j++) {
+        var x = r.g[j];
+        if (!x || typeof x !== "object" || !hat(HABITS, x.i) || typeof x.x !== "string" || g.some(function (y) { return y.i === x.i; })) return null;
+        g.push({ i: x.i, x: zeichen(x.x, 420) });
+      }
+      return { v: 2, p: "sd", s: r.s, w: r.w, a: r.a.slice(), r: r.r, h: r.h, t: r.t, u: r.u, k: r.k, e: zeichen(r.e, 220), o: zeichen(r.o, 420), g: g, n: r.n };
     } catch (e) { return null; }
   }
-  /* #plan=…&check=14|30 ist die Landingpage #mein-plan: die Adresse bleibt stehen (neu laden, Lesezeichen, Zurück und Vor), html.plan-modus zeigt sie.
-     Neu gebaut wird nur, wenn sich Code oder check ändern. Läuft vor alteAdresse() */
+  /* #plan=… ist die Landingpage #mein-plan: die Adresse bleibt stehen (neu laden, Lesezeichen, Zurück und Vor), html.plan-modus zeigt sie.
+     Neu gebaut wird nur, wenn sich Code oder saved ändern. Läuft vor alteAdresse() */
   function planModus() { document.documentElement.classList.toggle("plan-modus", location.hash.indexOf("#plan=") === 0); }
   function planAusAdresse() {
     planModus();
     if (location.hash.indexOf("#plan=") !== 0) return false;
-    var daten = "", check = 0, saved = 0;
+    var daten = "", saved = 0;
     location.hash.slice(1).split("&").forEach(function (teil) {
       var i = teil.indexOf("="), k = teil.slice(0, i), v = teil.slice(i + 1);
       if (k === "plan") daten = v;
-      if (k === "check" && (v === "14" || v === "30")) check = +v;
       if (k === "saved" && v === "1") saved = 1;
     });
     sd.ausMail = saved ? daten : null;
-    if (daten + "|" + check + "|" + saved === sd.schluessel) return true;
-    sd.schluessel = daten + "|" + check + "|" + saved;
+    if (daten + "|" + saved === sd.schluessel) return true;
+    sd.schluessel = daten + "|" + saved;
     var plan = planLesen(daten);
     sd.lauf++;
     if (!plan) { planFehlerZeigen(); return true; }
-    /* Ein anderer Plan als der im Speicher: seine Antworten übernehmen. Derselbe Plan (nur check neu): Bauen und Hinweis bleiben */
+    /* Ein anderer Plan als der im Speicher: seine Antworten übernehmen. Derselbe Plan: Hinweis nach dem Ändern bleibt */
     if (!sd.plan || planKodieren(sd.plan) !== daten) {
       sd.antworten = antwortenAus(plan);
       sd.wahl = null;
       sd.geaendert = false;
+      sd.notizNacht = 0;
     }
-    planUebernehmen(plan, check);
+    planUebernehmen(plan);
     return true;
   }
   /* Ein Plan wird aktiv: Tonight, Seitenleiste, das Kapitel „Your sleep plan“ und die Landingpage zeigen ihn */
-  function planUebernehmen(plan, check) {
+  function planUebernehmen(plan) {
     sd.plan = plan;
-    sd.check = check;
     schlafenszeit = minutenAus(plan.t);
     abendZeigen();
     planStatusZeigen(plan);
     bereitZeigen();
     planSeiteZeigen();
   }
-  /* Nach dem Wechsel auf die Landingpage: nach oben, mit ?check= gleich zur Bewertung */
-  function planSeiteOben() {
-    var c = planSeite.querySelector(".plan-check");
-    if (c) c.scrollIntoView({ behavior: "instant", block: "start" }); else window.scrollTo({ top: 0, behavior: "instant" });
-  }
-  /* Von der Landingpage zurück ins Kapitel „Your sleep plan“, dann dort weiter (Bauen ab Schritt N, neuer Plan) */
+  /* Nach dem Wechsel auf die Landingpage: nach oben */
+  function planSeiteOben() { window.scrollTo({ top: 0, behavior: "instant" }); }
+  /* Von der Landingpage zurück ins Kapitel „Your sleep plan“, dann dort weiter (Zeiten ändern, neuer Plan) */
   function zumHub(dann) {
     location.hash = "#drops-plan";
     planModus();
     dann();
   }
 
-  /* Nacht von heute im Plan, mindestens 1 (für den Abend: Gewohnheit ab Nacht 8) */
+  /* Nacht von heute im Plan, mindestens 1 */
   function planNacht(plan) { return Math.max(1, tageSeit(plan.s) + 1); }
-  /* Fotos im Plan: je Gewohnheit ein Foto für die Station „Nights 8 to 14“ */
-  var HABIT_FOTO = { wired: "foto-wind", screens: "foto-wind", rasen: "foto-wind", unruhig: "foto-wind", geraeusche: "foto-stay", leicht: "foto-stay", nachts: "foto-stay", zurueck: "foto-stay", spaet: "foto-fall", unregel: "foto-fall", "15min": "ritual-2" };
-  function bildPfad(name) { return "bilder/" + name + ".webp"; }
-  function planBild(name, klasse) { var img = element("img", klasse); img.src = bildPfad(name); img.alt = ""; img.loading = "lazy"; img.decoding = "async"; return img; }
   /* Kleine goldene Zeile über Überschriften, wie auf sleepwhale.com („HOW IT WORKS“) */
   function augenbraue(text, tag) { return element(tag || "p", "augenbraue", text); }
-  /* Dein Abend: Tropfen und Licht aus, dazu die Gewohnheit mit Uhrzeit. In Woche 1 steht die Gewohnheit grau mit „from night 8“ */
-  function abendZeilen(plan) {
-    var h = HABIT_ZEIT[plan.g], woche1 = planNacht(plan) <= 7, zeilen = [
-      { min: -10, art: "drops", text: "Shake well, 1 mL under your tongue, hold for a minute, then swallow" },
-      { min: 0, art: "licht", text: "Lights out" }
-    ];
-    if (h.statt) zeilen.forEach(function (z) {
-      if (z.art !== h.statt) return;
-      if (woche1) z.notiz = "From night 8: " + GEWOHNHEIT[plan.g][0].toLowerCase(); else z.text = h.text;
-    });
-    else zeilen.push({ min: h.min, etikett: h.etikett, text: h.text, spaeter: woche1 });
-    function rang(z) { return z.min !== null ? z.min : z.etikett === "During the night" ? 1e3 : -1e3; }
-    return zeilen.sort(function (x, y) { return rang(x) - rang(y); });
+  /* Die 4 Wochen in Nächten: Woche 1 die Routine, Woche 2 bis 4 je ein neues Habit (plan.g[0] bis [2]), frühere laufen weiter */
+  var WOCHEN = [[1, 7], [8, 14], [15, 21], [22, 30]];
+  function wocheVon(n) { return n < 1 ? 0 : n <= 7 ? 1 : n <= 14 ? 2 : n <= 21 ? 3 : n <= 30 ? 4 : 5; }
+  function aktiveHabits(plan, n) { return plan.g.filter(function (x, j) { return n >= WOCHEN[j + 1][0]; }).map(function (x) { return x.i; }); }
+  /* Dein Tag in Nacht n: Drops und Licht aus, dazu die aktiven Habits und morgens das Notizbuch. teil: tag, abend, nacht, morgen */
+  var TEIL_REIHE = { tag: 0, abend: 1, nacht: 2, morgen: 3 };
+  function tagesZeilen(plan, n) {
+    var zeilen = [{ teil: "abend", min: -10, text: "Your drops: shake well, 1 mL under your tongue, hold for a minute, then swallow" }, { teil: "abend", min: 0, text: "Lights out" }];
+    aktiveHabits(plan, n).forEach(function (id) { var h = HABITS[id]; zeilen.push({ teil: h.teil, min: h.min || 0, text: h.tun, id: id }); });
+    zeilen.push({ teil: "morgen", min: 15, text: "Rate last night in your notebook, 0 to 10" });
+    return zeilen.sort(function (x, y) { return TEIL_REIHE[x.teil] - TEIL_REIHE[y.teil] || x.min - y.min; });
   }
-  function abendZeit(z, bett) { return z.min !== null ? uhrText(bett + z.min) : z.etikett; }
+  /* Minuten am Tag einer Zeile: tag fest, abend zu Licht aus, morgen zum Aufstehen. nacht: null */
+  function zeileMin(z, plan) { return z.teil === "tag" ? z.min : z.teil === "abend" ? minutenAus(plan.t) + z.min : z.teil === "morgen" ? minutenAus(plan.u) + z.min : null; }
+  /* Für das PDF: der ganze Tag ab Woche 4, mit der Nacht, ab der ein Habit gilt */
   function abendListe(plan) {
-    var bett = minutenAus(plan.t), ol = element("ol", "abend-liste");
-    abendZeilen(plan).forEach(function (z) {
-      var li = element("li", z.spaeter ? "spaeter" : null), text = element("span", "abend-text", z.text);
-      if (z.spaeter) text.appendChild(element("small", null, "from night 8"));
-      if (z.notiz) text.appendChild(element("small", null, z.notiz));
-      li.append(element("span", "abend-zeit", abendZeit(z, bett)), text);
+    var ol = element("ol", "abend-liste");
+    tagesZeilen(plan, 30).forEach(function (z) {
+      var li = element("li"), min = zeileMin(z, plan), text = element("span", "abend-text", z.text);
+      if (z.id) text.appendChild(element("small", null, "from night " + WOCHEN[plan.g.map(function (x) { return x.i; }).indexOf(z.id) + 1][0]));
+      li.append(element("span", "abend-zeit", min === null ? "During the night" : uhrText(min)), text);
       ol.appendChild(li);
     });
     return ol;
@@ -3048,158 +3072,266 @@ body.chat-offen .chat-fenster { display: flex; }
     var n = tageSeit(plan.s) + 1;
     return { nacht: n, stand: n < 1 ? 0 : Math.min(30, n), titel: n < 1 ? "Starts " + datumText(ausIso(plan.s)) : n > 30 ? "Your 30 nights are done" : "Night " + n + " of 30" };
   }
-  /* Heute Abend auf der Landingpage: je Schritt mit Uhrzeit eine Zeile, die Gewohnheit erst ab Nacht 8. Ohne Uhrzeit eine kleine Zeile darunter */
-  function heuteTafel(plan) {
-    var bett = minutenAus(plan.t), tafel = element("div", "ps-heute"), liste = element("ol", "ps-heute-liste"), ohne = [];
-    abendZeilen(plan).forEach(function (z) {
-      if (z.spaeter) return;
-      if (z.min === null) { ohne.push(element("p", "ps-heute-ohne", z.etikett + ": " + z.text + ".")); return; }
-      var li = element("li");
-      li.append(element("span", "ps-uhr", abendZeit(z, bett)), element("span", "ps-tun", z.text));
-      liste.appendChild(li);
+  /* Dein Tag auf der Landingpage: Today, Tonight, During the night, Tomorrow morning. Dazu die Sleepwhale-Erinnerung (Drops und Nachbestellen) */
+  function heuteTafel(plan, n) {
+    var tafel = element("div", "ps-heute"), zeilen = tagesZeilen(plan, Math.max(1, n));
+    [["tag", "Today"], ["abend", "Tonight"], ["nacht", "During the night"], ["morgen", "Tomorrow morning"]].forEach(function (t) {
+      var liste = zeilen.filter(function (z) { return z.teil === t[0]; });
+      if (!liste.length) return;
+      var ol = element("ol", "ps-heute-liste");
+      liste.forEach(function (z) {
+        var li = element("li", z.teil === "nacht" ? "ohne-uhr" : null);
+        if (z.teil !== "nacht") li.appendChild(element("span", "ps-uhr", uhrText(zeileMin(z, plan))));
+        li.appendChild(element("span", "ps-tun", z.text));
+        ol.appendChild(li);
+      });
+      tafel.append(augenbraue(t[1]), ol);
     });
-    var kal = knopfMit("Add all to my calendar", "knopf marke", function () { planKalender(plan); });
+    var kal = knopfMit("Remind me to take my drops", "knopf marke", function () { planKalender(plan); });
     kal.prepend(ikon("kalender"));
-    tafel.append.apply(tafel, [augenbraue("Tonight"), liste].concat(ohne, [kal, knopfMit("Change bedtime", "text-link", function () { zumHub(function () { aendern(1); }); })]));
+    tafel.append(kal, knopfMit("Change my times", "text-link", function () { zumHub(bauenStarten); }));
     return tafel;
   }
-  /* 30 Nächte als Streifen: fertig Gold, heute Weiß mit Goldrand, danach Tiefblau. Darunter die Marken an ihrer Nacht, schmal nur die Zahlen */
-  function nachtStreifen(st) {
-    var box = element("div", "ps-streifen-box"), reihe = element("div", "ps-streifen"), marken = element("div", "ps-marken");
-    reihe.setAttribute("role", "img");
-    reihe.setAttribute("aria-label", st.titel);
-    for (var i = 1; i <= 30; i++) reihe.appendChild(element("span", i < st.nacht ? "fertig" : i === st.nacht ? "heute" : null));
-    marken.setAttribute("aria-hidden", "true");
-    [[1, "Night ", "", "anfang"], [7, "", " Check-in", "mitte"], [14, "", " Check-in", "mitte"], [30, "", "", "ende"]].forEach(function (m) {
-      var e = element("span", "ps-marke " + m[3]);
-      e.style.setProperty("--n", m[0]);
-      if (m[1]) e.appendChild(element("span", "ps-lang", m[1]));
-      e.appendChild(element("b", null, String(m[0])));
-      if (m[2]) e.appendChild(element("span", "ps-lang", m[2]));
-      marken.appendChild(e);
+  /* Notizbuch: jede Nacht 0 bis 10, nur im Browser des Kunden (localStorage), je Plan-Start ein Eintrag { "1": 7, … }.
+     Ohne Speicher (privater Modus) gelten die Werte nur, solange die Seite offen ist */
+  var notizNotfall = {};
+  function notizSchluessel(plan) { return "sleepwhale-notizbuch-" + plan.s; }
+  function notizbuch(plan) {
+    var k = notizSchluessel(plan), roh = null, d, sauber = {};
+    try { roh = localStorage.getItem(k); } catch (e) { roh = null; }
+    try { d = roh ? JSON.parse(roh) : notizNotfall[k]; } catch (e) { d = null; }
+    Object.keys(d && typeof d === "object" ? d : {}).forEach(function (n) {
+      var w = d[n];
+      if (/^([1-9]|[12]\d|30)$/.test(n) && typeof w === "number" && w === Math.round(w) && w >= 0 && w <= 10) sauber[n] = w;
     });
-    box.append(reihe, marken);
-    return box;
+    return sauber;
   }
+  function notizSetzen(plan, n, wert) {
+    var d = notizbuch(plan), k = notizSchluessel(plan);
+    d[n] = wert;
+    notizNotfall[k] = d;
+    try { localStorage.setItem(k, JSON.stringify(d)); } catch (e) { /* nur für diese Seite */ }
+  }
+  function notizLoeschen(plan) {
+    var k = notizSchluessel(plan);
+    notizNotfall[k] = {};
+    try { localStorage.removeItem(k); } catch (e) { /* nichts gespeichert */ }
+  }
+  function schnitt(werte) { return werte.length ? Math.round(werte.reduce(function (s, w) { return s + w; }, 0) / werte.length * 10) / 10 : null; }
+  function wochenWerte(d, w) { var l = []; for (var n = WOCHEN[w - 1][0]; n <= WOCHEN[w - 1][1]; n++) if (d[n] !== undefined) l.push(d[n]); return l; }
+  function alleWerte(d) { return Object.keys(d).map(function (n) { return d[n]; }); }
+  function naechteText(z) { return z + (z === 1 ? " night" : " nights"); }
+  /* Bewerten lässt sich jede Nacht ab dem Morgen danach: heute Nacht n, also bis n - 1, höchstens 30 */
+  function letzteBewertbar(n) { return Math.min(30, n - 1); }
+  /* Nachbestellen als Nacht im Plan (1 bis 30), sonst 0 */
+  function kaufNacht(plan) { if (!plan.n) return 0; var k = Math.round((ausIso(plan.n) - ausIso(plan.s)) / 864e5) + 1; return k >= 1 && k <= 30 ? k : 0; }
   function kaufLink(selektor) { var a = document.querySelector(selektor); return a ? rabattiert(mitKennung(a.dataset.basis || a.href, "plan")) : hubAdresse("#drops-reorder"); }
   function kaufKnoepfe() {
     var k = element("div", "plan-knoepfe"), d = STAERKE[staerke];
     k.append(linkMit("Subscribe & Save for " + dollar(d.abo), "knopf gold marke", kaufLink('[data-kauf="drops-abo"]'), true), linkMit("Reorder once for " + dollar(d.kunde), "knopf hell marke", kaufLink('[data-kauf="drops-einmal"]'), true));
     return k;
   }
-  /* Nachbestellen in der Roadmap: Preise der gewählten Stärke. Wechselt die Stärke, wird die Landingpage neu gebaut */
-  function kaufBild() { var d = STAERKE[staerke], b = element("img", "rm-flasche"); b.src = d.bild; b.alt = d.titel; b.loading = "lazy"; return b; }
+  /* Nachbestellen auf der Plan-Seite: Preise der gewählten Stärke. Wechselt die Stärke, wird die Landingpage neu gebaut */
+  function kaufBild() { var d = STAERKE[staerke], b = element("img", "kk-flasche"); b.src = d.bild; b.alt = d.titel; b.loading = "lazy"; return b; }
   function kaufZeilen() {
-    var d = STAERKE[staerke], einmal = element("p", "rm-einmal");
+    var d = STAERKE[staerke], einmal = element("p", "kk-einmal");
     einmal.append("Reorder once ", element("b", null, dollar(d.kunde)), " instead of ", element("s", null, dollar(d.einmal)), ", your " + KUNDEN_RABATT.pct + "% customer offer");
-    return [element("p", "rm-abo", "Subscribe & Save " + dollar(d.abo) + " per bottle"), einmal, kaufKnoepfe(), element("p", "rm-klein", "Easily edit, skip, or cancel anytime")];
+    return [element("p", "kk-abo", "Subscribe & Save " + dollar(d.abo) + " per bottle"), einmal, kaufKnoepfe(), element("p", "kk-klein", "Easily edit, skip, or cancel anytime")];
   }
   function preisSatz() {
     var d = STAERKE[staerke];
     return "One bottle lasts 30 nights at 1 mL. Subscribe & Save " + dollar(d.abo) + " per bottle, a new bottle every 4 weeks. Or reorder once for " + dollar(d.kunde) + " instead of " + dollar(d.einmal) + ", your " + KUNDEN_RABATT.pct + "% customer offer.";
   }
-  /* Die Roadmap: 9 Stationen (ohne Nachbestell-Datum 8) nach Datum, dieselben auf der Landingpage, im PDF und in der Mail.
-     tag = Tage ab Start, nacht = tag + 1: daran hängt fertig, jetzt oder später. Fotos: keins doppelt, sonst das nächste der Liste */
-  function stationenVon(plan) {
-    var s = ausIso(plan.s), bett = minutenAus(plan.t), gw = gewohnheitText(plan.g, plan.t), benutzt = [];
-    var liste = [
-      { art: "phase", tag: 0, kal: "drops", woche: 1, augenbraue: "Nights 1 to 7", titel: "Same time, every night", fotos: ["ritual-1"],
-        tun: ["Drops at " + uhrText(bett - 10) + ", lights out at " + uhrText(bett) + ".", "Keep the bottle where you brush your teeth at night.", "Missed a night? Take your drops the next night at your usual time."] },
-      { art: "check", tag: 6, kal: "check7", augenbraue: "Night 7, check-in", titel: "Start noticing the little wins", n7: true,
-        tun: ["“One week in, it’s time to pay attention. Are you spending less time tossing and turning? Are nighttime wake-ups becoming less disruptive? Even small improvements are worth noticing.”"] },
-      { art: "phase", tag: 7, kal: "gewohnheit", woche: 2, augenbraue: "Nights 8 to 14", titel: "Add one habit: " + gw[0], fotos: [HABIT_FOTO[plan.g], "foto-stay", "foto-wind", "foto-fall"],
-        tun: [gw[1], "Your ritual stays the same."] },
-      { art: "check", tag: 13, kal: "check14", augenbraue: "Night 14, check-in", titel: "How are your mornings feeling?", bewerten: 14,
-        tun: ["Rate your sleep: How’d you sleep last night?", "“Better sleep isn’t just about what happens at night.”"] },
-      { art: "phase", tag: 14, kal: "beobachten", woche: 3, augenbraue: "Nights 15 to 21", titel: "Watch closely", fotos: ["foto-schlaf", "foto-stay", "ritual-3"],
-        tun: [BEOBACHTUNG[plan.f], "Keep your ritual and your habit."], klein: "Sleepwhale says judging whether your sleep is improving “can take longer, sometimes up to several weeks.”" },
-      { art: "phase", tag: 21, kal: "festigen", woche: 4, augenbraue: "Nights 22 to 30", titel: "Make it stick", fotos: ["foto-recover", "foto-wind", "foto-fall"],
-        tun: ["Keep your ritual and your habit, same time every night."] },
-      { art: "check", tag: 29, kal: "check30", augenbraue: "Night 30, check-in", titel: "Look how far you’ve come", bewerten: 30,
-        tun: ["“Thirty nights give you a chance to look at the bigger picture. Are you falling asleep more comfortably? Waking up less often? Feeling better rested when the alarm goes off?”", "Morning after night 30: rate your sleep again."] },
-      { art: "ziel", tag: 30, nachtText: "After night 30", augenbraue: "After night 30", titel: "Make better nights part of your routine",
-        tun: ["“Keep the simple bedtime ritual that works for you and continue giving your nights the attention they deserve.”"] }
-    ];
-    if (plan.n) {
-      var t = Math.max(0, Math.round((ausIso(plan.n) - s) / 864e5));
-      liste.push({ art: "kauf", tag: t, kal: "kauf", augenbraue: "Night " + (t + 1), titel: "Order your next bottle", tun: ["About 7 nights left in your bottle."] });
+  /* Wann ein Habit dran ist, als Zeile in der Wochen-Karte */
+  function habitWann(plan, id) {
+    var h = HABITS[id];
+    if (h.teil === "nacht") return "During the night, when you need it";
+    if (id === "nickerchen") return "Only before 3 PM, 20 minutes at most";
+    if (h.teil === "tag") return "Every day, the last one before 2 PM";
+    return (h.teil === "morgen" ? "Every morning at " : "Every evening at ") + uhrText(zeileMin({ teil: h.teil, min: h.min }, plan));
+  }
+  /* Deine 4 Wochen als Karten: Woche 1 die Routine, dann je ein Habit mit dem Text von ChatGPT. Die Woche von heute mit Gold, erledigte ruhiger.
+     Erinnerung nur als kleiner Link, die Frage geht in den Chat */
+  function wochenKarten(plan, n, d) {
+    var raster = element("div", "wk-raster"), start = ausIso(plan.s);
+    WOCHEN.forEach(function (w, j) {
+      var id = j ? plan.g[j - 1].i : "", h = id ? HABITS[id] : null, zustand = n > w[1] ? "fertig" : n >= w[0] ? "jetzt" : "spaeter";
+      var karte = element("article", "wk " + zustand), kopf = element("div", "wk-kopf"), symbol = element("span", "wk-ikon"), werte = wochenWerte(d, j + 1), links = element("p", "plan-links wk-links");
+      symbol.appendChild(ikon(h ? h.ikon : "pipette"));
+      kopf.append(symbol, augenbraue("Week " + (j + 1) + ", nights " + w[0] + " to " + w[1]));
+      if (zustand === "jetzt") kopf.appendChild(element("p", "wk-jetzt", "This week"));
+      karte.append(kopf, element("h3", null, h ? h.titel : "Your Sleepwhale routine"), element("p", "wk-text", h ? habitText(plan, j - 1) : routineText(plan)),
+        element("p", "wk-wann", (h ? habitWann(plan, id) : "Every evening at " + uhrText(minutenAus(plan.t) - 10)) + (zustand === "spaeter" ? ", from " + tagKurz(plusTage(start, w[0] - 1)) : "")));
+      if (werte.length) karte.appendChild(element("p", "wk-schnitt", "Your notebook: " + schnitt(werte) + " on average, " + naechteText(werte.length) + " rated"));
+      if (h && h.erinnern !== false) links.appendChild(knopfMit("Add to calendar", "text-link", function () { kalenderPlan([habitTermin(plan, j - 1)], "Your calendar reminds you every day until night 30: " + h.titel + "."); }));
+      if (!h) links.appendChild(linkMit("How the ritual works", "text-link", "#drops-ritual"));
+      if (!h && n >= 7) links.appendChild(linkMit("Is your serving right?", "text-link", "#drops-n7"));
+      var frage = element("button", "text-link wk-frage", h ? "Ask about this habit" : "Ask about your drops");
+      frage.type = "button";
+      frage.dataset.chatFrage = h ? "Tell me more about my habit: " + h.titel + ". Why does it fit me, and how do I start?" : "How do I take my Sleep Drops, and what if I forget a night?";
+      frage.prepend(ikon("chat"));
+      links.appendChild(frage);
+      karte.appendChild(links);
+      raster.appendChild(karte);
+    });
+    return raster;
+  }
+  /* Deine 30 Nächte: oben das Notizbuch (0 bis 10), darunter die Timeline mit einem Balken je Nacht, den 4 Wochen und Marken für heute, Nachbestellen und Nacht 30 */
+  function naechteBereich(plan, n) {
+    var bereich = element("section", "ps-naechte"), d = notizbuch(plan), werte = alleWerte(d), kopf = element("div", "ps-naechte-kopf"), titel = element("h2", "ps-klein", "Your 30 nights");
+    titel.id = "ps-naechte-titel";
+    bereich.setAttribute("aria-labelledby", "ps-naechte-titel");
+    kopf.appendChild(titel);
+    if (werte.length) {
+      var stand = element("p", "ps-naechte-schnitt");
+      stand.append("Your average so far: ", element("b", null, String(schnitt(werte))), ", " + naechteText(werte.length) + " rated");
+      kopf.appendChild(stand);
     }
-    liste.forEach(function (x, i) { x.nr = i; x.nacht = x.tag + 1; x.datum = plusTage(s, x.tag); x.nachtText = x.nachtText || "Night " + x.nacht; });
-    liste.sort(function (a, b) { return a.tag - b.tag || a.nr - b.nr; });
-    liste.forEach(function (x) {
-      if (!x.fotos) return;
-      x.foto = x.fotos.filter(function (n) { return n && benutzt.indexOf(n) < 0; })[0] || x.fotos[0];
-      benutzt.push(x.foto);
-    });
-    return liste;
+    bereich.append(kopf, notizKarte(plan, n, d), zeitleiste(plan, n, d));
+    return bereich;
   }
-  /* Aktuelle Station: die letzte, deren Nacht schon erreicht ist. Vor dem Start keine (-1) */
-  function aktuelleStation(stationen, n) { var j = -1; stationen.forEach(function (x, i) { if (x.nacht <= n) j = i; }); return j; }
-  /* „Keep your ritual going“: ohne Animation zur Station „Order your next bottle“ springen, dann Fokus auf die Karte */
-  function zurKaufStation() {
-    var k = planSeite.querySelector(".rm-kauf .rm-karte");
-    if (!k) return;
-    k.scrollIntoView({ behavior: "instant", block: "start" });
-    k.focus({ preventScroll: true });
+  function notizNacht(n) { var letzte = letzteBewertbar(n); return sd.notizNacht >= 1 && sd.notizNacht <= letzte ? sd.notizNacht : letzte; }
+  /* Das Notizbuch: die letzte Nacht oder die angetippte, 11 Knöpfe von 0 bis 10. Vor der ersten Nacht nur der Hinweis */
+  function notizKarte(plan, n, d) {
+    var box = element("div", "notiz"), kopf = element("div", "notiz-kopf"), symbol = element("span", "wk-ikon"), titel = element("div");
+    symbol.appendChild(ikon("h-notiz"));
+    kopf.append(symbol, titel);
+    box.appendChild(kopf);
+    if (letzteBewertbar(n) < 1) {
+      titel.appendChild(element("p", "notiz-frage", n < 1 ? "Your notebook starts after your first night" : "Your notebook starts tomorrow morning"));
+      box.append(element("p", "notiz-hinweis", "Every morning, rate the night before from 0 to 10. After 30 nights you see how your nights went, week by week."), notizFuss(plan, false));
+      return box;
+    }
+    var nacht = notizNacht(n), wert = d[nacht], frageText = nacht === n - 1 ? "How was last night?" : "How was night " + nacht + "?", skala = element("div", "notiz-skala"), enden = element("p", "notiz-enden");
+    titel.append(element("p", "notiz-frage", frageText), element("p", "notiz-datum", "Night " + nacht + ", " + datumText(plusTage(ausIso(plan.s), nacht - 1))));
+    skala.setAttribute("role", "group");
+    skala.setAttribute("aria-label", frageText + " From 0 to 10");
+    for (var z = 0; z <= 10; z++) (function (z) {
+      var b = knopfMit(String(z), null, function () { notizSetzen(plan, nacht, z); sd.notizNacht = nacht; naechteNeu('.notiz-skala [data-wert="' + z + '"]'); });
+      b.dataset.wert = z;
+      b.setAttribute("aria-pressed", wert === z ? "true" : "false");
+      skala.appendChild(b);
+    })(z);
+    enden.append(element("span", null, "0, a very poor night"), element("span", null, "10, a great night"));
+    box.append(skala, enden);
+    if (wert !== undefined) box.appendChild(element("p", "notiz-gespeichert", "Saved: night " + nacht + ", " + wert + " of 10." + (letzteBewertbar(n) > 1 ? " Tap a night below to change an earlier one." : "")));
+    box.appendChild(notizFuss(plan, alleWerte(d).length > 0));
+    return box;
   }
-  /* Die Roadmap als Weg: links das Datum, in der Mitte die Linie mit Knoten (Gold bis heute), rechts die Karte der Station.
-     Jede Station trägt ihren Kalendereintrag; Serien aus erledigten Stationen (Drops, Gewohnheit) stehen bei der Station von heute */
-  function roadmapListe(plan) {
-    var stationen = stationenVon(plan), n = tageSeit(plan.s) + 1, jetzt = aktuelleStation(stationen, n), ol = element("ol", "roadmap-plan"), termine = planTermine(plan), laufend = [];
-    ol.setAttribute("aria-label", "Your roadmap");
-    stationen.forEach(function (x, i) {
-      var zustand = i < jetzt ? "fertig" : i === jetzt ? "jetzt" : "spaeter";
-      var li = element("li", "rm-station rm-" + x.art + " " + zustand), datum = element("p", "rm-datum"), knoten = element("span", "rm-knoten"), karte = element("div", "rm-karte"), text = element("div", "rm-teil");
-      datum.append(element("b", null, tagKurz(x.datum)), element("span", null, x.nachtText));
-      knoten.setAttribute("aria-hidden", "true");
-      if (zustand === "fertig") knoten.appendChild(ikon("haken"));
-      else if (x.art === "phase") knoten.textContent = x.woche;
-      else knoten.appendChild(ikon(x.art === "check" ? "ziel" : x.art === "kauf" ? "flasche" : "mond"));
-      /* Kopf der Karte: auf dem Handy das Datum, dann „You are here“ und die Augenbraue in einer Zeile */
-      var kopf = element("div", "rm-kopf");
-      if (zustand === "jetzt") {
-        li.setAttribute("aria-current", "step");
-        kopf.appendChild(element("p", "rm-hier", x.art === "ziel" ? "You are here" : "You are here, night " + n));
-      }
-      kopf.appendChild(augenbraue(x.augenbraue));
-      text.append(element("p", "rm-wann", tagKurz(x.datum)), kopf, element("h3", null, x.titel));
-      if (x.art === "phase") {
-        var ul = element("ul", "rm-liste");
-        x.tun.forEach(function (t) { ul.appendChild(element("li", null, t)); });
-        text.appendChild(ul);
-        if (x.klein) text.appendChild(element("p", "rm-klein", x.klein));
-        karte.append(planBild(x.foto, "rm-foto"), text);
-      } else {
-        x.tun.forEach(function (t) { text.appendChild(element("p", "rm-absatz", t)); });
-        if (x.n7) { var p = element("p", "rm-absatz"); p.append(linkMit("Check your serving", "text-link", "#drops-n7"), " to stay at 1 mL or fine-tune by 0.25 mL."); text.appendChild(p); }
-        if (x.bewerten) text.appendChild(tageSeit(plan.s) >= x.bewerten ? linkMit("Rate your sleep", "knopf marke", planAnker(plan, x.bewerten)) : element("p", "rm-klein", "Opens on " + datumText(plusTage(ausIso(plan.s), x.bewerten))));
-        if (x.art === "kauf") {
-          text.append.apply(text, kaufZeilen());
-          karte.tabIndex = -1;
-          karte.appendChild(kaufBild());
-        }
-        if (x.art === "ziel" && !plan.n) {
-          var angebot = element("div", "rm-angebot"), angebotText = element("div");
-          angebotText.append.apply(angebotText, kaufZeilen());
-          angebot.append(kaufBild(), angebotText);
-          text.appendChild(angebot);
-        }
-        if (x.art === "ziel" && plan.n) { var weiter = element("p", "rm-absatz"); weiter.appendChild(knopfMit("Keep your ritual going", "text-link", zurKaufStation)); text.appendChild(weiter); }
-        karte.appendChild(text);
-      }
-      var termin = x.kal ? termine.filter(function (t) { return t.kal === x.kal; })[0] : null, eintraege = [];
-      if (termin && zustand === "fertig") { if (termin.anzahl > 1) laufend.push(termin); }
-      else if (termin) eintraege.push(termin);
-      if (zustand === "jetzt") eintraege = laufend.concat(eintraege);
-      if (eintraege.length) {
-        var kal = element("div", "ke-liste");
-        eintraege.forEach(function (t) { kal.appendChild(kalEintrag(t)); });
-        karte.appendChild(kal);
-      }
-      li.append(datum, knoten, karte);
-      ol.appendChild(li);
+  function notizFuss(plan, hatWerte) {
+    var fuss = element("p", "notiz-fuss");
+    fuss.append(element("span", null, "Saved on this phone only."), knopfMit("Remind me every morning", "text-link", function () {
+      kalenderPlan([notizTermin(plan)], "Every morning your calendar reminds you to rate the night before, until the morning after night 30.");
+    }));
+    if (hatWerte) {
+      var loeschen = knopfMit("Clear my notebook", "text-link", function () {
+        if (!loeschen.dataset.sicher) { loeschen.dataset.sicher = "1"; loeschen.textContent = "Tap again to clear all entries"; return; }
+        notizLoeschen(plan);
+        sd.notizNacht = 0;
+        naechteNeu(".notiz-frage");
+      });
+      fuss.appendChild(loeschen);
+    }
+    return fuss;
+  }
+  /* Die Timeline: 30 Spalten. Oben Marken (heute, Nachbestellen, Nacht 30), dann je Nacht ein Balken mit der Zahl aus dem Notizbuch,
+     Nächte bis gestern lassen sich antippen. Darunter die Nummern und die 4 Wochen mit ihrem Habit */
+  function zeitleiste(plan, n, d) {
+    var box = element("div", "zl"), marken = element("div", "zl-marken"), naechte = element("div", "zl-naechte"), zahlen = element("div", "zl-zahlen"), wochen = element("ol", "zl-wochen");
+    var start = ausIso(plan.s), letzte = letzteBewertbar(n), kauf = kaufNacht(plan), gewaehlt = letzte >= 1 ? notizNacht(n) : 0;
+    marken.setAttribute("aria-hidden", "true");
+    zahlen.setAttribute("aria-hidden", "true");
+    naechte.setAttribute("role", "group");
+    naechte.setAttribute("aria-label", "Your notebook, night by night");
+    function marke(nr, inhalt, klasse) {
+      var m = element("span", "zl-marke " + klasse);
+      m.style.gridColumn = String(nr);
+      if (typeof inhalt === "string") m.textContent = inhalt; else m.appendChild(inhalt);
+      marken.appendChild(m);
+    }
+    if (n >= 1 && n <= 30) marke(n, "Tonight", "heute");
+    if (kauf && kauf !== n) marke(kauf, ikon("flasche"), "kauf");
+    if (n !== 30) marke(30, ikon("h-flagge"), "ziel");
+    for (var i = 1; i <= 30; i++) (function (i) {
+      var wert = d[i], klasse = "zl-nacht" + (i < n ? " vorbei" : i === n ? " heute" : " spaeter") + (wert !== undefined ? " hat" : "") + (i === gewaehlt ? " gewaehlt" : "");
+      var zelle = i <= letzte ? knopfMit("", klasse, function () { sd.notizNacht = i; naechteNeu(".notiz-skala button"); }) : element("span", klasse);
+      zelle.style.setProperty("--wert", wert !== undefined ? wert : 0);
+      zelle.setAttribute("aria-label", "Night " + i + ", " + tagKurz(plusTage(start, i - 1)) + (wert !== undefined ? ": " + wert + " of 10" : i <= letzte ? ": not rated yet" : i === n ? ": tonight" : ""));
+      if (i > letzte) zelle.setAttribute("role", "img");
+      zelle.appendChild(element("span", "zl-balken"));
+      naechte.appendChild(zelle);
+      if ([1, 8, 15, 22, 30].indexOf(i) > -1) { var nr = element("span", "zl-zahl", String(i)); nr.style.gridColumn = String(i); zahlen.appendChild(nr); }
+    })(i);
+    WOCHEN.forEach(function (w, j) {
+      var h = j ? HABITS[plan.g[j - 1].i] : null, li = element("li", "zl-woche " + (n > w[1] ? "fertig" : n >= w[0] ? "jetzt" : "spaeter")), text = element("span");
+      li.style.gridColumn = w[0] + " / " + (w[1] + 1);
+      li.appendChild(ikon(h ? h.ikon : "pipette"));
+      text.append(element("b", null, "Week " + (j + 1)), element("span", null, h ? "+ " + h.kurz : "Your routine"));
+      li.appendChild(text);
+      wochen.appendChild(li);
     });
-    return ol;
+    box.append(marken, naechte, zahlen, wochen);
+    return box;
+  }
+  /* Nach einer Zahl im Notizbuch: Nächte, Wochen und Rückblick neu, ohne die Seite zu verschieben. fokus: Selektor für den Fokus danach */
+  function naechteNeu(fokus) {
+    var plan = sd.plan, n = planStand(plan).nacht, d = notizbuch(plan);
+    [[".ps-naechte", function () { return naechteBereich(plan, n); }], [".wk-raster", function () { return wochenKarten(plan, n, d); }], [".bilanz", function () { return bilanzKarte(plan, n, d); }]].forEach(function (x) {
+      var alt = planSeite.querySelector(x[0]);
+      if (alt) alt.replaceWith(x[1]());
+    });
+    var ziel = fokus && planSeite.querySelector(fokus);
+    if (ziel) { if (!ziel.matches("button")) ziel.tabIndex = -1; ziel.focus({ preventScroll: true }); }
+  }
+  /* Nachbestellen am Bestelldatum: etwa 7 Nächte vor der leeren Flasche */
+  function kaufKarte(plan) {
+    var karte = element("section", "kauf-karte"), text = element("div"), datum = plan.n ? ausIso(plan.n) : null, k = kaufNacht(plan);
+    karte.setAttribute("aria-label", "Order your next bottle");
+    text.append(augenbraue(datum ? tagKurz(datum) + (k ? ", night " + k : "") : "Your next bottle"), element("h2", "ps-klein", "Order your next bottle"),
+      element("p", "kk-text", datum ? "About 7 nights left in your bottle by then. Delivery takes 3 to 4 days, so your next bottle arrives in time." : "One bottle lasts 30 nights at 1 mL."));
+    text.append.apply(text, kaufZeilen());
+    karte.append(kaufBild(), text);
+    return karte;
+  }
+  /* Nach Nacht 30: dein Rückblick aus dem Notizbuch, die 4 Wochen als Säulen. Vorher nur, wann er öffnet */
+  function bilanzKarte(plan, n, d) {
+    var karte = element("section", "bilanz"), kopf = element("div", "wk-kopf"), symbol = element("span", "wk-ikon"), titel = element("h2", "ps-klein", "Your 30-night review"), werte = alleWerte(d);
+    titel.id = "bilanz-titel";
+    karte.setAttribute("aria-labelledby", "bilanz-titel");
+    symbol.appendChild(ikon("h-flagge"));
+    kopf.append(symbol, augenbraue("After night 30"));
+    karte.append(kopf, titel);
+    if (n <= 30) {
+      karte.appendChild(element("p", "bilanz-text", "Your notebook turns into your review here: your nights week by week, your first week next to your last. Opens on " + datumText(plusTage(ausIso(plan.s), 30)) + "."));
+      return karte;
+    }
+    if (!werte.length) {
+      karte.append(element("p", "bilanz-text", "Your notebook on this phone is empty. You can still talk your 30 nights through with the assistant, or build a new plan."), bilanzKnoepfe());
+      return karte;
+    }
+    var schnitte = WOCHEN.map(function (w, j) { return schnitt(wochenWerte(d, j + 1)); }), saeulen = element("div", "bilanz-saeulen"), erste = schnitte[0], vierte = schnitte[3], satz;
+    schnitte.forEach(function (s, j) {
+      var spalte = element("div", "bilanz-saeule" + (s === null ? " leer" : "")), balken = element("span", "bilanz-balken");
+      balken.style.setProperty("--wert", s === null ? 0 : s);
+      spalte.append(balken, element("b", null, s === null ? "no entries" : String(s)), element("small", null, "Week " + (j + 1)));
+      saeulen.appendChild(spalte);
+    });
+    if (erste !== null && vierte !== null) {
+      var diff = Math.round((vierte - erste) * 10) / 10;
+      satz = "Week 1: " + erste + " on average. Week 4: " + vierte + ". " + (diff >= 0.5 ? "That's " + diff + " points more than in your first week." : diff <= -0.5 ? "That's " + (-diff) + " points less than in your first week." : "About the same as your first week.");
+    } else satz = "Your average over " + naechteText(werte.length) + ": " + schnitt(werte) + ".";
+    var beste = Object.keys(d).sort(function (x, y) { return d[y] - d[x] || x - y; })[0];
+    karte.append(saeulen, element("p", "bilanz-text", satz + " Your best night: night " + beste + ", " + d[beste] + " of 10."));
+    if (erste !== null && vierte !== null && vierte < erste) karte.appendChild(element("p", "bilanz-text", "Sleepwhale's advice: “Discuss persistent or changing sleep problems with your healthcare provider.”"));
+    karte.appendChild(bilanzKnoepfe());
+    return karte;
+  }
+  function bilanzKnoepfe() {
+    var k = element("div", "plan-knoepfe"), chat = element("button", "knopf marke", "Talk it through with the assistant");
+    chat.type = "button";
+    chat.dataset.chatFrage = "What does my notebook tell me about my 30 nights, and which habits should I keep?";
+    k.append(chat, knopfMit("Build a new plan", "text-link", function () { zumHub(neuStarten); }));
+    return k;
   }
   var DISCLAIMER = "Everyone sleeps differently — these milestones are moments to check in, not promises of specific results.";
   var FDA = "These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.";
@@ -3215,94 +3347,74 @@ body.chat-offen .chat-fenster { display: flex; }
     balken.setAttribute("aria-valuemax", "30");
     balken.appendChild(element("span"));
     balkenSetzen(balken, st.stand);
-    links.append(knopfMit("Change my plan", "text-link", function () { aendern(1); }), knopfMit("Build a new plan", "text-link", neuStarten));
+    links.append(knopfMit("Change my times", "text-link", bauenStarten), knopfMit("Build a new plan", "text-link", neuStarten));
     box.append(augenbraue("Your 30-night sleep plan"), element("h2", null, st.titel), balken, linkMit("Open my plan", "knopf marke", planAnker(plan)), links);
     sdTeil("koerper").replaceChildren(box);
     sdTeil("fuss").replaceChildren();
   }
-  /* Landingpage bei kaputtem oder unvollständigem Link */
+  /* Landingpage bei kaputtem, unvollständigem oder altem Link (vor Version 2) */
   var planSeite = document.querySelector("[data-plan-seite]");
   function planFehlerZeigen() {
     var band = element("section", "plan-band ps-held ps-fehler"), text = element("div", "ps-held-text");
-    text.append(augenbraue("Your 30-night sleep plan"), element("h1", null, "This plan link is incomplete"), element("p", "ps-unter", "Just build your plan again. It only takes a few minutes."),
+    text.append(augenbraue("Your 30-night sleep plan"), element("h1", null, "This plan link doesn't open anymore"), element("p", "ps-unter", "It may be from an earlier version of your Sleep Guide. Just build your plan again, it only takes a few minutes."),
       knopfMit("Build my plan again", "knopf marke", function () { zumHub(neuStarten); }));
     band.appendChild(text);
     planSeite.replaceChildren(band);
   }
-  /* Die Landingpage: Kopf mit Stand und heute Abend, Bewertung, Roadmap, Ergebnis, Plan B, Plan behalten, Hilfe */
+  /* Die Landingpage: Kopf mit Stand und deinem Tag, Plan speichern, deine 30 Nächte (Notizbuch und Timeline), die 4 Wochen, Nachbestellen, Rückblick,
+     dann Ergebnis, Plan behalten und Fragen. Wo der Kunde steht, kommt aus dem Startdatum */
   function planSeiteZeigen() {
-    var plan = sd.plan, s = ausIso(plan.s), st = planStand(plan), stationen = stationenVon(plan), naechste = stationen[aktuelleStation(stationen, st.nacht) + 1];
-    /* 1 Kopf: links Stand, die Woche von heute, der 30-Nächte-Streifen und die nächste Station, rechts heute Abend */
+    var plan = sd.plan, s = ausIso(plan.s), st = planStand(plan), n = st.nacht, w = wocheVon(n), f = planFokus(plan), d = notizbuch(plan);
     var held = element("section", "plan-band ps-held"), heldText = element("div", "ps-held-text");
-    var phase = st.nacht >= 1 && st.nacht <= 30 ? stationen.filter(function (x) { return x.art === "phase" && x.nacht <= st.nacht; }).pop() : null;
     heldText.appendChild(augenbraue("Your 30-night sleep plan"));
     if (linkName) heldText.appendChild(element("p", "ps-hallo", "Hi " + linkName + ","));
-    heldText.append(element("h1", null, st.titel), element("p", "ps-unter", (plan.f ? "Focus: " + saeuleName(plan.f) + "." : "Keep your nights steady.") + " " + kurzDatum(s) + " to " + kurzDatum(plusTage(s, 29)) + "."));
-    if (phase) {
-      var woche = element("div", "ps-woche");
-      woche.append(element("p", "ps-woche-etikett", "This week, " + phase.augenbraue.toLowerCase()), element("p", "ps-woche-titel", phase.titel));
+    heldText.append(element("h1", null, st.titel), element("p", "ps-unter", (f ? "Focus: " + saeuleName(f) + "." : "Keep your nights steady.") + " " + kurzDatum(s) + " to " + kurzDatum(plusTage(s, 29)) + "."));
+    if (w >= 1 && w <= 4) {
+      var woche = element("div", "ps-woche"), h = w > 1 ? HABITS[plan.g[w - 2].i] : null;
+      woche.append(element("p", "ps-woche-etikett", "This week, nights " + WOCHEN[w - 1][0] + " to " + WOCHEN[w - 1][1]), element("p", "ps-woche-titel", h ? "New: " + h.titel : "Your Sleepwhale routine"));
       heldText.appendChild(woche);
     }
-    heldText.appendChild(nachtStreifen(st));
-    /* Die nächste Station steht links unter dem Streifen, so sind beide Spalten etwa gleich hoch */
-    if (naechste) {
-      var weiter = element("p", "ps-naechstes");
-      weiter.append("Next on " + tagKurz(naechste.datum) + ": ", element("b", null, naechste.titel));
-      heldText.appendChild(weiter);
-    }
-    held.append(heldText, heuteTafel(plan));
-    /* 1b Plan speichern, direkt unter dem Kopf */
+    heldText.appendChild(element("p", "ps-einleitung", einleitungText(plan)));
+    held.append(heldText, heuteTafel(plan, n));
     var teile = [held, speicherKarte(plan)];
-    /* 2 Hinweis nach dem Ändern, Bewertung aus ?check= */
-    if (sd.geaendert) teile.push(element("p", "plan-hinweis", "Already added the dates? Delete the old ones in your calendar and add your plan again."));
-    if (sd.check) teile.push(checkKarte(plan, sd.check));
-    /* 3 Roadmap */
-    var weg = element("section", "ps-weg");
-    weg.append(augenbraue("Your roadmap"), element("h2", null, "30 nights, step by step"), roadmapListe(plan), element("p", "plan-quelle", "“" + DISCLAIMER + "”"));
-    /* 4 bis 7 unter der Roadmap als Raster mit 2 Spalten: Ergebnis mit vier kleinen Ringen, Plan B, Plan behalten, Fragen */
+    if (sd.geaendert) teile.push(element("p", "plan-hinweis", "Changed your times? If you added reminders, delete the old ones in your calendar and add them again."));
+    /* Die 4 Wochen mit Hinweis, woher die Texte kommen */
+    var wochen = element("section", "ps-wochen"), wTitel = element("h2", null, "One new habit per week");
+    wTitel.id = "ps-wochen-titel";
+    wochen.setAttribute("aria-labelledby", "ps-wochen-titel");
+    wochen.append(augenbraue("Your 4 weeks"), wTitel, wochenKarten(plan, n, d),
+      element("p", "plan-quelle", (plan.k ? "Your habits were chosen and written by ChatGPT from your answers. " : "Your habits were chosen from your answers. ") + "Not medical advice. Sleepwhale: “" + DISCLAIMER + "”"));
+    /* Unten als Raster: Ergebnis links, Plan behalten und Fragen rechts */
     var kurz = element("section", "plan-kurz"), ergebnis = element("details", "plan-ergebnis"), ergebnisInhalt = element("div");
-    ergebnisInhalt.append(ergebnisZeilen(plan), ergebnisBalken(plan), element("p", "ergebnis-satz", fokusSatz(plan.f)));
+    ergebnisInhalt.append(ergebnisZeilen(plan), ergebnisBalken(plan), element("p", "ergebnis-satz", fokusSatz(f)));
     ergebnis.append(element("summary", "text-link", "See your results"), ergebnisInhalt);
     kurz.append(element("h2", "ps-klein", "Your sleep results"), ringeKompakt(plan), ergebnis);
-    var planB = element("section"), bText = element("p", "plan-b");
-    bText.append(WENN[plan.h] + " " + plan.b + " ", knopfMit("Change", "text-link", function () { zumHub(function () { aendern(3); }); }));
-    planB.append(element("h2", "ps-klein", "Your Plan B"), bText);
-    /* Plan behalten: PDF, ändern, neu (die Mail kommt über „Save my plan“) */
-    var behalten = element("section"), aktionen = element("div", "plan-knoepfe");
-    aktionen.append(knopfMit("Save as PDF", "knopf hell marke", planDrucken),
-      knopfMit("Change habit", "text-link", function () { zumHub(function () { aendern(2); }); }), knopfMit("Build a new plan", "text-link", function () { zumHub(neuStarten); }));
+    var rechts = element("div", "ps-mehr-rechts"), behalten = element("section"), aktionen = element("div", "plan-knoepfe");
+    aktionen.append(knopfMit("Save as PDF", "knopf hell marke", planDrucken), knopfMit("Change my times", "text-link", function () { zumHub(bauenStarten); }), knopfMit("Build a new plan", "text-link", function () { zumHub(neuStarten); }));
     behalten.append(element("h2", "ps-klein", "Keep your plan"), aktionen);
-    /* Fragen und Quelle */
     var hilfe = element("section"), hk = element("div", "plan-knoepfe");
     hk.append(knopfMit("Ask the assistant", "knopf hell marke", oeffnen), linkMit("Or email our team", "text-link", "mailto:hello@sleepwhale.com?subject=Question%20about%20my%20sleep%20plan"));
     hilfe.append(element("h2", "ps-klein", "Questions about your plan?"), hk);
-    var quelle = "Your plan uses the questions and tips from Sleepwhale's own sleep quiz and website. It doesn't replace medical advice.";
+    var quelle = "Your plan uses Sleepwhale's own sleep quiz and everyday sleep habits. It doesn't replace medical advice.";
     if (plan.r === "gesundheit") quelle += " Sleepwhale: “If you take medications or have an ongoing health condition, however, please check with your healthcare provider before making any new supplement like Sleep Drops a part of your nightly routine.”";
     if (plan.r === "hormone") quelle += " Sleepwhale: “Tell your healthcare provider how broken sleep affects you, even if you’ve sought advice before.”";
     hilfe.appendChild(element("p", "plan-quelle", quelle));
+    rechts.append(behalten, hilfe);
     var mehr = element("div", "ps-mehr");
-    mehr.append(kurz, planB, behalten, hilfe);
-    planSeite.replaceChildren.apply(planSeite, teile.concat([weg, mehr]));
+    mehr.append(kurz, rechts);
+    planSeite.replaceChildren.apply(planSeite, teile.concat([naechteBereich(plan, n), wochen, kaufKarte(plan), bilanzKarte(plan, n, d), mehr]));
   }
-  staerkeHoerer.push(function () { if (sd.plan && planSeite.querySelector(".roadmap-plan")) planSeiteZeigen(); });
-  /* „Change“: zurück zum Schritt im Bauen. Aus einem Link entstehen die festen Bausteine neu, die gewählte Gewohnheit zuerst */
-  function aendern(schritt) {
-    var plan = sd.plan;
-    sd.wahl = { t: plan.t, g: plan.g, b: plan.b, reihe: sd.wahl && sd.wahl.reihe.indexOf(plan.g) > -1 ? sd.wahl.reihe : gewohnheitReihe(sd.antworten, plan.f, plan.g) };
-    sd.check = 0;
-    sd.bauSchritt = schritt;
-    bauenRendern(true);
-  }
+  staerkeHoerer.push(function () { if (sd.plan && planSeite.querySelector(".kauf-karte")) planSeiteZeigen(); });
   /* Plan speichern: auf sleepwhale.com legt Klaviyos Onsite-Skript (klaviyo.js, öffentlicher Schlüssel) das Profil über die E-Mail direkt aus dem Browser an
      oder ergänzt es. Es schreibt nur Eigenschaften, Kennungen lassen sich clientseitig nicht ändern. Die Mails verlinken
      #plan={{ person|lookup:'sleep_plan_code' }}&saved=1. Datensparsam nur diese Felder: der Code enthält die Quiz-Antworten codiert, nicht verschlüsselt,
-     Fokus, Antworten und Plan B gehen nicht einzeln mit. Ohne klaviyo.js (Prototyp, öffentliche Demo) wird nur simuliert: false */
+     das Notizbuch bleibt auf dem Gerät. Ohne klaviyo.js (Prototyp, öffentliche Demo) wird nur simuliert: false */
   function planSpeichern(email, plan) {
-    var code = planKodieren(plan);
-    var daten = { email: email, sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_habit: gewohnheitText(plan.g, plan.t)[0] };
+    var code = planKodieren(plan), habits = plan.g.map(function (x) { return HABITS[x.i].titel; });
+    var daten = { email: email, sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_wake_time: plan.u, sleep_habits: habits };
     if (window.klaviyo && typeof window.klaviyo.identify === "function" && typeof window.klaviyo.track === "function") {
       window.klaviyo.identify(daten);
-      window.klaviyo.track("Sleep Plan Created", { plan_code: code, plan_url: planLink(plan) + "&saved=1", start: plan.s, bedtime: plan.t, habit: daten.sleep_habit, reorder_date: plan.n });
+      window.klaviyo.track("Sleep Plan Created", { plan_code: code, plan_url: planLink(plan) + "&saved=1", start: plan.s, bedtime: plan.t, wake_time: plan.u, habits: habits, written_by_ai: !!plan.k, reorder_date: plan.n });
       return true;
     }
     return false;
@@ -3325,13 +3437,13 @@ body.chat-offen .chat-fenster { display: flex; }
       feld.append(element("span", null, "Email you ordered with"), eingabe);
       box.type = "checkbox";
       box.required = true;
-      hakenText.append("Email me my sleep plan and check-ins. Sleepwhale saves my plan (my quiz answers, bedtime and habit) for this. I can unsubscribe anytime. ", linkMit("Privacy Policy", "text-link", "https://sleepwhale.com/policies/privacy-policy", true));
+      hakenText.append("Email me my sleep plan. Sleepwhale saves my plan (my quiz answers, times and habits) for this. I can unsubscribe anytime. ", linkMit("Privacy Policy", "text-link", "https://sleepwhale.com/policies/privacy-policy", true));
       haken.append(box, hakenText);
       meldung.id = "sp-meldung";
       meldung.setAttribute("aria-live", "polite");
       senden.type = "submit";
       /* [prüfen] Einwilligungstext von Sleepwhale freigeben lassen (Angaben zum Schlaf, z. B. Washington My Health My Data Act) */
-      form.append(feld, document.createComment(" [prüfen] Einwilligungstext von Sleepwhale freigeben lassen (Angaben zum Schlaf, z. B. Washington My Health My Data Act) "), haken, senden, meldung, element("p", "sp-fuss", "Nothing is saved unless you tick the box."));
+      form.append(feld, document.createComment(" [prüfen] Einwilligungstext von Sleepwhale freigeben lassen (Angaben zum Schlaf, z. B. Washington My Health My Data Act) "), haken, senden, meldung, element("p", "sp-fuss", "Sleepwhale saves nothing unless you tick the box."));
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         var email = eingabe.value.trim(), ok = EMAIL_MUSTER.test(email), falsch = !ok ? eingabe : !box.checked ? box : null;
@@ -3348,13 +3460,13 @@ body.chat-offen .chat-fenster { display: flex; }
         erfolgZeigen();
       });
       karte.className = "plan-speichern";
-      karte.replaceChildren(augenbraue("Save your plan"), element("h2", null, "Get your plan in your inbox"), element("p", "sp-text", "Save it once and every email from us links to your own plan, including your check-ins at night 7, 14 and 30."), form);
+      karte.replaceChildren(augenbraue("Save your plan"), element("h2", null, "Get your plan in your inbox"), element("p", "sp-text", "Save it once and every email from us links to your own plan, with your habit for each week."), form);
       if (fokus) eingabe.focus();
     }
     function erfolgZeigen() {
       var g = sd.gespeichert, titel = element("h3", null, "Your plan is saved"), satz = element("p", "sp-text");
       titel.tabIndex = -1;
-      satz.append("We'll send the link to ", element("b", null, g.email), ", with your check-ins at night 7, 14 and 30.");
+      satz.append("We'll send the link to ", element("b", null, g.email), ", with your habit for each week.");
       karte.replaceChildren(augenbraue("Save your plan"), titel, satz, knopfMit("Use a different email", "text-link", function () { formZeigen(true); }));
       if (!g.live) karte.appendChild(element("p", "sp-fuss", "Prototype: nothing was sent. On sleepwhale.com this saves the plan to the customer's Klaviyo profile."));
       if (karte.isConnected) titel.focus();
@@ -3370,110 +3482,84 @@ body.chat-offen .chat-fenster { display: flex; }
     else formZeigen(false);
     return karte;
   }
-  /* Neu bewerten in Nacht 14 und 30: dieselbe Frage wie im Quiz, Vergleich mit dem Start. Gespeichert wird nichts */
-  function checkKarte(plan, tag) {
-    var karte = element("section", "plan-check"), raster = element("div", "quiz-antworten"), ergebnis = element("div", "plan-check-ergebnis");
-    karte.append(element("p", "plan-zusatz-art", "Night " + tag + ", rate again"), element("h3", null, "How’d you sleep last night?"));
-    raster.setAttribute("role", "group");
-    raster.setAttribute("aria-label", "How’d you sleep last night?");
-    [1, 2, 3, 4, 5].forEach(function (z) {
-      var b = knopfMit(NACHT_TEXT[z], "quiz-antwort ohne-ikon", function () {
-        Array.prototype.forEach.call(raster.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
-        var teile = [element("p", "plan-check-zahlen", "Before your plan: “" + NACHT_TEXT[plan.w] + "”. Today: “" + NACHT_TEXT[z] + "”.")];
-        if (z > plan.w) teile.push(element("p", null, "Good to hear. Keep your bedtime, your drops and your habit."));
-        else if (z === plan.w) teile.push(element("p", null, "Everyone sleeps differently. Sleepwhale says judging whether your sleep is improving “can take longer, sometimes up to several weeks.”" + (tag === 14 ? " Stay with your plan and rate again on night 30." : "")));
-        else {
-          var satz = element("p", null, "Listen to your body. Sleepwhale's advice: “Discuss persistent or changing sleep problems with your healthcare provider.” ");
-          satz.appendChild(linkMit("Email our team", "text-link", "mailto:hello@sleepwhale.com?subject=Question%20about%20my%20sleep%20plan"));
-          teile.push(satz);
-        }
-        if (tag === 30) { var k = kaufKnoepfe(); k.appendChild(knopfMit("Build a new plan", "text-link", function () { zumHub(neuStarten); })); teile.push(k); }
-        ergebnis.replaceChildren.apply(ergebnis, teile);
-      });
-      b.setAttribute("aria-pressed", "false");
-      raster.appendChild(b);
-    });
-    karte.append(raster, ergebnis);
-    return karte;
+  /* Termine des Plans als Serie zur selben Uhrzeit (min am Tag), von Tag „von“ bis „bis“ (ab Start gezählt), frühestens ab dem nächsten Termin. Vorbei: null */
+  function planSerie(plan, von, bis, min, titel, text) {
+    var s = ausIso(plan.s), jetzt = new Date(), tag = Math.max(von, tageSeit(plan.s));
+    function um(t) { var d = plusTage(s, t); d.setHours(Math.floor(tagMin(min) / 60), tagMin(min) % 60, 0, 0); return d; }
+    var d = um(tag);
+    if (d <= jetzt) d = um(++tag);
+    return tag <= bis ? { titel: titel, text: text, start: d, anzahl: bis - tag + 1 } : null;
   }
-  /* Uhrzeit der Gewohnheit im Kalender, in Minuten zu Licht aus: wie im Abend, spätestens mit den Drops.
-     „Earlier in the evening“ 2 Stunden vorher, „During the night“ mit den Drops */
-  function gewohnheitMin(g) {
-    var z = HABIT_ZEIT[g];
-    if (!z) return -60;
-    if (z.min === null) return z.etikett === "Earlier in the evening" ? -120 : -15;
-    return Math.min(z.min, -10);
+  /* Sleepwhale-Erinnerungen, sichtbar im Tagesplan: die Drops jeden Abend bis Nacht 30 und das Nachbestellen */
+  function sleepwhaleTermine(plan) {
+    var bett = minutenAus(plan.t), liste = [], drops = planSerie(plan, 0, 29, bett - 10, "Sleepwhale: take your Sleep Drops", "Shake well, 1 mL under your tongue, hold, then swallow. Lights out at " + uhrText(bett) + ". Your plan: " + planLink(plan));
+    if (drops) { drops.name = "Your drops, every evening"; liste.push(drops); }
+    if (plan.n && ausIso(plan.n) >= heute0()) liste.push({ name: "Reorder", titel: "Sleepwhale: reorder your Sleep Drops", text: "About 7 nights left in your bottle. Reorder now: " + hubAdresse("#drops-reorder"), start: ausIso(plan.n), ganztags: true, anzahl: 1 });
+    return liste;
   }
-  /* Alle Termine des Plans, einer je Station (kal): Drops jeden Abend, Serving-Check an Nacht 7, die Gewohnheit jeden Abend ab Nacht 8, Bewerten nach Nacht 14,
-     „Watch closely“ in den Nächten 15 bis 21, Start von Woche 4, Bewerten nach Nacht 30, Nachbestellen. Was vorbei ist, fällt weg, Serien beginnen frühestens heute */
-  function planTermine(plan) {
-    var jetzt = new Date(), s = ausIso(plan.s), bett = minutenAus(plan.t), link = planLink(plan), gw = gewohnheitText(plan.g, plan.t), morgens = plan.f !== "wind", liste = [];
-    function um(tag, min) { var d = plusTage(s, tag); d.setHours(Math.floor(tagMin(min) / 60), tagMin(min) % 60, 0, 0); return d; }
-    /* Jeden Tag von Tag „von“ bis „bis“ (ab Start gezählt) zur selben Uhrzeit, ab dem nächsten Termin */
-    function serie(kal, name, titel, text, von, bis, min) {
-      var tag = Math.max(von, tageSeit(plan.s)), d = um(tag, min);
-      if (d <= jetzt) d = um(++tag, min);
-      if (tag <= bis) liste.push({ kal: kal, name: name, titel: titel, text: text, start: d, anzahl: bis - tag + 1 });
-    }
-    function einmal(kal, name, titel, text, tag, min) {
-      var d = um(tag, min);
-      if (d > jetzt) liste.push({ kal: kal, name: name, titel: titel, text: text, start: d, anzahl: 1 });
-    }
-    serie("drops", "Your drops, every evening", "Sleepwhale: take your Sleep Drops", "Shake well, 1 mL under your tongue, hold, then swallow. Lights out at " + uhrText(bett) + ". Your plan: " + link, 0, 29, bett - 10);
-    einmal("check7", "Check your serving", "Sleepwhale: check your serving", "One week in. Three questions show whether to stay at your serving or fine-tune by 0.25 mL: " + hubAdresse("#drops-n7") + " Your plan: " + link, 6, bett - 60);
-    serie("gewohnheit", "Your habit, every evening", "Sleepwhale: " + gw[0], gw[1] + " Your plan: " + link, 7, 29, bett + gewohnheitMin(plan.g));
-    einmal("check14", "Rate on night 14", "Sleepwhale: rate your sleep", "How’d you sleep last night? Tap your answer: " + planLink(plan, 14) + ". From tonight, nights 15 to 21: " + BEOBACHTUNG[plan.f], 14, 540);
-    serie("beobachten", "Watch closely, nights 15 to 21", "Sleepwhale: watch closely", BEOBACHTUNG[plan.f] + " Your plan: " + link, morgens ? 15 : 14, morgens ? 21 : 20, morgens ? 540 : bett - 20);
-    einmal("festigen", "Nights 22 to 30", "Sleepwhale sleep plan, nights 22 to 30: make it stick", "Ritual and habit continue. On " + datumText(plusTage(s, 30)) + " you rate one last time. Your plan: " + link, 21, bett - 60);
-    einmal("check30", "Rate on night 30", "Sleepwhale: rate your 30 nights", "How’d you sleep last night? Tap your answer and see what changed: " + planLink(plan, 30), 30, 540);
-    if (plan.n && ausIso(plan.n) >= heute0()) liste.push({ kal: "kauf", name: "Reorder", titel: "Sleepwhale: reorder your Sleep Drops", text: "About 7 nights left in your bottle. Reorder now: " + hubAdresse("#drops-reorder"), start: ausIso(plan.n), ganztags: true, anzahl: 1 });
-    return liste.sort(function (a, b) { return a.start - b.start; });
+  /* Dezente Erinnerungen, nur über den kleinen Link: ein Habit ab seiner Woche bis Nacht 30, das Notizbuch jeden Morgen */
+  function habitTermin(plan, j) {
+    var h = HABITS[plan.g[j].i], von = WOCHEN[j + 1][0] - 1, t = planSerie(plan, von, h.teil === "morgen" ? 30 : 29, zeileMin({ teil: h.teil, min: h.min }, plan), "Sleepwhale sleep plan: " + h.titel, h.tun + ". Your plan: " + planLink(plan));
+    if (t) t.name = h.titel;
+    return t;
   }
-  function planKalender(plan) {
-    var termine = planTermine(plan), text = kalDialog.querySelector("[data-kal-text]"), vorschau = kalDialog.querySelector("[data-kal-vorschau]"), knoepfe = kalDialog.querySelector("[data-kal-knoepfe]");
-    text.textContent = termine.length + (termine.length === 1 ? " date goes" : " dates go") + " into your calendar. Each one leads back to your plan.";
+  function notizTermin(plan) {
+    var t = planSerie(plan, 1, 30, minutenAus(plan.u) + 15, "Sleepwhale sleep plan: rate last night", "How was last night, from 0 to 10? Note it in your plan: " + planLink(plan));
+    if (t) t.name = "Your notebook, every morning";
+    return t;
+  }
+  /* Der Kalender-Dialog für eine Liste von Terminen: Kalenderdatei (iPhone, Mac) und Google Kalender einzeln */
+  function kalenderPlan(termine, satz) {
+    termine = termine.filter(Boolean);
+    var text = kalDialog.querySelector("[data-kal-text]"), vorschau = kalDialog.querySelector("[data-kal-vorschau]"), knoepfe = kalDialog.querySelector("[data-kal-knoepfe]");
+    text.textContent = termine.length ? satz : "Nothing left to add: these dates are over.";
     kalDialog.querySelector("[data-kal-felder]").replaceChildren();
     vorschau.replaceChildren.apply(vorschau, termine.map(function (t) {
       var li = element("li");
       li.append(element("b", null, tagKurz(t.start)), " " + terminTitel(t) + ", " + terminWann(t));
       return li;
     }));
-    var ics = knopfMit(istAndroid ? "Use another calendar" : "Add all to my calendar", istAndroid ? "knopf hell" : "knopf gold", function () { kalenderDatei(termine, "sleepwhale-plan"); kalDialog.close(); });
+    var ics = knopfMit(istAndroid ? "Use another calendar" : "Add to my calendar", istAndroid ? "knopf hell" : "knopf gold", function () { kalenderDatei(termine, "sleepwhale-plan"); kalDialog.close(); });
     var google = element("div", "kal-google");
-    google.appendChild(element("p", null, "Google Calendar, one by one:"));
+    google.appendChild(element("p", null, termine.length > 1 ? "Google Calendar, one by one:" : "Google Calendar:"));
     termine.forEach(function (t) { google.appendChild(knopfMit(t.name, istAndroid ? "knopf gold" : "knopf hell", function () { window.open(googleLink(t), "_blank", "noopener"); })); });
     knoepfe.replaceChildren.apply(knoepfe, termine.length ? (istAndroid ? [google, ics] : [ics, google]) : []);
     kalDialog.showModal();
   }
-  /* Als PDF speichern: ein eigenes Druck-Dokument, US Letter, 2 Seiten, ohne Fotos und Knöpfe. Seite 1 dein Ergebnis, Seite 2 Abend und Roadmap */
+  function planKalender(plan) { kalenderPlan(sleepwhaleTermine(plan), "Every evening, 10 minutes before lights out, your calendar reminds you to take your drops" + (plan.n ? ", plus one reminder to reorder in time." : ".") + " Each one leads back to your plan."); }
+  /* Als PDF speichern: ein eigenes Druck-Dokument, US Letter, 2 Seiten, ohne Fotos und Knöpfe. Seite 1 dein Ergebnis, Seite 2 dein Tag, die 4 Wochen und das Notizbuch */
   function planDrucken() {
     var plan = sd.plan;
     if (!plan) return;
-    var s = ausIso(plan.s), druck = element("div"), eins = element("section", "druck-seite"), zwei = element("section", "druck-seite"), logo = element("img");
+    var s = ausIso(plan.s), d = notizbuch(plan), druck = element("div"), eins = element("section", "druck-seite"), zwei = element("section", "druck-seite"), logo = element("img");
     druck.id = "plan-druck";
     logo.className = "druck-logo";
     logo.src = "bilder/sleepwhale-logo.svg";
     logo.alt = "Sleepwhale";
     eins.append(logo, augenbraue("Your Sleep Guide"), element("h1", null, "Your sleep results and 30-night sleep plan"), element("p", "druck-datum", "Created on " + datumText(new Date()) + (linkName ? " for " + linkName : "")),
-      element("h2", null, "Your sleep results"), ergebnisZeilen(plan), ergebnisBalken(plan), element("p", "ergebnis-satz", fokusSatz(plan.f)),
+      element("h2", null, "Your sleep results"), ergebnisZeilen(plan), ergebnisBalken(plan), element("p", "ergebnis-satz", fokusSatz(planFokus(plan))),
       element("p", "druck-klein", "Questions from Sleepwhale's own quizzes on sleepwhale.com. This is not a medical assessment."));
-    /* Die Roadmap als Tabelle: Datum, Schritt, was zu tun ist. Die Zeile zum Nachbestellen (ohne Datum: das Ziel) trägt die Preise */
+    /* Die 4 Wochen als Tabelle: Wochen, Nächte mit Datum, Habit und der Text dazu */
     var tabelle = element("table", "druck-weg"), thead = element("thead"), kopfZeile = element("tr"), tbody = element("tbody");
-    ["Date", "Step", "What to do"].forEach(function (t) { kopfZeile.appendChild(element("th", null, t)); });
+    ["Week", "Habit", "What to do"].forEach(function (t) { kopfZeile.appendChild(element("th", null, t)); });
     thead.appendChild(kopfZeile);
-    stationenVon(plan).forEach(function (x) {
-      var tr = element("tr"), wann = element("td"), tun = element("td"), texte = x.tun.slice();
-      wann.append(element("b", null, tagKurz(x.datum)), element("span", null, x.nachtText));
-      if (x.n7) texte.push("The serving check shows whether to stay at 1 mL or fine-tune by 0.25 mL.");
-      if (x.klein) texte.push(x.klein);
-      if (x.art === "kauf" || (x.art === "ziel" && !plan.n)) texte.push(preisSatz());
-      texte.forEach(function (t) { tun.appendChild(element("p", null, t)); });
-      tr.append(wann, element("td", "druck-fokus", x.titel), tun);
+    WOCHEN.forEach(function (w, j) {
+      var tr = element("tr"), wann = element("td");
+      wann.append(element("b", null, "Week " + (j + 1)), element("span", null, "Nights " + w[0] + " to " + w[1]), element("span", null, kurzDatum(plusTage(s, w[0] - 1)) + " to " + kurzDatum(plusTage(s, w[1] - 1))));
+      tr.append(wann, element("td", "druck-fokus", j ? HABITS[plan.g[j - 1].i].titel : "Your Sleepwhale routine"), element("td", null, j ? habitText(plan, j - 1) : routineText(plan)));
       tbody.appendChild(tr);
     });
     tabelle.append(thead, tbody);
-    zwei.append(augenbraue(kurzDatum(s) + " to " + kurzDatum(plusTage(s, 29)) + ", focus: " + (plan.f ? saeuleName(plan.f) : "steady nights")), element("h2", null, "Your evening"), abendListe(plan), element("h2", null, "Your roadmap"), tabelle, element("h2", null, "Your Plan B"), element("p", "druck-b", WENN[plan.h] + " " + plan.b),
-      element("p", "druck-klein", "Open your plan again:"), element("p", "druck-link", planLink(plan)), element("p", "druck-klein", DISCLAIMER), element("p", "druck-klein", FDA));
+    /* Das Notizbuch: 30 Felder, ausgefüllt, was auf diesem Gerät steht */
+    var notiz = element("ol", "druck-notiz");
+    for (var i = 1; i <= 30; i++) { var li = element("li"); li.append(element("small", null, String(i)), element("b", null, d[i] !== undefined ? String(d[i]) : "")); notiz.appendChild(li); }
+    /* Der Link ist lang (die Texte von ChatGPT stecken darin): im PDF klickbar, sichtbar nur sein Anfang.
+       utm_source=pdf macht ihn zu einer anderen Adresse als diese Seite, sonst wird er im PDF ein interner Sprung ohne Ziel und ist nicht klickbar */
+    var adresse = planLink(plan), wieder = element("p", "druck-klein", "Open your plan again: ");
+    wieder.appendChild(linkMit(adresse.replace(/^https?:\/\//, "").slice(0, 60) + "…", "druck-link", adresse.replace(/(\?[^#]*)?#/, function (m, q) { return (q ? q + "&" : "?") + "utm_source=pdf#"; })));
+    zwei.append(augenbraue(kurzDatum(s) + " to " + kurzDatum(plusTage(s, 29)) + ", focus: " + (planFokus(plan) ? saeuleName(planFokus(plan)) : "steady nights")), element("h2", null, "Your day, from week 4"), abendListe(plan), element("h2", null, "Your 4 weeks"), tabelle,
+      element("h2", null, "Your notebook, 0 to 10"), notiz, element("p", "druck-klein", "Order your next bottle" + (plan.n ? " on " + datumText(ausIso(plan.n)) : "") + ". " + preisSatz()),
+      wieder, element("p", "druck-klein", (plan.k ? "Habits chosen and written by ChatGPT from your answers. " : "") + "Not medical advice. " + DISCLAIMER), element("p", "druck-klein", FDA));
     druck.append(eins, zwei);
     document.body.appendChild(druck);
     document.body.classList.add("plan-druck");
@@ -3483,33 +3569,33 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function neuStarten() {
     sd.lauf++;
-    sd.id = null; sd.antworten = {}; sd.plan = null; sd.wahl = null; sd.check = 0; sd.geaendert = false; sd.bauSchritt = 1; sd.schluessel = "";
+    sd.id = null; sd.antworten = {}; sd.plan = null; sd.wahl = null; sd.geaendert = false; sd.schluessel = ""; sd.notizNacht = 0;
     planStatusZeigen(null);
     quizRendern(true);
   }
   /* Plan-Stand an einer Stelle: Plan-Karte auf Tonight, Roadmap-Schritt 2, Plan-Block in der Seitenleiste, Punkt am Tab „Sleep plan“.
      Ohne Plan die Standardtexte aus dem HTML */
   alle("[data-ziel-wert], [data-ziel-text]").forEach(function (e) { e.dataset.standard = e.textContent; });
-  var PK_WOCHEN = ["Same time, every night", "Add one habit", "Watch closely", "Make it stick"];
+  var PK_WOCHEN = ["Your Sleepwhale routine", "+ one habit", "+ one habit", "+ one habit"];
   function balkenSetzen(balken, wert) {
     balken.setAttribute("aria-valuenow", wert);
     balken.firstElementChild.style.width = (wert / 30 * 100) + "%";
   }
   function planStatusZeigen(plan) {
-    var wertText = "", zielText = "", schritt = document.querySelector("[data-plan-gewohnheit]"), h = null;
+    var wertText = "", zielText = "", schritt = document.querySelector("[data-plan-gewohnheit]"), heute = [];
     var karte = document.querySelector("[data-plan-karte]"), leiste = document.querySelector("[data-leiste-plan]");
     var kTitel = "Your 30-night sleep plan", lTitel = "Not started yet", wocheText = "", stand = 0, woche = 0;
     if (plan) {
       var st = planStand(plan), nr = st.nacht;
-      woche = nr <= 7 ? 1 : nr <= 14 ? 2 : nr <= 21 ? 3 : 4;
+      woche = wocheVon(nr);
       stand = st.stand;
       kTitel = lTitel = st.titel;
       if (nr < 1) wocheText = "Week 1: " + PK_WOCHEN[0];
-      else if (nr > 30) { wocheText = "Rate your nights and build a new plan"; woche = 0; }
-      else wocheText = "This week: " + (woche === 2 ? "Add one habit: " + gewohnheitText(plan.g, plan.t)[0] : PK_WOCHEN[woche - 1]);
-      wertText = "Your sleep plan: " + fokusTitel(plan.f);
+      else if (woche > 4) { wocheText = "See your 30-night review and build a new plan"; woche = 0; }
+      else wocheText = "This week: " + (woche > 1 ? "+ " + HABITS[plan.g[woche - 2].i].titel : PK_WOCHEN[0]);
+      wertText = "Your sleep plan: " + fokusTitel(planFokus(plan));
       zielText = "Your 30-night sleep plan is ready. Night " + stand + " of 30.";
-      if (nr >= 8 && !HABIT_ZEIT[plan.g].statt) h = HABIT_ZEIT[plan.g];
+      if (nr >= 8 && nr <= 30) heute = tagesZeilen(plan, nr).filter(function (z) { return z.id && z.teil !== "morgen"; });
     }
     [["[data-ziel-wert]", wertText], ["[data-ziel-text]", zielText]].forEach(function (z) {
       alle(z[0]).forEach(function (e) { e.textContent = z[1] || e.dataset.standard; });
@@ -3534,14 +3620,15 @@ body.chat-offen .chat-fenster { display: flex; }
     lLink.textContent = plan ? "Open my plan" : "Build it in 3 minutes";
     lLink.href = plan ? planAnker(plan) : "#drops-plan";
     alle("[data-plan-punkt]").forEach(function (p) { p.hidden = !!plan; });
-    /* Ab Plan-Nacht 8 steht die Gewohnheit als erster Schritt im Ritual von heute, mit Uhrzeit ab der Schlafenszeit */
-    schritt.hidden = !h;
-    if (h) {
-      var uhr = schritt.querySelector(".rh-uhr");
-      if (h.min !== null) { uhr.dataset.uhr = h.min; uhr.textContent = uhrText(schlafenszeit + h.min); }
-      else { uhr.removeAttribute("data-uhr"); uhr.textContent = h.etikett; }
-      schritt.querySelector("b").textContent = h.text;
-    }
+    /* Ab Plan-Nacht 8 stehen die Habits für heute über den drei Schritten im Ritual, mit Uhrzeit ab der Schlafenszeit (data-uhr folgt ihr) */
+    alle("[data-pk-wnr]", karte).forEach(function (li, j) { li.querySelector("b").textContent = plan ? (j ? "+ " + HABITS[plan.g[j - 1].i].kurz : PK_WOCHEN[0]) : PK_WOCHEN[j]; });
+    schritt.hidden = !heute.length;
+    schritt.querySelector("[data-plan-habits]").replaceChildren.apply(schritt.querySelector("[data-plan-habits]"), heute.map(function (z) {
+      var li = element("li"), uhr = element("span", "rh-uhr", z.teil === "nacht" ? "At night" : uhrText(zeileMin(z, plan)));
+      if (z.teil === "abend") uhr.dataset.uhr = z.min;
+      li.append(uhr, element("b", null, z.text));
+      return li;
+    }));
     reiseZeigen();
   }
   /* Tonight: deine ersten 30 Nächte als Streifen wie im Plan (30 Nächte und „30+“). Tippen, Ziehen, Pfeiltasten oder die Stationen darunter wählen die Nacht.
@@ -3676,7 +3763,7 @@ body.chat-offen .chat-fenster { display: flex; }
     { p: "alle", k: [" hi ", " hello ", " hey ", "good morning", "good evening", "good night"], a: "Hi! Ask me anything about your Sleep Drops: your ritual, your serving, delivery or reordering." },
     { p: "drops", k: ["how much", "dose", "dosage", "serving", "amount", "how many ml", "half", "dropper", "full ml", "more drops", "double", "increase", "more than 1", "serving check", "dose check", "is my dose right", "right amount"], a: "Start at 1 mL, that's one serving. After your first nights you can go up or down by 0.25 mL: up if you don't notice enough, down if you feel groggy in the morning. Always at bedtime, nothing extra when you wake up at night.", l: [L.dosis, L.n7] },
     { p: "drops", k: ["how do i take", "how to take", "when do i take", "when should i take", "before bed", "under tongue", "under my tongue", "hold it", "swallow", "how to use", "ritual", "routine"], a: "Take it 10 minutes before bed time. Shake well, fill the dropper to 1 mL, drop it under your tongue, hold, then swallow. Then get cozy, close your eyes and drift off. Same time every night: “Sleepwhale is formulated for nightly use as part of a consistent bedtime routine.”", l: [L.ritual] },
-    { p: "drops", k: [" plan ", " plans ", "my plan", "sleep plan", "30 night", "30-night", "quiz", "habit", "sleep goal", "sleep better", "improve my sleep"], a: "In your Sleep Guide you can take Sleepwhale's sleep quiz and build your 30-night sleep plan: one fixed bedtime with your drops, one small habit from night 8, and two dates to rate your sleep again. Everything goes into your calendar, the guide saves nothing.", l: [L.plan] },
+    { p: "drops", k: [" plan ", " plans ", "my plan", "sleep plan", "30 night", "30-night", "quiz", "sleep goal", "sleep better", "improve my sleep"], a: "In your Sleep Guide you can take Sleepwhale's sleep quiz and build your 30-night sleep plan: your drops ritual in week 1, then one new habit each week, chosen for your answers, and a notebook to rate your nights from 0 to 10. Your plan opens from its link anytime, the notebook stays on this phone.", l: [L.plan] },
     { p: "drops", k: ["save my plan", "save plan", "save the plan", "email my plan", "email me my plan", "lost my plan", "find my plan", "open my plan again", "plan link", "link to my plan", "my plan", " plan "], a: "On your plan page, tap Save my plan, enter the email you ordered with and tick the box. Then every email from us links to your own plan. You can also keep the link, add your dates to your calendar or save it as a PDF.", l: [L.plan] },
     { p: "alle", k: ["how fast", "how quickly", "how long until", "kick in", "feel it", "take effect", "how long does it take", "work fast"], a: "“Because we use a water-soluble formula instead of oil-based (aka every other product), you should feel the effects within 10-15 minutes.” A late meal can make it take a bit longer. Whether your sleep itself improves “can take longer, sometimes up to several weeks.”", l: [L.n7] },
     { p: "alle", k: ["not working", "doesnt work", "does not work", "didnt work", "no effect", "nothing happens", "dont feel", "no difference", "not helping", "still cant sleep"], a: "Check the basics first: 10 minutes before bed, under your tongue, after a good shake, not right after a big meal. Start at 1 mL and, if you don't notice enough after a few nights, go up by 0.25 mL. A better sleep overall can take a few weeks, and the serving check helps you adjust. Still not working? Write to us, the 30-Day Risk Free Guarantee applies.", l: [L.n7, L.hilfe, L.mail] },
@@ -3706,20 +3793,37 @@ body.chat-offen .chat-fenster { display: flex; }
     { p: "alle", k: ["account", "log in", "login", "sign in", "password"], a: "Your account is at sleepwhale.com/account: sign in with your email and a one-time code. Subscribe & Save has its own sign-in with your email.", l: [L.konto, L.portal] },
     { p: "alle", k: ["contact", "email", "phone", "human", "person", "support", "customer service", "talk to"], a: "The Sleepwhale team answers at hello@sleepwhale.com.", l: [L.mail], s: true },
     { p: "alle", k: ["wind down", "screen", "phone before", "racing mind", "mind races", "anxious", "cant fall asleep", "fall asleep faster"], a: "Sleepwhale's Four Pillars of Sleep are Wind Down, Fall Asleep, Stay Asleep and Recover Fully. Inside & lab shows the ingredients Sleepwhale tags for each pillar, in its own words.", l: [L.inside] },
-    { p: "alle", k: ["gift", "present", "friend", "partner", "wife", "husband", "someone else"], a: "You can send a bottle to someone else, just enter their address at checkout, or give a Sleepwhale gift card.", l: [L.geschenk, L.nachkauf] }
+    { p: "alle", k: ["gift", "present", "friend", "partner", "wife", "husband", "someone else"], a: "You can send a bottle to someone else, just enter their address at checkout, or give a Sleepwhale gift card.", l: [L.geschenk, L.nachkauf] },
+    { p: "plan", k: ["notebook", "rate", "rating", "score", "0 to 10", "diary", "journal", "log my"], a: "Every morning, rate the night before from 0 to 10 in your plan. It's saved on this phone only. After night 30 your review shows your nights week by week, your first week next to your last.", l: [L.plan] },
+    { p: "plan", k: ["habit", "why this", "this week", "new habit", "my plan", "week 2", "week 3", "week 4"], a: "Your plan adds one habit per week, chosen for your answers in Sleepwhale's sleep quiz. Earlier habits keep running, your ritual with the drops stays the same. Each week's card in your plan explains what to do.", l: [L.plan] },
+    { p: "plan", k: ["missed", "forgot", "skip a night", "skipped", "didnt do", "fell off"], a: "No problem. Take your drops the next night at your usual time and pick your habit up again. One missed night doesn't change your plan.", l: [L.plan] }
   ];
+  /* Begrüßung und Vorschläge je Ort: Start, Drops, Plan-Seite */
   var THEMEN = {
     start: { gruss: "Hi! I'm the Sleepwhale assistant. Ask me about your Sleep Drops, delivery or reordering.", vorschlaege: ["How much should I take?", "How long does shipping take?", "How does Subscribe & Save work?"], demo: [] },
-    drops: { gruss: "Hi! I'm the Sleepwhale assistant. Ask me anything about your Sleep Drops: your ritual, your serving, delivery or reordering.", vorschlaege: ["How much should I take?", "What if I still wake up at 3 am?", "Will I feel high?", "How long does a bottle last?", "How do I skip a delivery?"], demo: ["How much should I take?", "What if I still wake up at 3 am?"] }
+    drops: { gruss: "Hi! I'm the Sleepwhale assistant. Ask me anything about your Sleep Drops: your ritual, your serving, delivery or reordering.", vorschlaege: ["How much should I take?", "What if I still wake up at 3 am?", "Will I feel high?", "How long does a bottle last?", "How do I skip a delivery?"], demo: ["How much should I take?", "What if I still wake up at 3 am?"] },
+    plan: { gruss: "Hi! I'm the Sleepwhale assistant. Ask me about your sleep plan, this week's habit, your notebook or your Sleep Drops.", vorschlaege: ["Why this habit for me?", "I missed a night. What now?", "How do I use my notebook?", "How much should I take?"], demo: ["Why this habit for me?"] }
   };
   var KEINE_ANTWORT = "I don't have a reliable answer to that in Sleepwhale's product information. The team is happy to help: send your question with one click.";
-  /* Chat-Server (meta hub-chat-api), heute leer. Link-IDs wie in kunden/sleepwhale/chat/kunde.js */
+  /* Chat-Server (meta hub-chat-api, Worker hub-chat): ChatGPT auf Englisch mit Sleepwhales Wissen und dem Plan als Kontext.
+     Fällt er aus, antworten die festen Antworten aus WISSEN. Link-IDs wie in kunden/sleepwhale/chat/kunde.js */
   var CHAT_API = (document.querySelector('meta[name="hub-chat-api"]') || {}).content || "";
+  /* Der Plan als kurzer Text für den Chat (höchstens 900 Zeichen): Nacht, Zeiten, Wochen mit Habits, Antworten, Notizbuch */
+  function planKontext() {
+    var plan = sd.plan;
+    if (!plan) return "";
+    var st = planStand(plan), d = notizbuch(plan), werte = alleWerte(d), teile = [st.titel + " (started " + datumText(ausIso(plan.s)) + ").", "Bedtime " + uhrText(minutenAus(plan.t)) + ", wake-up " + uhrText(minutenAus(plan.u)) + "."];
+    teile.push("Week 1: Sleepwhale routine, drops 10 minutes before bed.");
+    plan.g.forEach(function (x, j) { teile.push("Week " + (j + 2) + ": " + HABITS[x.i].titel + (wocheVon(st.nacht) === j + 2 ? " (this week)" : "") + "."); });
+    teile.push("Quiz: last night " + NACHT_TEXT[plan.w] + "; ticked: " + (plan.a.length ? plan.a.map(function (w) { return antwortText(OPTION_SAEULE[w], w); }).join("; ") : "none") + "; biggest impact: " + antwortText("grund", plan.r) + "; could get in the way: " + antwortText("huerde", plan.h) + ".");
+    if (werte.length) teile.push("Notebook (0 to 10): " + naechteText(werte.length) + " rated, average " + schnitt(werte) + "; by night: " + Object.keys(d).map(function (n) { return n + ":" + d[n]; }).join(", ") + ".");
+    return teile.join(" ").slice(0, 900);
+  }
   var CHAT_LINKS = { regular: L.drops, extra: L.drops, ritual: L.ritual, labor: L.labor, plan: L.plan, library: L.library, abo: L.portal, garantie: L.refund, coa: L.coa, konto: L.konto };
   var chatVerlauf = [], verlauf = document.getElementById("chat-verlauf"), vorschlaege = document.getElementById("chat-vorschlaege"), chatFeld = document.getElementById("chat-feld"), menschLink = document.getElementById("chat-mensch"), aktiv = null;
   function norm(s) { return s.toLowerCase().replace(/[’']/g, "").replace(/[^a-z0-9% ]+/g, " ").replace(/\s+/g, " ").trim(); }
   function kontext() {
-    if (document.documentElement.classList.contains("plan-modus")) return "drops";
+    if (document.documentElement.classList.contains("plan-modus")) return sd.plan ? "plan" : "drops";
     var z = ziel(), seite = z && (z.classList.contains("seite") ? z : z.closest(".seite"));
     return seite && (seite.id === "sleep-drops" || seite.id === "abo") ? "drops" : "start";
   }
@@ -3745,13 +3849,13 @@ body.chat-offen .chat-fenster { display: flex; }
       });
       if (!s) return;
       if (nennt && e.p === nennt) s += 8;
-      if (e.p === ctx) s += 2;
+      if (e.p === ctx || (ctx === "plan" && e.p === "drops")) s += 2;
       if (s > punkte) { punkte = s; beste = e; }
     });
     return beste ? { a: beste.a, l: beste.l || [], s: !!beste.s } : { a: KEINE_ANTWORT, l: [], s: true };
   }
   function supportMail(frage, ohneAntwort) {
-    var produkt = aktiv === "drops" ? "Natural Sleep Drops, " + STAERKE[staerke].kurz : "";
+    var produkt = aktiv !== "start" ? "Natural Sleep Drops, " + STAERKE[staerke].kurz : "";
     var text = "Hi Sleepwhale team,\n\n" + (frage ? (ohneAntwort ? "I have a question the assistant in my Sleep Guide couldn't answer:" : "I have a question:") + "\n\n" + frage + "\n\n" : "I have a question:\n\n\n\n") + (produkt ? "My product: " + produkt + "\n\n" : "") + "Thanks!";
     return "mailto:hello@sleepwhale.com?subject=" + encodeURIComponent("Question from my Sleep Guide") + "&body=" + encodeURIComponent(text);
   }
@@ -3774,7 +3878,7 @@ body.chat-offen .chat-fenster { display: flex; }
     aktiv = ctx;
     chatVerlauf = [];
     verlauf.replaceChildren();
-    document.getElementById("chat-thema").textContent = "Questions about your Sleep Drops";
+    document.getElementById("chat-thema").textContent = ctx === "plan" ? "Questions about your sleep plan" : "Questions about your Sleep Drops";
     nachricht(THEMEN[ctx].gruss, "bot");
     menschLink.href = supportMail("");
     vorschlaegeSetzen(THEMEN[ctx].vorschlaege);
@@ -3793,7 +3897,7 @@ body.chat-offen .chat-fenster { display: flex; }
     menschLink.href = supportMail(text);
     if (sofort || !CHAT_API) { regelAntwort(text, sofort); return; }
     var t = tippt(), ab = new AbortController(), uhr = setTimeout(function () { ab.abort(); }, 20000);
-    fetch(CHAT_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ produkt: aktiv === "drops" ? staerke : aktiv, frage: text, verlauf: chatVerlauf.slice(-6) }), signal: ab.signal })
+    fetch(CHAT_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ produkt: aktiv === "start" ? "start" : staerke, frage: text, verlauf: chatVerlauf.slice(-6), plan: planKontext() || undefined }), signal: ab.signal })
       .then(function (r) { if (!r.ok) throw new Error("Status " + r.status); return r.json(); })
       .then(function (d) {
         if (!d || !d.antwort) throw new Error("leer");
