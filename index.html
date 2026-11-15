@@ -2999,17 +2999,13 @@ body.chat-offen .chat-fenster { display: flex; }
     }
     return ids.concat(BASIS_HABITS.filter(function (id) { return ids.indexOf(id) < 0; })).slice(0, 3);
   }
-  /* Die eine Antwort, für die ein Habit steht (Niklas 15.11.: „nur der betroffene punkt passend zum habit“): zuerst Aussagen aus den Säulen, dann der
-     größte Einfluss; die meisten offenen Punkte, bei Gleichstand die weniger abgedeckte, sonst die frühere im Quiz. "" = keine passt, ein Klassiker */
+  /* Die eine Antwort, für die ein Habit steht (Niklas 15.11.: „nur der betroffene punkt passend zum habit“): die mit den meisten offenen Punkten,
+     bei Gleichstand die weniger abgedeckte, sonst die frühere (Aussagen aus den Säulen vor dem größten Einfluss). "" = keine passt, ein Klassiker */
   function antwortFuer(offen, id) {
-    var beste = "", punkte = 0, rest = 0;
-    [true, false].forEach(function (ausSaeule) {
-      if (beste) return;
-      Object.keys(offen).forEach(function (w) {
-        if (hat(OPTION_SAEULE, w) !== ausSaeule) return;
-        var p = habitPunkte(offen, w, id);
-        if (p > punkte || (p > 0 && p === punkte && offen[w] > rest)) { beste = w; punkte = p; rest = offen[w]; }
-      });
+    var beste = "", punkte = 0;
+    Object.keys(offen).forEach(function (w) {
+      var p = habitPunkte(offen, w, id);
+      if (p > punkte || (p > 0 && p === punkte && offen[w] > offen[beste])) { beste = w; punkte = p; }
     });
     return beste;
   }
