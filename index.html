@@ -798,7 +798,9 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
 .wk-text { max-width: 68ch; font-size: 16px; line-height: 1.55; color: var(--text); }
 .wk-wann { font-size: 15px; font-weight: 600; color: var(--nacht); font-variant-numeric: tabular-nums; }
 .wk-schnitt { font-size: 14px; color: var(--muted); }
-.wk-links { margin-top: 2px; gap: 6px 22px; }
+/* Knöpfe unter jeder Woche (seit dem späten 15.11., Niklas: „bitte prominenter machen die buttons“): Kalender nachtblau, Frage hell mit Rand */
+.plan-links.wk-links { align-items: center; gap: 10px 12px; }
+.wk-links .knopf { display: inline-flex; min-height: 44px; margin-top: 0; padding: 10px 18px; font-size: 15px; }
 .wk-links .text-link { font-size: 15px; }
 .wk-frage { display: inline-flex; align-items: center; gap: 6px; }
 .wk-frage svg { width: 18px; height: 18px; }
@@ -814,12 +816,10 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
 .wk-info > .wi-raster { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 28px; max-width: none; padding: 4px 16px 18px; color: var(--text); }
 .wi-teil h4 { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold-tief); }
 .wi-teil > p { margin-top: 8px; font-size: 15px; line-height: 1.5; }
-.wi-antworten { list-style: none; display: grid; gap: 8px; margin-top: 8px; font-size: 15px; line-height: 1.4; }
-.wi-antworten small { display: block; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.wi-antwort small { display: block; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
 .wi-schritte { display: grid; gap: 6px; margin-top: 8px; padding-left: 20px; font-size: 15px; line-height: 1.45; }
 .wi-warum { grid-column: 1 / -1; padding-top: 16px; border-top: 1px solid var(--linie); }
-.wi-teil > .wi-quelle { font-size: 13px; color: var(--muted); }
-.wi-quelle .text-link { font-size: 13px; }
+.wi-mehr .text-link { font-size: 14px; }
 .ps-wochen > .plan-quelle { margin-top: 16px; }
 /* „Your next step“ oben im Plan (seit 15.11.): an Nacht 7, 14 und 23 eine Frage mit drei Antworten, danach der passende nächste Schritt */
 .ps-schritt { display: grid; justify-items: start; gap: 10px; padding: 24px 26px; border: 2px solid var(--gold); border-radius: 12px; }
@@ -983,6 +983,7 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
   .wk-bild { border-radius: 0; }
   .wk-inhalt { padding: 14px 16px 16px; }
   .wk .wk-ikon { display: none; }
+  .wk-links .knopf { flex: 1 1 auto; }
   .labor-feld { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 20px; }
   .lf-gruppe.gross { grid-column: 1 / -1; grid-row: auto; order: -1; }
 }
@@ -1822,11 +1823,11 @@ body.chat-offen .chat-fenster { display: flex; }
       <section class="ansicht" id="drops-library" data-bereich="sd-ziel">
         <nav class="saeule-nav" aria-label="How to sleep better"><span class="saeule-name"><b>3</b>How to sleep better</span><a href="#drops-plan" data-ansicht="drops-plan">Your sleep plan</a><a href="#drops-library" data-ansicht="drops-library">Sleep library</a><a href="#drops-stories" data-ansicht="drops-stories">Customer stories</a></nav>
         <div class="lib-uebersicht">
-          <header class="ansicht-kopf"><h1>Sleep library</h1><p>For your first 30 nights with Sleepwhale. These chapters follow Sleepwhale's Deep Sleep Guide: how a night of sleep works, and what light, food, drinks, movement and your daily routines have to do with it.</p></header>
+          <header class="ansicht-kopf"><h1>Sleep library</h1><p>For your first 30 nights with Sleepwhale: how a night of sleep works, and what light, food, drinks, movement and your daily routines have to do with it.</p></header>
           <ul class="lib-liste">
             <li><a class="lib-karte" href="#lib-schlaf"><img src="bilder/foto-stay.webp" alt="" loading="lazy"><span><b>How sleep works</b><span>Your internal clock, sleep pressure, and the stages your night moves through.</span></span></a></li>
             <li><a class="lib-karte" href="#lib-licht"><img src="bilder/habit-tageslicht.webp" alt="" loading="lazy"><span><b>Light &amp; screens</b><span>Why morning light and evening light send opposite signals.</span></span></a></li>
-            <li><a class="lib-karte" href="#lib-essen"><img src="bilder/habit-essen.webp" alt="" loading="lazy"><span><b>Food &amp; sleep</b><span>Steady meals, a balanced evening plate, and five foods from the guide.</span></span></a></li>
+            <li><a class="lib-karte" href="#lib-essen"><img src="bilder/habit-essen.webp" alt="" loading="lazy"><span><b>Food &amp; sleep</b><span>Steady meals, a balanced evening plate, and five foods for the evening.</span></span></a></li>
             <li><a class="lib-karte" href="#lib-trinken"><img src="bilder/habit-wasser.webp" alt="" loading="lazy"><span><b>When to drink</b><span>Drink earlier and more evenly, not more at night.</span></span></a></li>
             <li><a class="lib-karte" href="#lib-bewegung"><img src="bilder/habit-bewegung.webp" alt="" loading="lazy"><span><b>Movement</b><span>Move often, keep it calm, and mind the timing.</span></span></a></li>
             <li><a class="lib-karte" href="#lib-reset"><img src="bilder/habit-reset.webp" alt="" loading="lazy"><span><b>Calm your nervous system</b><span>Tired doesn't always mean calm. Five-minute options for busy days.</span></span></a></li>
@@ -1859,7 +1860,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p>Both are sensitive to stress, the way you eat, and irregular schedules. That is why the rest of this library looks at your whole day, not just bedtime.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#lib-licht">Light &amp; screens</a><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide and Sleepwhale's emails. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-licht" aria-labelledby="lib-licht-titel">
@@ -1879,24 +1880,24 @@ body.chat-offen .chat-fenster { display: flex; }
             <p><b>Mental stimulation.</b> Gripping or emotionally charged content can keep the brain active long after the screen is put away.</p>
             <p><b>An alert nervous system.</b> Constant input, notifications and rapid visual changes keep the nervous system in a more activated state.</p>
             <p><b>A blurred wind-down.</b> Late screen use blurs the transition between daytime activity and rest, and the body receives mixed signals.</p>
-            <p class="lib-klein">From the guide's 7-day reset: get 10 to 30 minutes of natural light within the first hour after waking, outside or by a bright window, and dim the lights in the evening.</p>
+            <p class="lib-klein">From the 7-day reset: get 10 to 30 minutes of natural light within the first hour after waking, outside or by a bright window, and dim the lights in the evening.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a><a class="text-link" href="#lib-7-tage">The 7-day reset</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-essen" aria-labelledby="lib-essen-titel">
           <a class="text-link" href="#drops-library">All articles</a>
           <img class="lib-foto" src="bilder/habit-essen.webp" alt="A couple eats an early, light dinner at the kitchen table" loading="lazy">
           <h1 id="lib-essen-titel">Food &amp; sleep</h1>
-          <p class="lib-unter">Steady meals, a balanced evening plate, and five foods from the guide.</p>
+          <p class="lib-unter">Steady meals, a balanced evening plate, and five foods for the evening.</p>
           <div class="lib-text">
             <p>Nutrition plays a quiet but important role in sleep. What and when you eat sends signals about energy availability and safety, helping the body decide whether it is time to stay alert or rest.</p>
             <h3>Steady meals</h3>
             <p>Long gaps between meals, very light dinners, or restrictive eating can trigger stress hormones overnight, pulling the body out of sleep. Regular meals and a balanced evening intake keep blood sugar steadier through the night.</p>
             <h3>Protein and carbs in the evening</h3>
             <p>Protein provides the building blocks for neurotransmitters involved in sleep and relaxation. Carbohydrates, when paired with protein, can support calming sleep signals in the evening. Nutrients such as magnesium, glycine and tryptophan are often best obtained through food.</p>
-            <h3>Five foods from the guide</h3>
+            <h3>Five foods for the evening</h3>
             <ol class="lib-stufen">
               <li><span class="lib-etikett">Salmon</span><p>Protein, omega-3 fats and vitamin B6.</p></li>
               <li><span class="lib-etikett">Oats</span><p>Complex carbohydrates for steady blood sugar overnight, plus small amounts of magnesium.</p></li>
@@ -1909,7 +1910,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p><b>Sleep-disrupting:</b> heavy, processed, or sugary meals late in the day can increase alertness and disrupt overnight sleep.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a><a class="text-link" href="#lib-trinken">When to drink</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-trinken" aria-labelledby="lib-trinken-titel">
@@ -1930,7 +1931,7 @@ body.chat-offen .chat-fenster { display: flex; }
             </ol>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a><a class="text-link" href="#lib-routine">Your morning &amp; evening</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-bewegung" aria-labelledby="lib-bewegung-titel">
@@ -1946,7 +1947,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p>Choose movement that leaves you feeling calmer afterward. When exercise is overly intense or stressful, it can keep the body in alert mode into the evening.</p>
             <h3>Timing and recovery</h3>
             <p>Earlier movement in the day helps reinforce natural sleep–wake rhythms. Late, intense workouts may delay relaxation and make it harder to wind down. Rest days and lighter movement are part of the process.</p>
-            <h3>The guide's best movement types</h3>
+            <h3>Four kinds of movement</h3>
             <ol class="lib-stufen">
               <li><span class="lib-etikett">Walking</span><p>Supports circulation and stress reduction without overstimulating the nervous system. Regular walks, especially earlier in the day, help reinforce natural daily rhythms.</p></li>
               <li><span class="lib-etikett">Light to moderate strength</span><p>Supports muscle recovery without excessive nervous system activation, done earlier in the day or late afternoon.</p></li>
@@ -1956,7 +1957,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p class="lib-klein">Movement is one signal your body uses to decide when it’s safe to rest. Light, food timing, stress, and recovery all work together.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a><a class="text-link" href="#lib-reset">Calm your nervous system</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-reset" aria-labelledby="lib-reset-titel">
@@ -1979,7 +1980,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p class="lib-klein">If slow breathing feels activating, choose movement or sensory grounding instead.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-ritual">Your ritual</a><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-routine" aria-labelledby="lib-routine-titel">
@@ -2014,7 +2015,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p class="lib-klein">Your Sleepwhale drops can be one of the calming cues you repeat each night.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-ritual">Your ritual</a><a class="text-link" href="#lib-7-tage">The 7-day reset</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-7-tage" aria-labelledby="lib-7-tage-titel">
@@ -2036,7 +2037,7 @@ body.chat-offen .chat-fenster { display: flex; }
             <p class="lib-klein">Some nights will feel easier than others. That is part of how the body adjusts.</p>
           </div>
           <p class="lib-links"><a class="text-link" href="#drops-plan">Build your 30-night sleep plan</a><a class="text-link" href="#lib-reset">Calm your nervous system</a></p>
-          <p class="lib-quelle">From Sleepwhale's Deep Sleep Guide. For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+          <p class="lib-quelle">For educational and informational purposes only, not medical advice. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
         </article>
 
         <article class="lib-artikel" id="lib-tracker" aria-labelledby="lib-tracker-titel">
@@ -2786,7 +2787,8 @@ body.chat-offen .chat-fenster { display: flex; }
   });
   /* ---------- Dein Schlafplan: Sleepwhales Schlaf-Quiz, dann schreibt ChatGPT deinen 30-Nächte-Plan ----------
      Fragen wörtlich aus dem Schlaf-Quiz von sleepwhale.com. Woche 1 ist die Sleepwhale-Routine, ab Woche 2 kommt jede Woche ein Habit dazu.
-     ChatGPT (Worker hub-chat, meta hub-plan-api) wählt die 3 Habits aus HABITS und schreibt die Texte; fällt die API aus, kommen feste Texte.
+     Die 3 Habits wählt seit dem späten 15.11. eine feste Regel aus den Antworten (habitsWaehlen, Niklas: „habits wirklich individuell“), ChatGPT
+     (Worker hub-chat, meta hub-plan-api) schreibt die Texte dazu; fällt die API aus, kommen feste Texte.
      Der Plan steckt nur im Link (#plan=…), das Notizbuch nur im Browser des Kunden (localStorage). */
   var SAEULEN_SD = { wind: ["Wind Down", "p-wind", 1], fall: ["Fall Asleep", "p-fall", 2], stay: ["Stay Asleep", "p-stay", 3], recover: ["Recover Fully", "p-recover", 4] };
   var SAEULEN_REIHE = ["wind", "fall", "stay", "recover"];
@@ -2808,11 +2810,12 @@ body.chat-offen .chat-fenster { display: flex; }
   /* Das Quiz seit 15.11.: 5 Fragen, danach direkt der Plan (Wunsch Niklas: weniger Fragen, lebhafter). Die E-Mail (Pflicht, Wunsch Niklas: möglichst viele Adressen)
      ist seit dem späten 15.11. die erste Frage (Niklas: „bitte doch frage an erster stelle“, davor kurz die zweite), dorthin geht der Plan automatisch; die Adresse
      steht nie im Plan-Link und geht nicht an ChatGPT. Die Zeiten gehören seit 13.11. dazu und sind die letzte Frage.
-     Raus sind „How long have you been taking your Sleep Drops?“ und „What could get in the way over the next 30 nights?“ */
+     Raus sind „How long have you been taking your Sleep Drops?“ und „What could get in the way over the next 30 nights?“.
+     Die Überschrift der Säulen-Seite seit dem späten 15.11. konkreter (Niklas: „bitte konkretisieren headline“) */
   var QUIZ_SD = [
     { id: "email", art: "email", frage: "Where should we send your plan?", unter: "Your plan and its weekly steps come to this email. Use the one you ordered with." },
     { id: "nacht", art: "wahl", frage: "How’d you sleep last night?", antworten: [1, 2, 3, 4, 5].map(function (z) { return { wert: z, text: NACHT_TEXT[z] }; }) },
-    { id: "saeulen", art: "saeulen", kopf: "Sleepwhale's Four Pillars of Sleep", frage: "Which of these sound like you?", unter: "Select all that apply" },
+    { id: "saeulen", art: "saeulen", kopf: "Sleepwhale's Four Pillars of Sleep", frage: "Which of these sleep problems do you have?", unter: "Select all that apply" },
     { id: "grund", art: "wahl", frage: "At the moment, what’s having the biggest impact on your sleep?",
       antworten: wahlListe([["arbeit", "My work or financial situation"], ["pflege", "Caring for loved ones"], ["gesundheit", "A health issue or injury"], ["hormone", "Hormones or midlife changes"], ["menschen", "Stuff going on with people in my life"], ["nichts", "Nothing that’s obvious"]]) },
     { id: "zeiten", art: "zeiten", frage: "When do you go to bed and get up?", unter: ZEITEN_UNTER }
@@ -2822,34 +2825,35 @@ body.chat-offen .chat-fenster { display: flex; }
   /* Habits für Woche 2 bis 4, dieselben ids wie im Worker (kunden/sleepwhale/chat/plan.js). Seit 15.11. nur noch mit Sleepwhale-Quelle:
      10 aus Sleepwhales „The Deep Sleep Guide“ (PDF), dunkel und ruhe aus Sleepwhales Quiz. Raus sind gedanken, kuehl und uhr (ALTE_HABITS).
      teil: tag (min = Uhrzeit in Minuten), abend (min zu Licht aus), nacht (ohne Uhrzeit), morgen (min zum Aufstehen). erinnern: false = kein Kalendereintrag.
-     tun = Zeile im Tagesplan, text = fester Text, wenn ChatGPT nichts liefert, passt = angekreuzte Antworten für den festen Weg */
+     tun = Zeile im Tagesplan, text = fester Text, wenn ChatGPT nichts liefert. Welche Antwort zu welchem Habit passt, steht in ANTWORT_HABITS.
+     Die Texte nennen den Guide nicht (Niklas 15.11.: „guide nicht erwähnen“) */
   var HABITS = {
     blaulicht: { titel: "Screens off an hour before bed", kurz: "Screens off", ikon: "h-bildschirm", teil: "abend", min: -60, tun: "Screens off and lights low",
-      text: "An hour before lights out, put your phone, laptop and TV away and dim the lights at home. Sleepwhale's Deep Sleep Guide explains that bright light late in the evening can push your body's sleep signals later. A book, a shower or getting things ready for tomorrow all work instead.", passt: ["screens", "wired", "rasen", "15min"] },
+      text: "An hour before lights out, put your phone, laptop and TV away and dim the lights at home. Bright light late in the evening can push your body's sleep signals later. A book, a shower or getting things ready for tomorrow all work instead." },
     essen: { titel: "Dinner 2 to 3 hours before bed", kurz: "Early dinner", ikon: "h-teller", teil: "abend", min: -150, tun: "Dinner done for the day",
-      text: "Plan dinner so it's done about 2 to 3 hours before bed, with some protein and carbs on the plate. If you tend to wake up hungry, Sleepwhale's Deep Sleep Guide suggests a small, balanced evening snack. If an evening runs late, keep dinner light.", passt: ["spaet", "unruhig", "nachts"] },
+      text: "Plan dinner so it's done about 2 to 3 hours before bed, with some protein and carbs on the plate. If you tend to wake up hungry, add a small, balanced evening snack. If an evening runs late, keep dinner light." },
     wasser: { titel: "Water early in the day", kurz: "Water early", ikon: "h-glas", teil: "morgen", min: 0, tun: "A glass of water to start the day",
-      text: "Start drinking soon after you get up and have most of your water by midday. In the afternoon, drink a little less, and in the evening take small sips only, with no large drinks in the last 1 to 2 hours before bed. That's the timing in Sleepwhale's Deep Sleep Guide.", passt: ["muede", "energie", "nebel", "nachts"] },
+      text: "Start drinking soon after you get up and have most of your water by midday. In the afternoon, drink a little less, and in the evening take small sips only, with no large drinks in the last 1 to 2 hours before bed. The idea is to drink earlier, not more at night." },
     tageslicht: { titel: "Daylight in the morning", kurz: "Morning light", ikon: "h-sonne", teil: "morgen", min: 30, tun: "10 to 30 minutes of daylight",
-      text: "Within the first hour after waking, get 10 to 30 minutes of natural light, outside or by a bright window. A short walk or breakfast near a window both count. Sleepwhale's Deep Sleep Guide calls morning light the signal that tells your brain the day has started.", passt: ["muede", "energie", "nebel", "unregel", "15min"] },
+      text: "Within the first hour after waking, get 10 to 30 minutes of natural light, outside or by a bright window. A short walk or breakfast near a window both count. Morning light is the signal that tells your brain the day has started." },
     koffein: { titel: "No caffeine after 2 PM", kurz: "Caffeine by 2 PM", ikon: "h-tasse", teil: "tag", min: 810, tun: "Last coffee or tea of the day, before 2 PM",
-      text: "Move your last coffee, black tea or energy drink to before 2 PM, then switch to water, herbal tea or decaf. If you drink a lot of caffeine, cut back slowly instead of stopping all at once, as Sleepwhale's Deep Sleep Guide advises.", passt: ["15min", "rasen", "unruhig", "nachts", "mittag"] },
+      text: "Move your last coffee, black tea or energy drink to before 2 PM, then switch to water, herbal tea or decaf. If you drink a lot of caffeine, cut back slowly instead of stopping all at once." },
     weckzeit: { titel: "Same wake-up time every day", kurz: "Same wake-up", ikon: "h-wecker", teil: "morgen", min: 0, tun: "Up at your usual time",
-      text: "Choose a wake time and keep it every day, weekends included, even after a poor night. If you're tired, go to bed a little earlier or rest during the day, but don't sleep in. A steady morning makes your evening ritual easier to keep.", passt: ["unregel", "muede", "energie", "15min"] },
+      text: "Choose a wake time and keep it every day, weekends included, even after a poor night. If you're tired, go to bed a little earlier or rest during the day, but don't sleep in. A steady morning makes your evening ritual easier to keep." },
     abschalten: { titel: "10 minutes to wind down", kurz: "Wind down", ikon: "p-wind", teil: "abend", min: -30, tun: "10 minutes to wind down: stretching, reading or dim lights",
-      text: "Before your drops, repeat the same calming activity every night: gentle stretching, reading on paper or sitting with the lights dimmed. Keep it short. Sleepwhale's Deep Sleep Guide says consistency matters more than length.", passt: ["wired", "rasen"] },
+      text: "Before your drops, repeat the same calming activity every night: gentle stretching, reading on paper or sitting with the lights dimmed. Keep it short. Doing it every night matters more than how long it lasts." },
     reset: { titel: "A 5-minute reset", kurz: "5-minute reset", ikon: "h-atem", teil: "tag", min: 900, tun: "A 5-minute reset: slow breathing, longer exhale",
-      text: "Once or twice a day, take a short break: for one minute, breathe slowly through your nose and let each exhale be a little longer than the inhale. If breathing exercises don't feel calming, stretch or notice your feet on the floor instead. Sleepwhale's Deep Sleep Guide suggests short resets during the day over long sessions at night.", passt: ["rasen", "wired", "unruhig", "zurueck"] },
+      text: "Once or twice a day, take a short break: for one minute, breathe slowly through your nose and let each exhale be a little longer than the inhale. If breathing exercises don't feel calming, stretch or notice your feet on the floor instead. Short pauses during the day are the idea, not one long session at night." },
     dunkel: { titel: "A dark bedroom", kurz: "Dark room", ikon: "mond", teil: "abend", min: -5, tun: "Bedroom dark: curtains closed, standby lights covered",
-      text: "Make your bedroom as dark as you can: curtains closed, standby lights covered, phone face down. Dim the lights in the hour before bed too. If the room doesn't get dark, try a sleep mask.", passt: ["leicht", "nachts", "zurueck"] },
+      text: "Make your bedroom as dark as you can: curtains closed, standby lights covered, phone face down. Dim the lights in the hour before bed too. If the room doesn't get dark, try a sleep mask." },
     ruhe: { titel: "A quiet bedroom", kurz: "Quiet room", ikon: "h-ohr", teil: "abend", min: -5, tun: "Bedroom quiet, earplugs ready",
-      text: "Cut down noise before lights out: close windows and doors and keep earplugs on your nightstand. A fan or a steady background sound can cover sudden noises. Ask others at home about quiet hours.", passt: ["geraeusche", "leicht", "nachts"] },
+      text: "Cut down noise before lights out: close windows and doors and keep earplugs on your nightstand. A fan or a steady background sound can cover sudden noises. Ask others at home about quiet hours." },
     aufstehen: { titel: "Awake for a while? Get up", kurz: "Get up if awake", ikon: "h-bett", teil: "nacht", erinnern: false, tun: "Awake for about 20 minutes? Get up, keep the light dim, go back when you feel sleepy",
-      text: "If you've been lying awake for about 20 minutes, get up and do something calm in dim light, like reading on paper. Go back to bed when you feel sleepy. Sleepwhale's Deep Sleep Guide explains that lying in bed awake keeps sleep pressure from building.", passt: ["15min", "zurueck", "rasen", "unruhig"] },
+      text: "If you've been lying awake for about 20 minutes, get up and do something calm in dim light, like reading on paper. Go back to bed when you feel sleepy. Lying in bed awake keeps sleep pressure from building." },
     bewegung: { titel: "Move earlier in the day", kurz: "Move earlier", ikon: "h-gehen", teil: "abend", min: -180, tun: "Workouts done for the day",
-      text: "Walk, stretch or do light strength training for 20 to 40 minutes, earlier in the day. Finish harder workouts at least three hours before bed and keep the evening to gentle stretching. Sleepwhale's Deep Sleep Guide suggests movement that leaves you feeling calmer afterward.", passt: ["unruhig", "energie", "mittag", "spaet"] },
+      text: "Walk, stretch or do light strength training for 20 to 40 minutes, earlier in the day. Finish harder workouts at least three hours before bed and keep the evening to gentle stretching. Choose movement that leaves you feeling calmer afterward." },
     nickerchen: { titel: "Short, early naps only", kurz: "Short naps", ikon: "h-sofa", teil: "tag", min: 780, erinnern: false, tun: "If you nap: 20 minutes at most, before 3 PM",
-      text: "If you need a nap, keep it under 20 minutes and before 3 PM, and set an alarm so it stays short. Sleepwhale's Deep Sleep Guide explains that long naps keep sleep pressure from building. On days without a nap, a short walk or some daylight can carry you through the afternoon.", passt: ["mittag", "nebel", "15min"] }
+      text: "If you need a nap, keep it under 20 minutes and before 3 PM, and set an alarm so it stays short. Long naps keep sleep pressure from building. On days without a nap, a short walk or some daylight can carry you through the afternoon." }
   };
   var HABIT_REIHE = Object.keys(HABITS);
   /* Alte Plan-Links (bis 15.11.) mit gestrichenen Habits: beim Lesen gegen das erste freie aus ERSATZ_HABITS tauschen, der alte Text entfällt */
@@ -2874,44 +2878,71 @@ body.chat-offen .chat-fenster { display: flex; }
     nickerchen: ["bilder/habit-nickerchen.webp", "A man takes a short nap on the sofa in the afternoon"]
   };
   /* Info-Kasten je Woche (seit 15.11. abends, Feedback Niklas: „mehr Infos über das Habit und warum es gerade für den Kunden Sinn macht“).
-     wie = so fängst du an, warum = Grund aus Sleepwhales Deep Sleep Guide, Zitate wörtlich (Seite im PDF: routine und abschalten 22, blaulicht 10, essen 8,
-     wasser 15, tageslicht 9, koffein 13, weckzeit 22, reset 20, dunkel 22, aufstehen und nickerchen 5, bewegung 16), lib = passendes Kapitel der Library.
-     dunkel und ruhe kommen aus Sleepwhales Schlaf-Quiz, ruhe ohne Zitat. Warum es zum Kunden passt, baut infoPasst() aus seinen Antworten */
+     wie = so fängst du an, warum = Grund aus Sleepwhales Deep Sleep Guide, ohne den Guide zu nennen (Niklas 15.11.: „guide nicht erwähnen“), Zitate wörtlich
+     (Seite im PDF: routine und abschalten 22, blaulicht 10, essen 8, wasser 15, tageslicht 9, koffein 13, weckzeit 22, reset 20, dunkel 22, aufstehen und
+     nickerchen 5, bewegung 16), lib = passendes Kapitel der Library. dunkel und ruhe kommen aus Sleepwhales Schlaf-Quiz, ruhe ohne Zitat.
+     Warum es zum Kunden passt, baut infoPasst() aus seinen Antworten */
   var HABIT_INFO = {
     routine: { wie: ["Shake the bottle, then place 1 mL under your tongue", "Hold it for a minute, then swallow, no water needed", "Take it 10 minutes before lights out, at the same time every night"],
-      warum: "The guide describes how a repeated evening cue becomes a signal for rest: “Repeating calming activities nightly helps the body associate these cues with sleep.” Your drops are meant to be that fixed point each night.", quelle: "Sleepwhale's Deep Sleep Guide: Your morning & evening", lib: "#lib-routine" },
+      warum: "A repeated evening cue becomes a signal for rest: “Repeating calming activities nightly helps the body associate these cues with sleep.” Your drops are meant to be that fixed point each night.", lib: "#lib-routine" },
     blaulicht: { wie: ["Set a phone alarm for one hour before bed as your screens-off cue", "Charge your phone outside the bedroom", "Switch overhead lights off and use one low lamp"],
-      warum: "The guide names more than light: bright screens can delay sleep signals, while notifications and emotionally charged content keep the nervous system alert. “Using screens late at night can blur the natural transition between daytime activity and rest.”", quelle: "Sleepwhale's Deep Sleep Guide: Light & screens", lib: "#lib-licht" },
+      warum: "It's about more than light: bright screens can delay sleep signals, while notifications and emotionally charged content keep the nervous system alert. “Using screens late at night can blur the natural transition between daytime activity and rest.”", lib: "#lib-licht" },
     essen: { wie: ["Put protein, carbs and some fat on your dinner plate", "Keep late dinners small and skip heavy, spicy or very sugary food", "If you wake up hungry, try a small snack like yogurt or a banana"],
-      warum: "The guide links night waking to blood sugar: long gaps between meals, very light dinners or restrictive eating can trigger stress hormones overnight. “Large gaps between meals, low protein intake, or unbalanced dinners can trigger night waking and restless sleep.”", quelle: "Sleepwhale's Deep Sleep Guide: Food & sleep", lib: "#lib-essen" },
+      warum: "Night waking can be linked to blood sugar: long gaps between meals, very light dinners or restrictive eating can trigger stress hormones overnight. “Large gaps between meals, low protein intake, or unbalanced dinners can trigger night waking and restless sleep.”", lib: "#lib-essen" },
     wasser: { wie: ["Drink a glass of water right after you get up", "Have a drink with breakfast and most of your fluids by midday", "Keep large drinks out of the last 1 to 2 hours before bed"],
-      warum: "According to the guide, many people who wake at night are under-hydrated during the day, and low fluid levels can trigger thirst signals at night. “The goal is not to drink more at night, but to hydrate earlier and more evenly during the day.”", quelle: "Sleepwhale's Deep Sleep Guide: When to drink", lib: "#lib-trinken" },
+      warum: "Many people who wake at night are under-hydrated during the day, and low fluid levels can trigger thirst signals at night. “The goal is not to drink more at night, but to hydrate earlier and more evenly during the day.”", lib: "#lib-trinken" },
     tageslicht: { wie: ["Step outside within the first hour after waking, even when it's cloudy", "Have breakfast or your first coffee by a bright window", "Walk part of your commute or take the dog out in the morning"],
-      warum: "The guide calls light the strongest signal for your internal clock and explains that morning light supports melatonin production later in the evening. “A well-timed morning light signal can make the body more tolerant to small amounts of evening light.”", quelle: "Sleepwhale's Deep Sleep Guide: Light & screens", lib: "#lib-licht" },
+      warum: "Light is the strongest signal for your internal clock, and morning light supports melatonin production later in the evening. “A well-timed morning light signal can make the body more tolerant to small amounts of evening light.”", lib: "#lib-licht" },
     koffein: { wie: ["Note what time your last coffee, tea or energy drink usually is", "Move it 30 to 60 minutes earlier each day until it's before 2 PM", "Watch for hidden caffeine in black or green tea, cola and chocolate"],
-      warum: "The guide lists caffeine late in the day as a disruptor of cortisol, the hormone that should drop at night, and counts coffee, energy drinks, some teas and chocolate as sleep-disrupting foods, “especially when eaten late.”", quelle: "Sleepwhale's Deep Sleep Guide: Food & sleep", lib: "#lib-essen" },
+      warum: "Caffeine late in the day can disrupt cortisol, the hormone that should drop at night. Coffee, energy drinks, some teas and chocolate count as sleep-disrupting foods, “especially when eaten late.”", lib: "#lib-essen" },
     weckzeit: { wie: ["Pick a wake time that works on workdays and weekends alike", "Put your alarm across the room so you have to get up", "After a short night, get up anyway and go to bed a bit earlier"],
-      warum: "In the guide's 7-day plan, a fixed wake time comes first because it anchors your day and night rhythm. “Waking at a similar time daily helps regulate your sleep rhythm, even after a poor night.”", quelle: "Sleepwhale's Deep Sleep Guide: The 7-day reset", lib: "#lib-7-tage" },
+      warum: "In the 7-day reset, a fixed wake time comes first because it anchors your day and night rhythm. “Waking at a similar time daily helps regulate your sleep rhythm, even after a poor night.”", lib: "#lib-7-tage" },
     abschalten: { wie: ["Choose one calm activity: stretching, a paper book or sitting in dim light", "Start it at the same time every evening, about 30 minutes before bed", "Keep it to 10 minutes, then go straight into your drops ritual"],
-      warum: "The guide explains that a tired body doesn't always mean a calm nervous system, and that without a clear wind-down period the body gets mixed signals. “Repeating calming activities nightly helps the body associate these cues with sleep.”", quelle: "Sleepwhale's Deep Sleep Guide: Your morning & evening", lib: "#lib-routine" },
+      warum: "A tired body doesn't always mean a calm nervous system, and without a clear wind-down period the body gets mixed signals. “Repeating calming activities nightly helps the body associate these cues with sleep.”", lib: "#lib-routine" },
     reset: { wie: ["Pick a fixed time, for example mid-afternoon, and set a reminder", "Breathe slowly through your nose for one minute, exhale a bit longer", "If breathing feels off, stretch or feel your feet on the floor"],
-      warum: "The guide says sleep depends on a nervous system that receives signals of safety throughout the day, not just at bedtime. “Short breathing pauses during the day can be more effective than long sessions at night”", quelle: "Sleepwhale's Deep Sleep Guide: Calm your nervous system", lib: "#lib-reset" },
+      warum: "Sleep depends on a nervous system that receives signals of safety throughout the day, not just at bedtime. “Short breathing pauses during the day can be more effective than long sessions at night”", lib: "#lib-reset" },
     dunkel: { wie: ["Close curtains or blinds fully before you get into bed", "Cover standby lights and turn your phone face down", "Try a sleep mask if streetlight still gets in"],
-      warum: "Darkness is one of the bedroom factors Sleepwhale's sleep quiz asks about. The guide adds that dimming the lights earlier matters too: “Lower lighting in the evening helps signal that the day is ending and supports natural sleep cues.”", quelle: "Sleepwhale's sleep quiz", lib: "" },
+      warum: "Darkness is one of the bedroom factors Sleepwhale's sleep quiz asks about, and dimming the lights earlier in the evening matters too: “Lower lighting in the evening helps signal that the day is ending and supports natural sleep cues.”", lib: "" },
     ruhe: { wie: ["Close windows and doors before lights out", "Keep a pair of earplugs on your nightstand", "Run a fan or a steady background sound to cover sudden noises"],
-      warum: "Noise in the bedroom is one of the factors Sleepwhale's sleep quiz asks about. Quiet is part of your sleep environment, and a few fixed steps each evening make it easy to set up the same way every night.", quelle: "Sleepwhale's sleep quiz", lib: "" },
+      warum: "Noise in the bedroom is one of the factors Sleepwhale's sleep quiz asks about. Quiet is part of your sleep environment, and a few fixed steps each evening make it easy to set up the same way every night.", lib: "" },
     aufstehen: { wie: ["If you've been awake about 20 minutes, leave the bed", "Read on paper or sit quietly in dim light, no screens", "Go back to bed only when you feel sleepy again"],
-      warum: "The guide describes sleep pressure, which builds the longer you're awake. “If you nap too long, lie in bed awake, or stay inactive all day, this pressure doesn’t build properly”", quelle: "Sleepwhale's Deep Sleep Guide: How sleep works", lib: "#lib-schlaf" },
+      warum: "Sleep pressure builds the longer you're awake. “If you nap too long, lie in bed awake, or stay inactive all day, this pressure doesn’t build properly”", lib: "#lib-schlaf" },
     bewegung: { wie: ["Walk, stretch or do light strength training for 20 to 40 minutes", "Schedule it in the morning or early afternoon", "In the evening, stick to slow stretching"],
-      warum: "The guide explains that regular light movement builds sleep pressure, while late, intense workouts can keep the body in alert mode. “Movement that leaves you feeling calmer afterward is more likely to support deeper sleep.”", quelle: "Sleepwhale's Deep Sleep Guide: Movement", lib: "#lib-bewegung" },
+      warum: "Regular light movement builds sleep pressure, while late, intense workouts can keep the body in alert mode. “Movement that leaves you feeling calmer afterward is more likely to support deeper sleep.”", lib: "#lib-bewegung" },
     nickerchen: { wie: ["Set an alarm for 20 minutes before you lie down", "Nap before 3 PM, never in the evening", "On no-nap days, take a short walk outside instead"],
-      warum: "The guide names long naps as one reason sleep pressure doesn't build: “If you nap too long, lie in bed awake, or stay inactive all day, this pressure doesn’t build properly”", quelle: "Sleepwhale's Deep Sleep Guide: How sleep works", lib: "#lib-schlaf" }
+      warum: "Long naps are one reason sleep pressure doesn't build: “If you nap too long, lie in bed awake, or stay inactive all day, this pressure doesn’t build properly”", lib: "#lib-schlaf" }
   };
   var LIB_TITEL = { "#lib-schlaf": "How sleep works", "#lib-licht": "Light & screens", "#lib-essen": "Food & sleep", "#lib-trinken": "When to drink", "#lib-bewegung": "Movement", "#lib-reset": "Calm your nervous system", "#lib-routine": "Your morning & evening", "#lib-7-tage": "The 7-day reset" };
   /* Zutaten je Säule für Woche 1, wie in Inside & lab (Sleepwhales Four Pillars) */
   var SAEULE_ZUTATEN = { wind: "Broad Spectrum Nano Hemp, Gadomag+ (Magnesium Citrate) and Sibelius™ (Chamomile)", fall: "CBN Isolate and Suntheanine® (L-Theanine)", stay: "CBN Isolate and Gadomag+ (Magnesium Citrate)", recover: "M2 Lions Mane and Suntheanine® (L-Theanine)" };
-  /* Fester Weg: Habits, die zum größten Einfluss passen */
-  var GRUND_HABITS = { arbeit: ["reset", "abschalten", "blaulicht"], pflege: ["abschalten", "reset"], menschen: ["reset", "abschalten"], hormone: ["dunkel", "abschalten", "reset"], gesundheit: ["dunkel", "abschalten", "ruhe"] };
+  /* Welche Habits zu welcher Antwort passen (seit dem späten 15.11., Niklas: „habits wirklich individuell … basierend auf der umfrage“):
+     3 = gehört direkt dazu, 2 = passt gut, 1 = hilft auch. Grundlage: Sleepwhales Deep Sleep Guide und Sleepwhales Seite zu Wachphasen um 3 Uhr
+     (Cortisol durch Stress und Blutzucker). Beim größten Einfluss zählen nur die Stress-Antworten. Gesundheit und Hormone bekommen kein Habit zugeordnet
+     (keine Gesundheitsratschläge, auch nicht als Grund im Info-Kasten), bei Gesundheit fallen Essen, Trinken, Bewegung und Nickerchen ganz weg */
+  var ANTWORT_HABITS = {
+    wired: { abschalten: 3, reset: 2, blaulicht: 2 },
+    spaet: { essen: 3, bewegung: 3, blaulicht: 1 },
+    unregel: { weckzeit: 3, tageslicht: 2 },
+    screens: { blaulicht: 3 },
+    "15min": { blaulicht: 2, koffein: 2, aufstehen: 2, tageslicht: 1, weckzeit: 1 },
+    rasen: { abschalten: 3, reset: 3, aufstehen: 1 },
+    unruhig: { bewegung: 3, koffein: 2, wasser: 1 },
+    nachts: { essen: 2, wasser: 2, koffein: 1, dunkel: 1, reset: 1 },
+    zurueck: { aufstehen: 3, dunkel: 1, reset: 1 },
+    geraeusche: { ruhe: 3 },
+    leicht: { ruhe: 2, dunkel: 2 },
+    muede: { weckzeit: 2, tageslicht: 2, koffein: 2, bewegung: 1 },
+    energie: { tageslicht: 3, weckzeit: 2, wasser: 1 },
+    mittag: { nickerchen: 3, bewegung: 2, koffein: 1 },
+    nebel: { tageslicht: 2, weckzeit: 2, bewegung: 1, wasser: 1 },
+    arbeit: { reset: 2, abschalten: 1, blaulicht: 1 },
+    pflege: { reset: 2, abschalten: 1 },
+    menschen: { reset: 2, abschalten: 1 }
+  };
+  /* Punkte je Stufe: eine Antwort, zu der ein Habit direkt gehört, zählt mehr als mehrere lose (3 → 9, 2 → 4, 1 → 1) */
+  var STUFE_PUNKTE = [0, 1, 4, 9];
+  var BASIS_HABITS = ["weckzeit", "blaulicht", "tageslicht"];
+  var OHNE_BEI_GESUNDHEIT = ["essen", "wasser", "bewegung", "nickerchen"];
   /* Woche 1 ohne ChatGPT: das Ritual und ein Tipp, bei alten Plan-Links passend zur Hürde, sonst der Tipp gegen das Vergessen */
   var ROUTINE_TIPP = { vergessen: "Keep the bottle where you brush your teeth at night, so you see it every evening.", abende: "If an evening runs late, still take your drops 10 minutes before you go to bed.", schnell: "Keep it steady and give it time, your notebook shows how your nights go.", geschmack: "Shake the bottle well and hold the drops under your tongue for the full minute, then swallow.", keine: "Same time, same order, every night. That's your ritual." };
   var GRUND_SATZ = { arbeit: "your work or money", pflege: "caring for loved ones", gesundheit: "a health issue or injury", hormone: "hormones or midlife changes", menschen: "what's going on with people in your life" };
@@ -2941,19 +2972,53 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function saeuleName(f) { return f ? SAEULEN_SD[f][0] : ""; }
   function fokusTitel(f) { return f ? SAEULEN_SD[f][0] : "Keep your nights steady"; }
-  /* Fester Weg ohne ChatGPT: je Habit Punkte für passende Antworten (Fokus-Säule doppelt) und den größten Einfluss, die besten 3.
-     Bei Gleichstand die Reihenfolge in HABITS, aufgefüllt mit festen Klassikern */
-  function habitsWaehlen(a) {
-    var f = fokusVon(a), tick = angekreuzt(a), punkte = {};
-    HABIT_REIHE.forEach(function (id) {
-      var p = 0;
-      HABITS[id].passt.forEach(function (w) { if (tick.indexOf(w) > -1) p += OPTION_SAEULE[w] === f ? 2 : 1; });
-      if ((GRUND_HABITS[a.grund] || []).indexOf(id) > -1) p += 1;
-      punkte[id] = p;
-    });
-    var liste = HABIT_REIHE.filter(function (id) { return punkte[id] > 0; }).sort(function (x, y) { return punkte[y] - punkte[x] || HABIT_REIHE.indexOf(x) - HABIT_REIHE.indexOf(y); });
-    return liste.concat(["weckzeit", "blaulicht", "tageslicht"]).filter(function (id, i, l) { return l.indexOf(id) === i; }).slice(0, 3);
+  /* Die 3 Habits aus den Antworten (seit dem späten 15.11. für jeden Plan, ChatGPT schreibt nur noch die Texte): je Runde das Habit mit den meisten
+     Punkten aus den offenen Antworten (angekreuzte Aussagen und der größte Einfluss). Danach zählt die Antwort, für die es gewählt ist, nur noch ein
+     Viertel, andere Antworten, zu denen es mit Stufe 2 oder 3 passt, die Hälfte: so decken die 3 Habits möglichst verschiedene Antworten ab.
+     Gleichstand: Reihenfolge in HABITS. Fehlt etwas, kommen feste Klassiker */
+  function offeneAntworten(a) {
+    var offen = {};
+    angekreuzt(a).forEach(function (w) { offen[w] = 1; });
+    if (hat(ANTWORT_HABITS, a.grund)) offen[a.grund] = 1;
+    return offen;
   }
+  function habitPunkte(offen, w, id) { return offen[w] * STUFE_PUNKTE[ANTWORT_HABITS[w][id] || 0]; }
+  function abdecken(offen, id, wegen) { Object.keys(offen).forEach(function (w) { if ((ANTWORT_HABITS[w][id] || 0) >= 2) offen[w] *= w === wegen ? 0.25 : 0.5; }); }
+  function habitsWaehlen(a) {
+    var offen = offeneAntworten(a), ids = [];
+    while (ids.length < 3) {
+      var bestes = "", punkte = 0;
+      HABIT_REIHE.forEach(function (id) {
+        if (ids.indexOf(id) > -1 || (a.grund === "gesundheit" && OHNE_BEI_GESUNDHEIT.indexOf(id) > -1)) return;
+        var p = Object.keys(offen).reduce(function (s, w) { return s + habitPunkte(offen, w, id); }, 0);
+        if (p > punkte) { bestes = id; punkte = p; }
+      });
+      if (!bestes) break;
+      ids.push(bestes);
+      abdecken(offen, bestes, antwortFuer(offen, bestes));
+    }
+    return ids.concat(BASIS_HABITS.filter(function (id) { return ids.indexOf(id) < 0; })).slice(0, 3);
+  }
+  /* Die eine Antwort, für die ein Habit steht (Niklas 15.11.: „nur der betroffene punkt passend zum habit“): zuerst Aussagen aus den Säulen, dann der
+     größte Einfluss; die meisten offenen Punkte, bei Gleichstand die weniger abgedeckte, sonst die frühere im Quiz. "" = keine passt, ein Klassiker */
+  function antwortFuer(offen, id) {
+    var beste = "", punkte = 0, rest = 0;
+    [true, false].forEach(function (ausSaeule) {
+      if (beste) return;
+      Object.keys(offen).forEach(function (w) {
+        if (hat(OPTION_SAEULE, w) !== ausSaeule) return;
+        var p = habitPunkte(offen, w, id);
+        if (p > punkte || (p > 0 && p === punkte && offen[w] > rest)) { beste = w; punkte = p; rest = offen[w]; }
+      });
+    });
+    return beste;
+  }
+  /* Je Habit des Plans seine Antwort, abgedeckt in derselben Reihenfolge wie bei der Wahl. Gilt auch für ältere Pläne, deren Habits ChatGPT wählte */
+  function habitGruende(a, ids) {
+    var offen = offeneAntworten(a);
+    return ids.map(function (id) { var w = antwortFuer(offen, id); abdecken(offen, id, w); return w; });
+  }
+  function antwortZuText(w) { return hat(OPTION_SAEULE, w) ? antwortText(OPTION_SAEULE[w], w) : antwortText("grund", w); }
   /* Texte im Plan: von ChatGPT aus dem Link, sonst fest */
   function planFokus(plan) { return fokusVon(antwortenAus(plan)); }
   function routineText(plan) { return plan.o || "This week is about one thing: your drops, 10 minutes before bed, at the same time every night. Shake well, 1 mL under your tongue, hold for a minute, then swallow. " + (ROUTINE_TIPP[plan.h] || ROUTINE_TIPP.vergessen); }
@@ -3226,30 +3291,27 @@ body.chat-offen .chat-fenster { display: flex; }
     sdTeil("fuss").replaceChildren(knopfMit("Save my times", "knopf gold", zeitenSpeichern), knopfMit("Back to my plan", "text-link", function () { location.hash = planAnker(sd.plan); }));
     zurBox(true);
   }
-  /* ChatGPT schreibt den Plan (meta hub-plan-api). Gesendet werden nur die Antworten und die Zeiten, nie Name oder E-Mail.
-     Ohne API, bei Fehler oder nach 32 Sekunden kommt der feste Plan. Eine späte Antwort zählt nicht mehr (lauf) */
+  /* ChatGPT schreibt die Texte zum Plan (meta hub-plan-api). Gesendet werden nur die Antworten, die Zeiten und die 3 gewählten Habits mit der Antwort,
+     für die sie stehen (habits: id, wegen), nie Name oder E-Mail. Ohne API, bei Fehler oder nach 32 Sekunden kommen die festen Texte. Eine späte Antwort zählt nicht mehr (lauf) */
   var PLAN_API = (document.querySelector('meta[name="hub-plan-api"]') || {}).content || "";
   /* Seit wann der Kunde die Drops nimmt, kommt seit 15.11. nur noch aus dem Mail-Link (?night=), nicht mehr aus dem Quiz. Die Hürde nur bei alten Plänen */
-  function planAnfrage(a, w) {
-    var antworten = { nacht: a.nacht, grund: a.grund };
+  function planAnfrage(a, w, ids) {
+    var antworten = { nacht: a.nacht, grund: a.grund }, gruende = habitGruende(a, ids);
     SAEULEN_REIHE.forEach(function (k) { antworten[k] = getickt(a, k); });
     if (nachtBekannt) antworten.seit = nacht <= 3 ? "neu" : nacht <= 21 ? "wochen" : nacht <= 30 ? "fast_leer" : "laenger";
     if (a.huerde) antworten.huerde = a.huerde;
-    return { antworten: antworten, bett: w.t, auf: w.u };
+    return { antworten: antworten, bett: w.t, auf: w.u, habits: ids.map(function (id, j) { return { id: id, wegen: gruende[j] }; }) };
   }
-  /* Antwort von ChatGPT prüfen: genau 3 verschiedene Habits aus HABITS. Texte gekürzt, leer = fester Text */
-  function kiPlan(p) {
-    if (!p || !Array.isArray(p.habits) || p.habits.length !== 3) return null;
-    var g = [];
-    for (var j = 0; j < 3; j++) {
-      var x = p.habits[j];
-      if (!x || !hat(HABITS, x.id) || g.some(function (y) { return y.i === x.id; })) return null;
-      g.push({ i: x.id, x: zeichen(x.text, 420) });
-    }
-    return { e: zeichen(p.einleitung, 220), o: zeichen(p.routine, 420), g: g };
+  /* Antwort von ChatGPT: je gewähltem Habit der Text mit derselben id, gekürzt. Fehlt er, bleibt der feste Text */
+  function kiPlan(p, ids) {
+    if (!p || !Array.isArray(p.habits)) return null;
+    return { e: zeichen(p.einleitung, 220), o: zeichen(p.routine, 420), g: ids.map(function (id) {
+      var x = p.habits.filter(function (h) { return h && h.id === id; })[0];
+      return { i: id, x: zeichen(x && x.text, 420) };
+    }) };
   }
   function planErstellen() {
-    var nr = ++sd.lauf, a = sd.antworten, w = sd.wahl, f = fokusVon(a), fertig = false;
+    var nr = ++sd.lauf, a = sd.antworten, w = sd.wahl, f = fokusVon(a), ids = habitsWaehlen(a), fertig = false;
     kopfSetzen("", "", 0);
     sdTeil("titel").textContent = "Your plan is coming together …";
     sd.box.classList.add("laedt");
@@ -3290,21 +3352,21 @@ body.chat-offen .chat-fenster { display: flex; }
       schritt = punkte.length;
       laden.classList.add("fertig");
       setzen();
-      setTimeout(function () { if (nr === sd.lauf) planFertig(planAusDaten(a, w, ki)); }, 400);
+      setTimeout(function () { if (nr === sd.lauf) planFertig(planAusDaten(a, w, ids, ki)); }, 400);
     }
     if (!PLAN_API) { setTimeout(function () { ende(null); }, 1800); return; }
     var ab = new AbortController(), uhr = setTimeout(function () { ab.abort(); }, 32000);
-    fetch(PLAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(planAnfrage(a, w)), signal: ab.signal })
+    fetch(PLAN_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(planAnfrage(a, w, ids)), signal: ab.signal })
       .then(function (r) { if (!r.ok) throw new Error("Status " + r.status); return r.json(); })
-      .then(function (d) { ende(kiPlan(d && d.plan)); })
+      .then(function (d) { ende(kiPlan(d && d.plan, ids)); })
       .catch(function () { ende(null); })
       .then(function () { clearTimeout(uhr); });
   }
-  /* Aus Antworten, Zeiten und den Texten von ChatGPT (ki, sonst null) wird der Plan: dieselben Felder wie im Link.
+  /* Aus Antworten, Zeiten, den gewählten Habits und den Texten von ChatGPT (ki, sonst null) wird der Plan: dieselben Felder wie im Link.
      Flaschen-Nacht aus dem Mail-Link (?night=), sonst Nacht 1: der Guide ist für die ersten 30 Nächte, das Quiz fragt seit 15.11. nicht mehr „Seit wann“ */
-  function planAusDaten(a, w, ki) {
+  function planAusDaten(a, w, ids, ki) {
     var start = heute0(), flascheNacht = nachtBekannt ? nacht : 1, bis = isoTag(plusTage(start, Math.max(0, rest(flascheNacht) - 7)));
-    var g = ki ? ki.g : habitsWaehlen(a).map(function (id) { return { i: id, x: "" }; });
+    var g = ki ? ki.g : ids.map(function (id) { return { i: id, x: "" }; });
     return { v: 2, p: "sd", s: isoTag(start), w: a.nacht, a: angekreuzt(a), r: a.grund, h: a.huerde || "", t: w.t, u: w.u, k: ki ? 1 : 0, e: ki ? ki.e : "", o: ki ? ki.o : "", g: g, n: bis };
   }
   /* Neue Zeiten für den bestehenden Plan: Start, Habits und Texte bleiben */
@@ -3542,43 +3604,39 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function schnittZeile(werte) { return "Your notebook: " + schnitt(werte) + " on average, " + naechteText(werte.length) + " rated"; }
   /* Info-Kasten einer Woche (id leer = Woche 1): zu eine Zeile „Why it fits you, and how to start“, offen drei Teile. Warum es passt: bei Woche 1
-     Fokus-Säule mit ihren Zutaten und die Uhrzeit, bei Habits die angekreuzten Antworten aus HABITS[id].passt und der größte Einfluss aus GRUND_HABITS */
+     Fokus-Säule mit ihren Zutaten und die Uhrzeit, bei Habits nur die eine Antwort, für die das Habit steht (habitGruende) */
   function infoPasst(plan, id) {
-    var teil = element("section", "wi-teil"), liste = element("ul", "wi-antworten");
+    var teil = element("section", "wi-teil");
     teil.appendChild(element("h4", null, "Why it fits you"));
     if (!id) {
       var f = planFokus(plan), bett = minutenAus(plan.t);
       teil.appendChild(element("p", null, (f ? "Your focus is " + saeuleName(f) + ". For " + saeuleName(f) + ", Sleepwhale names " + SAEULE_ZUTATEN[f] + " in your drops. " : "") + "Your drops come at " + uhrText(bett - 10) + ", 10 minutes before lights out at " + uhrText(bett) + ", the same time every night."));
       return teil;
     }
-    HABITS[id].passt.filter(function (w) { return plan.a.indexOf(w) > -1; }).forEach(function (w) {
-      var li = element("li");
-      li.append(element("small", null, saeuleName(OPTION_SAEULE[w])), element("span", null, "“" + antwortText(OPTION_SAEULE[w], w) + "”"));
-      liste.appendChild(li);
-    });
-    if ((GRUND_HABITS[plan.r] || []).indexOf(id) > -1) {
-      var li = element("li");
-      li.append(element("small", null, "Biggest impact right now"), element("span", null, "“" + antwortText("grund", plan.r) + "”"));
-      liste.appendChild(li);
+    var ids = plan.g.map(function (x) { return x.i; }), w = habitGruende(antwortenAus(plan), ids)[ids.indexOf(id)];
+    if (!w) {
+      teil.appendChild(element("p", null, "Your answers didn't point to one habit in particular, so your plan adds this one as a steady basic for your 30 nights."));
+      return teil;
     }
-    if (liste.childNodes.length) teil.append(element("p", null, "You told us in Sleepwhale's sleep quiz:"), liste);
-    else teil.appendChild(element("p", null, "Your answers didn't point to one habit in particular, so your plan adds this one as a steady basic for your 30 nights."));
+    var antwort = element("p", "wi-antwort");
+    antwort.append(element("small", null, hat(OPTION_SAEULE, w) ? saeuleName(OPTION_SAEULE[w]) : "Biggest impact right now"), element("span", null, "“" + antwortZuText(w) + "”"));
+    teil.append(element("p", null, "You told us in Sleepwhale's sleep quiz:"), antwort);
     return teil;
   }
   function infoKasten(plan, id) {
     var info = HABIT_INFO[id || "routine"], kasten = element("details", "wk-info"), kopf = element("summary"), inhalt = element("div", "wi-raster");
-    var wie = element("section", "wi-teil"), schritte = element("ol", "wi-schritte"), warum = element("section", "wi-teil wi-warum"), quelle = element("p", "wi-quelle", "From " + info.quelle + ".");
+    var wie = element("section", "wi-teil"), schritte = element("ol", "wi-schritte"), warum = element("section", "wi-teil wi-warum");
     kopf.append(ikon("info"), element("span", null, "Why it fits you, and how to start"), ikon("plus"));
     info.wie.forEach(function (s) { schritte.appendChild(element("li", null, s)); });
     wie.append(element("h4", null, "How to start"), schritte);
-    if (info.lib) quelle.append(" ", linkMit("Read " + LIB_TITEL[info.lib] + " in your Sleep library", "text-link", info.lib));
-    warum.append(element("h4", null, "Why it matters"), element("p", null, info.warum), quelle);
+    warum.append(element("h4", null, "Why it matters"), element("p", null, info.warum));
+    if (info.lib) warum.appendChild(element("p", "wi-mehr")).appendChild(linkMit("Read " + LIB_TITEL[info.lib] + " in your Sleep library", "text-link", info.lib));
     inhalt.append(infoPasst(plan, id), wie, warum);
     kasten.append(kopf, inhalt);
     return kasten;
   }
   /* Deine 4 Wochen untereinander: links das Bild zum Habit (Woche 1 das Ritual), rechts Woche, Habit, der Text von ChatGPT, Uhrzeit und Links.
-     Die Woche von heute mit Gold, erledigte ruhiger. Erinnerung nur als kleiner Link, die Frage geht in den Chat */
+     Die Woche von heute mit Gold, erledigte ruhiger. Kalender und Frage als Knöpfe (Niklas 15.11.: „bitte prominenter machen die buttons“), die Frage geht in den Chat */
   function wochenKarten(plan, n, d) {
     var raster = element("div", "wk-raster"), start = ausIso(plan.s);
     WOCHEN.forEach(function (w, j) {
@@ -3598,14 +3656,18 @@ body.chat-offen .chat-fenster { display: flex; }
         element("p", "wk-wann", (h ? habitWann(plan, id) : "Every evening at " + uhrText(minutenAus(plan.t) - 10)) + (zustand === "spaeter" ? ", from " + tagKurz(plusTage(start, w[0] - 1)) : "")));
       if (werte.length) inhalt.appendChild(element("p", "wk-schnitt", schnittZeile(werte)));
       inhalt.appendChild(infoKasten(plan, id));
-      if (h && h.erinnern !== false) links.appendChild(knopfMit("Add to calendar", "text-link", function () { kalenderPlan([habitTermin(plan, j - 1)], "Your calendar reminds you every day until night 30: " + h.titel + "."); }));
-      if (!h) links.appendChild(linkMit("How the ritual works", "text-link", "#drops-ritual"));
-      if (!h && n >= 7) links.appendChild(linkMit("Is your serving right?", "text-link", "#drops-n7"));
-      var frage = element("button", "text-link wk-frage", h ? "Ask about this habit" : "Ask about your drops");
+      if (h && h.erinnern !== false) {
+        var kalender = knopfMit("Add to calendar", "knopf", function () { kalenderPlan([habitTermin(plan, j - 1)], "Your calendar reminds you every day until night 30: " + h.titel + "."); });
+        kalender.prepend(ikon("kalender"));
+        links.appendChild(kalender);
+      }
+      if (!h) links.appendChild(linkMit("How the ritual works", "knopf", "#drops-ritual"));
+      var frage = element("button", "knopf hell wk-frage", h ? "Ask about this habit" : "Ask about your drops");
       frage.type = "button";
       frage.dataset.chatFrage = h ? "Tell me more about my habit: " + h.titel + ". Why does it fit me, and how do I start?" : "How do I take my Sleep Drops, and what if I forget a night?";
       frage.prepend(ikon("chat"));
       links.appendChild(frage);
+      if (!h && n >= 7) links.appendChild(linkMit("Is your serving right?", "text-link", "#drops-n7"));
       inhalt.appendChild(links);
       karte.append(img, inhalt);
       raster.appendChild(karte);
@@ -3968,7 +4030,7 @@ body.chat-offen .chat-fenster { display: flex; }
     wTitel.id = "ps-wochen-titel";
     wochen.setAttribute("aria-labelledby", "ps-wochen-titel");
     wochen.append(augenbraue("Your 4 weeks"), wTitel, wochenKarten(plan, n, d),
-      element("p", "plan-quelle", (plan.k ? "Your habits were chosen and written by ChatGPT from your answers. " : "Your habits were chosen from your answers. ") + "Not medical advice. Sleepwhale: “" + DISCLAIMER + "”"));
+      element("p", "plan-quelle", (plan.k ? "Your habits were chosen from your answers and explained by ChatGPT. " : "Your habits were chosen from your answers. ") + "Not medical advice. Sleepwhale: “" + DISCLAIMER + "”"));
     planSeite.replaceChildren.apply(planSeite, teile.concat([einfuehrung(plan), wochen, kaufKarte(plan), naechteBereich(plan, n), bilanzKarte(plan, n, d)]));
     planFuss(plan, f);
   }
@@ -4278,7 +4340,7 @@ body.chat-offen .chat-fenster { display: flex; }
     wieder.appendChild(linkMit(adresse.replace(/^https?:\/\//, "").slice(0, 60) + "…", "druck-link", adresse.replace(/(\?[^#]*)?#/, function (m, q) { return (q ? q + "&" : "?") + "utm_source=pdf#"; })));
     zwei.append(augenbraue(kurzDatum(s) + " to " + kurzDatum(plusTage(s, 29)) + ", focus: " + (planFokus(plan) ? saeuleName(planFokus(plan)) : "steady nights")), element("h2", null, "Your day, from week 4"), abendListe(plan), element("h2", null, "Your 4 weeks"), tabelle,
       element("h2", null, "Your notebook, 0 to 10"), notiz, element("p", "druck-klein", "Order your next bottle" + (plan.n ? " on " + datumText(ausIso(plan.n)) : "") + ". " + preisSatz()),
-      wieder, element("p", "druck-klein", (plan.k ? "Habits chosen and written by ChatGPT from your answers. " : "") + "Not medical advice. " + DISCLAIMER), element("p", "druck-klein", FDA));
+      wieder, element("p", "druck-klein", (plan.k ? "Habits chosen from your answers, explained by ChatGPT. " : "") + "Not medical advice. " + DISCLAIMER), element("p", "druck-klein", FDA));
     druck.append(eins, zwei);
     document.body.appendChild(druck);
     document.body.classList.add("plan-druck");
@@ -4493,7 +4555,7 @@ body.chat-offen .chat-fenster { display: flex; }
     { p: "alle", k: ["thc", " high ", "stoned", "psychoactive", "marijuana", "cannabis", "weed"], a: "No. “Our hemp is broad spectrum, which means it contains no THC. No high, no hangover.” The lab report shows it too: delta-9 THC, delta-8 THC and THCA not detected.", l: [L.labor] },
     { p: "alle", k: ["wada", "drug test", "athlete", "competition", "compete", "doping", "tested sport"], a: "Your drops contain no THC, the lab found none. But they do contain CBN: WADA prohibits all natural and synthetic cannabinoids except CBD in competition, out of competition they're allowed. Competing in a tested sport? Check with your federation first.", l: [L.labor, L.mail] },
     { p: "alle", k: ["take it every night", "take this every night", "use it every night", "every single night", "daily", "each night", "long term", "tolerance", "habit forming", "addictive", "dependence", "depend on"], a: "Yes. “Sleepwhale is formulated for nightly use as part of a consistent bedtime routine.” For questions about long-term use, Sleepwhale says to “speak with your healthcare provider”.", l: [L.ritual] },
-    { p: "alle", k: ["sleep stage", " rem ", "deep sleep", "light sleep", "article", "library", "sleep score", "oura", "whoop", "tracker", "deep sleep guide", "ebook", "e book"], a: "The Sleep library follows Sleepwhale's Deep Sleep Guide: how sleep works (your internal clock, sleep pressure and the stages of a night), light and screens, food, when to drink, movement, calming your nervous system, your morning and evening, and the 7-day reset, plus an article on sleep trackers.", l: [L.library] },
+    { p: "alle", k: ["sleep stage", " rem ", "deep sleep", "light sleep", "article", "library", "sleep score", "oura", "whoop", "tracker", "deep sleep guide", "ebook", "e book"], a: "The Sleep library has eight short chapters: how sleep works (your internal clock, sleep pressure and the stages of a night), light and screens, food, when to drink, movement, calming your nervous system, your morning and evening, and the 7-day reset, plus an article on sleep trackers.", l: [L.library] },
     { p: "alle", k: ["medication", "medicine", "prescription", "pills", "interact", "ambien", "antidepress", "blood pressure", "hrt", "hormone"], a: "“If you take prescription medications or other supplements, we recommend consulting with your doctor or pharmacist before trying Sleepwhale. This is especially important if you’re managing an ongoing health condition.”" },
     { p: "alle", k: ["pregnan", "breastfeed", "nursing"], a: "Sleepwhale is for “Anyone over the age of 18 who is not currently pregnant or breastfeeding.”" },
     { p: "alle", k: ["over 65", "older", "my age", "how old", "teen", "child", "kids", "under 18"], a: "Sleepwhale is for adults over 18. If you're over 65, and especially if you take prescription medications, Sleepwhale recommends talking to your doctor first." },
@@ -4514,7 +4576,7 @@ body.chat-offen .chat-fenster { display: flex; }
     { p: "alle", k: ["wind down", "screen", "phone before", "racing mind", "mind races", "anxious", "cant fall asleep", "fall asleep faster"], a: "Sleepwhale's Four Pillars of Sleep are Wind Down, Fall Asleep, Stay Asleep and Recover Fully. Inside & lab shows the ingredients Sleepwhale tags for each pillar, in its own words.", l: [L.inside] },
     { p: "alle", k: ["gift", "present", "friend", "partner", "wife", "husband", "someone else"], a: "You can send a bottle to someone else, just enter their address at checkout, or give a Sleepwhale gift card.", l: [L.geschenk, L.nachkauf] },
     { p: "plan", k: ["notebook", "rate", "rating", "score", "0 to 10", "diary", "journal", "log my"], a: "Every morning, rate the night before from 0 to 10 in your plan. It's saved on this phone only. After night 30 your review shows your nights week by week, your first week next to your last.", l: [L.plan] },
-    { p: "plan", k: ["habit", "why this", "this week", "new habit", "my plan", "week 2", "week 3", "week 4"], a: "Your plan adds one habit per week, chosen for your answers in Sleepwhale's sleep quiz. Earlier habits keep running, your ritual with the drops stays the same. On each week's card, “Why it fits you, and how to start” shows the answers it's based on, how to start and why it matters.", l: [L.plan] },
+    { p: "plan", k: ["habit", "why this", "this week", "new habit", "my plan", "week 2", "week 3", "week 4"], a: "Your plan adds one habit per week, each chosen for one of your answers in Sleepwhale's sleep quiz. Earlier habits keep running, your ritual with the drops stays the same. On each week's card, “Why it fits you, and how to start” shows the answer it's based on, how to start and why it matters.", l: [L.plan] },
     { p: "plan", k: ["missed", "forgot", "skip a night", "skipped", "didnt do", "fell off"], a: "No problem. Take your drops the next night at your usual time and pick your habit up again. One missed night doesn't change your plan.", l: [L.plan] }
   ];
   /* Begrüßung und Vorschläge je Ort: Start, Drops, Plan-Seite */
@@ -4534,10 +4596,11 @@ body.chat-offen .chat-fenster { display: flex; }
     if (!plan) return "";
     var st = planStand(plan), w = wocheVon(st.nacht), d = notizbuch(plan), werte = alleWerte(d), bett = minutenAus(plan.t);
     var teile = [st.titel + " (started " + datumText(ausIso(plan.s)) + (w >= 1 && w <= 4 ? ", now in week " + w : "") + ").", "Drops at " + uhrText(bett - 10) + ", lights out " + uhrText(bett) + ", wake-up " + uhrText(minutenAus(plan.u)) + "."];
-    teile.push("Week 1 (nights 1 to 7): Your Sleepwhale routine, drops every evening at " + uhrText(bett - 10) + ". Plan text: " + routineText(plan).slice(0, 300));
+    teile.push("Week 1 (nights 1 to 7): Your Sleepwhale routine, drops every evening at " + uhrText(bett - 10) + ". Plan text: " + routineText(plan).slice(0, 260));
+    var ids = plan.g.map(function (x) { return x.i; }), gruende = habitGruende(antwortenAus(plan), ids);
     plan.g.forEach(function (x, j) {
       var h = HABITS[x.i];
-      teile.push("Week " + (j + 2) + " (nights " + WOCHEN[j + 1][0] + " to 30" + (w === j + 2 ? ", this week" : "") + "): " + h.titel + ", " + habitWann(plan, x.i).toLowerCase() + ". Plan text: " + habitText(plan, j).slice(0, 360));
+      teile.push("Week " + (j + 2) + " (nights " + WOCHEN[j + 1][0] + " to 30" + (w === j + 2 ? ", this week" : "") + "): " + h.titel + ", " + habitWann(plan, x.i).toLowerCase() + ". " + (gruende[j] ? "Chosen for their answer: " + antwortZuText(gruende[j]) : "A steady basic, not tied to one answer") + ". Plan text: " + habitText(plan, j).slice(0, 300));
     });
     teile.push("Quiz: last night " + NACHT_TEXT[plan.w] + "; ticked: " + (plan.a.length ? plan.a.map(function (k) { return antwortText(OPTION_SAEULE[k], k); }).join("; ") : "none") + "; biggest impact: " + antwortText("grund", plan.r) + (plan.h ? "; could get in the way: " + HUERDE_TEXT[plan.h] : "") + ".");
     teile.push(werte.length ? "Notebook (0 to 10): " + naechteText(werte.length) + " rated, average " + schnitt(werte) + "; by night: " + Object.keys(d).map(function (n) { return n + ":" + d[n]; }).join(", ") + "." : "Notebook: no nights rated yet.");
