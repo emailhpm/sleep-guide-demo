@@ -4045,11 +4045,12 @@ body.chat-offen .chat-fenster { display: flex; }
     weckzeit: "https://cdn.klaviyomail.com/company/VCPGP7/images/000c8106-9fab-4d1c-9ba6-03a570eb4333.jpeg"
   };
   /* hub_url: die Adresse des Guides, in dem der Plan gebaut wurde (Demo oder sleepwhale.com, mit ?bottle=extra). Die Mails bauen damit den Link
-     zum neuesten Plan aus dem Profil (sleep_plan_code), damit „Change my times“ auch in späteren Mails gilt */
+     zum neuesten Plan aus dem Profil (sleep_plan_code), damit „Change my times“ auch in späteren Mails gilt.
+     weeks[].schedule: wann das Habit dran ist (wie in der Wochen-Karte). Nicht „when“ nennen: Ereignisse mit diesem Feld nimmt Klaviyo mit 202 an und verwirft sie (getestet 15.11.) */
   function planDaten(plan) {
     var code = planKodieren(plan), habits = plan.g.map(function (x) { return HABITS[x.i].titel; }), s = ausIso(plan.s), bett = minutenAus(plan.t);
     var wochen = WOCHEN.map(function (w, j) {
-      return { week: j + 1, nights: w[0] + " to " + w[1], from: kurzDatum(plusTage(s, w[0] - 1)), title: j ? habits[j - 1] : "Your Sleepwhale routine", text: j ? habitText(plan, j - 1) : routineText(plan), when: j ? habitWann(plan, plan.g[j - 1].i) : "Every evening at " + uhrText(bett - 10), image: MAIL_BILD[j ? plan.g[j - 1].i : "routine"] || "" };
+      return { week: j + 1, nights: w[0] + " to " + w[1], from: kurzDatum(plusTage(s, w[0] - 1)), title: j ? habits[j - 1] : "Your Sleepwhale routine", text: j ? habitText(plan, j - 1) : routineText(plan), schedule: j ? habitWann(plan, plan.g[j - 1].i) : "Every evening at " + uhrText(bett - 10), image: MAIL_BILD[j ? plan.g[j - 1].i : "routine"] || "" };
     });
     return {
       profil: { sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_wake_time: plan.u, sleep_habits: habits },
