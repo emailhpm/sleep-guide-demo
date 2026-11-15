@@ -907,7 +907,7 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
 .plan-speichern > .sp-fuss { margin-top: 14px; }
 .sp-ruhig { font-size: 15px; color: var(--muted); }
 .sp-ruhig .text-link { margin-left: 4px; }
-/* E-Mail als zweite Frage im Quiz und im Formular „Lost your plan?“ */
+/* E-Mail als erste Frage im Quiz und im Formular „Lost your plan?“ */
 .quiz-email { display: grid; gap: 10px; max-width: 520px; margin-top: 10px; }
 .quiz-email > .sp-feld, .quiz-email > .sp-meldung, .quiz-email > .sp-fuss { grid-area: auto; }
 .quiz-email .sp-feld input { width: 100%; }
@@ -2806,12 +2806,12 @@ body.chat-offen .chat-fenster { display: flex; }
       antworten: wahlListe([["muede", "I wake up tired, even after a full night’s sleep"], ["energie", "It takes a while to feel energized in the morning"], ["mittag", "I feel tired in the middle of the day"], ["nebel", "I experience brain fog during the day"]]) }
   ];
   /* Das Quiz seit 15.11.: 5 Fragen, danach direkt der Plan (Wunsch Niklas: weniger Fragen, lebhafter). Die E-Mail (Pflicht, Wunsch Niklas: möglichst viele Adressen)
-     seit 15.11. abends als zweite Frage direkt nach der ersten (Feedback Niklas: „E-Mail Abfrage nach Frage 1“), dorthin geht der Plan automatisch; die Adresse
-     steht nie im Plan-Link und geht nicht an ChatGPT. Die Zeiten gehören seit 13.11. dazu und sind jetzt die letzte Frage.
+     ist seit dem späten 15.11. die erste Frage (Niklas: „bitte doch frage an erster stelle“, davor kurz die zweite), dorthin geht der Plan automatisch; die Adresse
+     steht nie im Plan-Link und geht nicht an ChatGPT. Die Zeiten gehören seit 13.11. dazu und sind die letzte Frage.
      Raus sind „How long have you been taking your Sleep Drops?“ und „What could get in the way over the next 30 nights?“ */
   var QUIZ_SD = [
-    { id: "nacht", art: "wahl", frage: "How’d you sleep last night?", antworten: [1, 2, 3, 4, 5].map(function (z) { return { wert: z, text: NACHT_TEXT[z] }; }) },
     { id: "email", art: "email", frage: "Where should we send your plan?", unter: "Your plan and its weekly steps come to this email. Use the one you ordered with." },
+    { id: "nacht", art: "wahl", frage: "How’d you sleep last night?", antworten: [1, 2, 3, 4, 5].map(function (z) { return { wert: z, text: NACHT_TEXT[z] }; }) },
     { id: "saeulen", art: "saeulen", kopf: "Sleepwhale's Four Pillars of Sleep", frage: "Which of these sound like you?", unter: "Select all that apply" },
     { id: "grund", art: "wahl", frage: "At the moment, what’s having the biggest impact on your sleep?",
       antworten: wahlListe([["arbeit", "My work or financial situation"], ["pflege", "Caring for loved ones"], ["gesundheit", "A health issue or injury"], ["hormone", "Hormones or midlife changes"], ["menschen", "Stuff going on with people in my life"], ["nichts", "Nothing that’s obvious"]]) },
