@@ -20,6 +20,7 @@
      Leer = feste Antworten aus WISSEN und fester Plan. Lokal schreibt chat/testen.js beide auf /chat/sleepwhale und /plan/sleepwhale um -->
 <meta name="hub-chat-api" content="https://hub-chat.hub-chat.workers.dev/chat/sleepwhale">
 <meta name="hub-plan-api" content="https://hub-chat.hub-chat.workers.dev/plan/sleepwhale">
+<meta name="hub-bild-api" content="https://hub-chat.hub-chat.workers.dev/bild/sleepwhale">
 <style>
 /* CI von sleepwhale.com: Schrift Onest, Nachtblau mit Gold, Königsblau für Links, Periwinkle nur als Leinwand um das Blatt und für die Seitenleiste.
    Prinzip: ein ruhiger Leitfaden auf Weiß, pro Seite ein Nachtband für den wichtigsten Moment. Karten nur für Auswahl */
@@ -840,6 +841,12 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
 .pe-schritte b { font-size: 18px; line-height: 1.3; color: var(--nacht); }
 .pe-schritte p { font-size: 16px; line-height: 1.55; color: var(--text); }
 .pe-schritte .wk-frage { margin-top: 2px; font-size: 15px; }
+/* Dein Tag als Rad (seit 16.11.): Nachtband, links Titel und Satz, rechts das Rad (SVG aus tagesRad(), dasselbe Bild geht als JPG in die Mails) */
+.ps-rad { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 24px 40px; align-items: center; padding: 36px 40px; border-radius: 12px; background: var(--nacht); color: var(--weiss); }
+.ps-rad .augenbraue { color: var(--gold); }
+.ps-rad h2 { color: var(--weiss); }
+.ps-rad-text p { margin-top: 12px; max-width: 46ch; color: var(--auf-nacht); }
+.ps-rad-bild svg { display: block; width: 100%; max-width: 580px; height: auto; margin: 0 auto; }
 /* 4 Nachbestellen: Flasche links, Preise und die beiden Knöpfe */
 .kauf-karte { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px 24px; border: 1px solid var(--linie); border-radius: 12px; }
 .kk-flasche { width: 96px; height: 160px; object-fit: contain; }
@@ -963,6 +970,7 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
   .wk.jetzt { padding: 11px 15px 13px 11px; }
   .wk h3 { font-size: 19px; }
   .wk-info > .wi-raster { grid-template-columns: minmax(0, 1fr); }
+  .ps-rad { grid-template-columns: minmax(0, 1fr); padding: 28px 20px; }
   .kauf-karte { display: block; padding: 18px 16px; }
   .kk-flasche { float: left; width: 56px; height: 96px; margin: 0 14px 8px 0; }
   .kauf-karte .plan-knoepfe { clear: both; }
@@ -984,6 +992,8 @@ button.zl-nacht:hover .zl-balken, .zl-nacht.gewaehlt .zl-balken { background: va
   .wk-inhalt { padding: 14px 16px 16px; }
   .wk .wk-ikon { display: none; }
   .wk-links .knopf { flex: 1 1 auto; }
+  .ps-rad { padding: 24px 10px 16px; }
+  .ps-rad-text { padding: 0 10px; }
   .labor-feld { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 20px; }
   .lf-gruppe.gross { grid-column: 1 / -1; grid-row: auto; order: -1; }
 }
@@ -3514,6 +3524,102 @@ body.chat-offen .chat-fenster { display: flex; }
     });
     return ol;
   }
+  /* ---------- Dein Tag als Rad (seit 16.11., Niklas: „den plan mit habits etc. so ähnlich wie hier visualisieren“, Vorlage ein Schlaf-Rad von The Bump) ----------
+     Oben das Aufstehen, im Uhrzeigersinn die Habits, die Drops und die Nacht. Jedes Stück reicht bis zum nächsten Punkt, aber mindestens RAD.min Grad,
+     damit Symbol und Schrift passen: ein Ablauf, kein Zifferblatt. Dasselbe SVG steht auf der Plan-Seite und geht als JPG in die Mails (radBildHochladen) */
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var RAD = { min: 36, aussen: 482, innen: 236, mitte: 359 };
+  /* Farben je Teil des Tages: Fläche, Schrift, Woche */
+  var RAD_FARBE = { morgen: ["#ffffff", "#011025", "#c9970a"], tag: ["#dfe6fb", "#011025", "#c9970a"], abend: ["#334fb4", "#ffffff", "#f4c245"], drops: ["#f4c245", "#011025", "#011025"], nacht: ["#0a2350", "#ffffff", "#f4c245"] };
+  /* Zeit und Name im Rad, wo die Angaben aus HABITS nicht passen */
+  var RAD_TEXT = { koffein: ["By 2 PM", "Last coffee"], nickerchen: ["By 3 PM", "Short nap"], aufstehen: ["At night", "Get up if awake"] };
+  /* Die Punkte des Tages ab dem Aufstehen (ab = Minuten danach). weckzeit wird zum Aufstehen, aufstehen liegt mitten in der Nacht */
+  function radPunkte(plan) {
+    var auf = minutenAus(plan.u), bett = minutenAus(plan.t), schlaf = tagMin(auf - bett) || 1440, punkte = [];
+    function dazu(min, art, ikonId, zeit, titel, woche) { punkte.push({ ab: tagMin(min - auf), art: art, ikon: ikonId, zeit: zeit, titel: titel, woche: woche }); }
+    var wecker = plan.g.map(function (x) { return x.i; }).indexOf("weckzeit");
+    dazu(auf, "morgen", "h-wecker", uhrText(auf), wecker > -1 ? "Same wake-up" : "Up", wecker > -1 ? "Week " + (wecker + 2) : "");
+    plan.g.forEach(function (x, j) {
+      if (x.i === "weckzeit") return;
+      var h = HABITS[x.i], t = RAD_TEXT[x.i] || [], m = h.teil === "nacht" ? bett + Math.round(schlaf / 2) : zeileMin({ teil: h.teil, min: h.min || 0 }, plan) + (h.teil === "morgen" && !h.min ? 1 : 0);
+      dazu(m, h.teil, h.ikon, t[0] || (x.i === "bewegung" ? "By " : "") + uhrText(m), t[1] || h.kurz, "Week " + (j + 2));
+    });
+    dazu(bett - 10, "drops", "pipette", uhrText(bett - 10), "Your drops", "");
+    dazu(bett, "nacht", "mond", uhrText(bett), "Lights out", "");
+    return punkte.sort(function (a, b) { return a.ab - b.ab; });
+  }
+  function svgEl(tag, attr, text) {
+    var e = document.createElementNS(SVG_NS, tag);
+    Object.keys(attr || {}).forEach(function (k) { e.setAttribute(k, attr[k]); });
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  /* Punkt im Rad: 0 Grad oben, im Uhrzeigersinn */
+  function radXY(r, grad) { var w = grad * Math.PI / 180; return [Math.round((500 + r * Math.sin(w)) * 10) / 10, Math.round((500 - r * Math.cos(w)) * 10) / 10]; }
+  function radStueck(a0, a1) {
+    var gross = a1 - a0 > 180 ? 1 : 0, p = function (r, a) { return radXY(r, a).join(" "); };
+    return "M" + p(RAD.aussen, a0) + "A" + RAD.aussen + " " + RAD.aussen + " 0 " + gross + " 1 " + p(RAD.aussen, a1) + "L" + p(RAD.innen, a1) + "A" + RAD.innen + " " + RAD.innen + " 0 " + gross + " 0 " + p(RAD.innen, a0) + "Z";
+  }
+  /* Ein Symbol aus dem Sprite als eigenes svg im Rad, damit das Rad auch allein als Bild funktioniert */
+  function radSymbol(id, x, y, groesse, farbe) {
+    var quelle = document.getElementById(id), s = svgEl("svg", { x: x, y: y, width: groesse, height: groesse, viewBox: quelle.getAttribute("viewBox"), color: farbe });
+    Array.prototype.forEach.call(quelle.childNodes, function (k) { s.appendChild(k.cloneNode(true)); });
+    return s;
+  }
+  /* Namen über 11 Zeichen auf zwei Zeilen, getrennt am Leerzeichen nahe der Mitte */
+  function radZeilen(text) {
+    if (text.length <= 11 || text.indexOf(" ") < 0) return [text];
+    var mitte = text.length / 2, beste = -1;
+    text.split("").forEach(function (c, i) { if (c === " " && (beste < 0 || Math.abs(i - mitte) < Math.abs(beste - mitte))) beste = i; });
+    return [text.slice(0, beste), text.slice(beste + 1)];
+  }
+  function stundenText(min) { return (min % 60 ? (min / 60).toFixed(1) : String(min / 60)) + " h"; }
+  function tagesRad(plan) {
+    var punkte = radPunkte(plan), auf = minutenAus(plan.u), bett = minutenAus(plan.t), schlaf = tagMin(auf - bett) || 1440;
+    var breite = punkte.map(function (p, i) { return Math.max(RAD.min, ((i + 1 < punkte.length ? punkte[i + 1].ab : 1440) - p.ab) / 4); });
+    var summe = breite.reduce(function (s, w) { return s + w; }, 0), frei = summe - RAD.min * breite.length, zuviel = summe - 360;
+    breite = breite.map(function (w) { return frei > zuviel ? w - (w - RAD.min) * zuviel / frei : 360 / breite.length; });
+    var svg = svgEl("svg", { viewBox: "0 0 1000 1000", xmlns: SVG_NS, "font-family": "Onest, sans-serif", role: "img" }), a = -breite[0] / 2;
+    svg.setAttribute("aria-label", "Your day: " + punkte.map(function (p) { return p.zeit.replace(/\u00a0/g, " ") + " " + p.titel + (/^Week/.test(p.woche) ? " (" + p.woche.toLowerCase() + ")" : ""); }).join(", ") + ". " + stundenText(schlaf) + " in bed.");
+    svg.appendChild(svgEl("rect", { width: 1000, height: 1000, fill: "#011025" }));
+    punkte.forEach(function (p, i) {
+      var a1 = a + breite[i], f = RAD_FARBE[p.art], zeilen = radZeilen(p.titel), hoehe = 56 + 12 + 38 + 36 * zeilen.length + (p.woche ? 32 : 0), xy = radXY(RAD.mitte, (a + a1) / 2), y = xy[1] - hoehe / 2;
+      svg.appendChild(svgEl("path", { d: radStueck(a, a1), fill: f[0], stroke: "#011025", "stroke-width": 8, "stroke-linejoin": "round" }));
+      var g = svgEl("g", { "text-anchor": "middle" });
+      g.appendChild(svgEl("circle", { cx: xy[0], cy: y + 28, r: 28, fill: "#011025", stroke: "#f4c245", "stroke-width": 2 }));
+      g.appendChild(radSymbol(p.ikon, xy[0] - 17, y + 11, 34, "#f4c245"));
+      y += 68;
+      g.appendChild(svgEl("text", { x: xy[0], y: y + 28, fill: f[1], "font-size": 34, "font-weight": 700 }, p.zeit));
+      y += 38;
+      zeilen.forEach(function (z) { g.appendChild(svgEl("text", { x: xy[0], y: y + 26, fill: f[1], "font-size": 31, "font-weight": 500 }, z)); y += 36; });
+      if (p.woche) g.appendChild(svgEl("text", { x: xy[0], y: y + 26, fill: f[2], "font-size": 21, "font-weight": 700, "letter-spacing": 2 }, p.woche.toUpperCase()));
+      svg.appendChild(g);
+      a = a1;
+    });
+    /* Innen ein Kreis mit drei Pfeilen im Uhrzeigersinn, in der Mitte die Zeit im Bett */
+    svg.appendChild(svgEl("circle", { cx: 500, cy: 500, r: RAD.innen - 30, fill: "none", stroke: "rgba(223,230,251,.3)", "stroke-width": 3 }));
+    [60, 180, 300].forEach(function (grad) {
+      var r = RAD.innen - 30, spitze = radXY(r, grad + 3.2), hinten = radXY(r, grad - 2.4), aussen = radXY(r + 11, grad - 2.4), innen = radXY(r - 11, grad - 2.4);
+      svg.appendChild(svgEl("path", { d: "M" + aussen.join(" ") + "L" + spitze.join(" ") + "L" + innen.join(" ") + "L" + hinten.join(" ") + "Z", fill: "rgba(223,230,251,.6)" }));
+    });
+    var mitte = svgEl("g", { "text-anchor": "middle" });
+    mitte.append(svgEl("text", { x: 500, y: 420, fill: "#f4c245", "font-size": 24, "font-weight": 700, "letter-spacing": 3.5 }, "YOUR DAY"),
+      svgEl("text", { x: 500, y: 510, fill: "#ffffff", "font-size": 88, "font-weight": 700, "letter-spacing": -2 }, stundenText(schlaf)),
+      svgEl("text", { x: 500, y: 552, fill: "rgba(255,255,255,.72)", "font-size": 28 }, "in bed"),
+      svgEl("text", { x: 500, y: 600, fill: "#ffffff", "font-size": 27, "font-weight": 600 }, uhrText(bett) + " to " + uhrText(auf)));
+    svg.appendChild(mitte);
+    return svg;
+  }
+  /* Auf der Plan-Seite zwischen Einführung und den 4 Wochen */
+  function radBereich(plan) {
+    var box = element("section", "ps-rad"), text = element("div", "ps-rad-text"), titel = element("h2", null, "Your day with your plan"), bild = element("div", "ps-rad-bild");
+    titel.id = "ps-rad-titel";
+    box.setAttribute("aria-labelledby", titel.id);
+    text.append(augenbraue("At a glance"), titel, element("p", null, "From getting up to lights out: your drops 10 minutes before bed, and one new habit in each of weeks 2, 3 and 4. The earlier ones keep going."));
+    bild.appendChild(tagesRad(plan));
+    box.append(text, bild);
+    return box;
+  }
   /* Stand des Plans für Tonight, Seitenleiste, Kapitel und Landingpage. nacht = Nacht von heute, vor dem Start 0 oder kleiner */
   function planStand(plan) {
     var n = tageSeit(plan.s) + 1;
@@ -4027,7 +4133,7 @@ body.chat-offen .chat-fenster { display: flex; }
     wochen.setAttribute("aria-labelledby", "ps-wochen-titel");
     wochen.append(augenbraue("Your 4 weeks"), wTitel, wochenKarten(plan, n, d),
       element("p", "plan-quelle", (plan.k ? "Your habits were chosen from your answers and explained by ChatGPT. " : "Your habits were chosen from your answers. ") + "Not medical advice. Sleepwhale: “" + DISCLAIMER + "”"));
-    planSeite.replaceChildren.apply(planSeite, teile.concat([einfuehrung(plan), wochen, kaufKarte(plan), naechteBereich(plan, n), bilanzKarte(plan, n, d)]));
+    planSeite.replaceChildren.apply(planSeite, teile.concat([einfuehrung(plan), radBereich(plan), wochen, kaufKarte(plan), naechteBereich(plan, n), bilanzKarte(plan, n, d)]));
     planFuss(plan, f);
   }
   /* Einführung vor dem Plan (Wunsch Niklas): das Ziel, wie der Plan aufgebaut ist und wie man ihn nutzt, in drei Spalten */
@@ -4116,8 +4222,9 @@ body.chat-offen .chat-fenster { display: flex; }
     };
   }
   /* Ein Ereignis an Klaviyo: im Shop über klaviyo.js, in der Demo nur für Testadressen über die Client-API. fertig(art) wie oben */
+  function klaviyoBereit() { return !!(window.klaviyo && typeof window.klaviyo.identify === "function" && typeof window.klaviyo.track === "function"); }
   function klaviyoEreignis(name, email, eigenschaften, profil, fertig) {
-    if (window.klaviyo && typeof window.klaviyo.identify === "function" && typeof window.klaviyo.track === "function") {
+    if (klaviyoBereit()) {
       var p = {};
       Object.keys(profil || {}).forEach(function (k) { p[k] = profil[k]; });
       if (email) p.email = email;
@@ -4132,9 +4239,60 @@ body.chat-offen .chat-fenster { display: flex; }
       .then(function (r) { fertig(r.status === 202 ? "test" : "fehler"); })
       .catch(function () { fertig("fehler"); });
   }
+  /* Das Rad als JPG für die Mails (seit 16.11., Niklas: „nur wenn das aber pro profil im flow möglich ist“). Mails zeigen kein SVG, und der Worker
+     darf im Gratis-Tarif nicht rendern (10 ms Rechenzeit): der Browser zeichnet dasselbe SVG mit eingebetteter Schrift auf ein Canvas mit 1024 x 1024,
+     der Worker prüft und speichert das JPG 45 Tage (meta hub-bild-api, Cloudflare KV) und gibt die Adresse zurück. Sie geht als plan_image ins Ereignis
+     und als sleep_plan_image ins Profil. Ohne Bild nach 9 Sekunden oder bei Fehler geht das Ereignis ohne, die Mail zeigt dann ihr festes Bild */
+  var BILD_API = (document.querySelector('meta[name="hub-bild-api"]') || {}).content || "";
+  var SCHRIFT = "schriften/onest-latin.woff2";
+  function radJpg(plan, fertig) {
+    fetch(SCHRIFT).then(function (r) { return r.arrayBuffer(); }).then(function (puffer) {
+      var bytes = new Uint8Array(puffer), bin = "";
+      for (var i = 0; i < bytes.length; i += 32768) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
+      var svg = tagesRad(plan);
+      svg.insertBefore(svgEl("style", null, '@font-face{font-family:"Onest";src:url(data:font/woff2;base64,' + btoa(bin) + ') format("woff2");font-weight:400 800}'), svg.firstChild);
+      svg.setAttribute("width", 1024);
+      svg.setAttribute("height", 1024);
+      var adresse = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" })), bild = new Image();
+      bild.onload = function () {
+        /* Kurz warten, bis die eingebettete Schrift im Bild bereit ist */
+        setTimeout(function () {
+          var leinwand = document.createElement("canvas");
+          leinwand.width = 1024;
+          leinwand.height = 1024;
+          leinwand.getContext("2d").drawImage(bild, 0, 0, 1024, 1024);
+          URL.revokeObjectURL(adresse);
+          try { leinwand.toBlob(function (b) { fertig(b); }, "image/jpeg", 0.9); } catch (e) { fertig(null); }
+        }, 150);
+      };
+      bild.onerror = function () { URL.revokeObjectURL(adresse); fertig(null); };
+      bild.src = adresse;
+    }).catch(function () { fertig(null); });
+  }
+  function radBildHochladen(plan, fertig) {
+    var fertigEinmal = function (url) { if (fertig) { var f = fertig; fertig = null; clearTimeout(uhr); f(url); } }, uhr = setTimeout(function () { fertigEinmal(""); }, 9000);
+    if (!BILD_API || !window.fetch || !window.FileReader) { fertigEinmal(""); return; }
+    radJpg(plan, function (blob) {
+      if (!blob) { fertigEinmal(""); return; }
+      var leser = new FileReader();
+      leser.onload = function () {
+        fetch(BILD_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: planKodieren(plan), bild: String(leser.result).split(",")[1] }) })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) { fertigEinmal(d && typeof d.url === "string" ? d.url : ""); })
+          .catch(function () { fertigEinmal(""); });
+      };
+      leser.onerror = function () { fertigEinmal(""); };
+      leser.readAsDataURL(blob);
+    });
+  }
+  /* Das Bild nur, wo das Ereignis wirklich rausgeht (Shop mit klaviyo.js oder Testadresse in der Demo) */
   function planSpeichern(email, plan, fertig) {
     var d = planDaten(plan);
-    klaviyoEreignis("Sleep Plan Created", email, d.ereignis, d.profil, fertig);
+    if (!klaviyoBereit() && !(email && TEST_ADRESSEN.test(email))) { klaviyoEreignis("Sleep Plan Created", email, d.ereignis, d.profil, fertig); return; }
+    radBildHochladen(plan, function (url) {
+      if (url) { d.ereignis.plan_image = url; d.profil.sleep_plan_image = url; }
+      klaviyoEreignis("Sleep Plan Created", email, d.ereignis, d.profil, fertig);
+    });
   }
   /* Seit 15.11.: Der Plan geht automatisch an die Adresse aus dem Quiz (oder die zuletzt gespeicherte), auch nach „Change my times“ */
   function planAutoSpeichern(plan) {
