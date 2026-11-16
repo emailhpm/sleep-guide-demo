@@ -4211,7 +4211,8 @@ body.chat-offen .chat-fenster { display: flex; }
      (steht im Quelltext von sleepwhale.com) in Sleepwhales Klaviyo, dort schickt der Test-Flow die Mail. Alle anderen Adressen: nichts wird gesendet.
      fertig(art): "live" (klaviyo.js), "test" (Client-API angenommen), "fehler" (Client-API nicht erreicht), "" (nur nachgestellt) */
   var KLAVIYO_SITE = "VCPGP7";
-  var TEST_ADRESSEN = /@(get-your-leads\.de|high-performance-mail\.com)$/i;
+  /* Testadressen: die eigenen Domains und seit 16.11. niklasboesch@gmx.de (Niklas: „niklasboesch@gmx.de kam auch nicht durch“; Strato lehnt Mails an get-your-leads.de als Spam ab) */
+  var TEST_ADRESSEN = /(@(get-your-leads\.de|high-performance-mail\.com)|^niklasboesch@gmx\.de)$/i;
   /* Bilder der Wochen für die Mails im Plan-Flow (seit 15.11.): JPG in Sleepwhales Klaviyo-Bildbibliothek, damit sie in jedem Postfach laden (WebP zeigt Outlook nicht).
      Woche 1 zeigt das Ritual von Tonight, die Habits ihr Bild aus HABIT_BILD als JPG. Neue Habits: Bild als JPG in Klaviyo hochladen und hier eintragen */
   var MAIL_BILD = {
