@@ -301,26 +301,39 @@ button.text-link { padding: 0; border: 0; background: none; cursor: pointer; }
 }
 .reise-fuss { margin-top: 20px; max-width: 80ch; font-size: 13px; line-height: 1.5; color: var(--muted); }
 
-/* Kundengeschichten: nur echte Bewertungen von sleepwhale.com, Säule wie im Rest des Guides */
+/* Kundengeschichten: nur echte Bewertungen von sleepwhale.com, Säule wie im Rest des Guides. Seit 16.11. lebhafter (Niklas: „reviews bitte lebhafter darstellen“):
+   Säule mit Symbol und Sterne oben, Vorher hell auf Periwinkle, Jetzt auf Nachtblau mit goldenem „Now“, Initiale vor dem Namen, Symbole in den Filtern */
 .story-filter { display: flex; flex-wrap: wrap; gap: 0 24px; border-bottom: 1px solid var(--linie); }
-.filter-tab { position: relative; padding: 10px 0; border: 0; background: none; font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.filter-tab { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 10px 0; border: 0; background: none; font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.filter-tab svg { width: 18px; height: 18px; }
 .filter-tab:hover { color: var(--nacht); }
 .filter-tab[aria-pressed="true"] { font-weight: 600; color: var(--nacht); }
+.filter-tab[aria-pressed="true"] svg { color: var(--akzent); }
 .filter-tab[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--akzent); }
 .story-liste { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.story { display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--linie); border-radius: 12px; }
+.story { display: flex; flex-direction: column; padding: 24px; border: 1px solid var(--linie); border-radius: 12px; background: var(--weiss); }
 .story[hidden] { display: none; }
-.story-saeule { font-size: 13px; font-weight: 600; color: var(--akzent); }
-.story-zitat { margin-top: 8px; font-size: 20px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--nacht); text-wrap: pretty; }
-.story-vn { display: grid; gap: 10px; margin: 16px 0 0; padding-top: 16px; border-top: 1px solid var(--linie); }
-.story-vn div { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 10px; }
-.story-vn dt { font-size: 13px; font-weight: 600; line-height: 1.8; color: var(--muted); }
+.story-kopf { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.story-saeule { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--akzent); }
+.story-ikon { display: grid; place-items: center; width: 38px; height: 38px; border: 1.5px solid var(--gold); border-radius: 50%; background: var(--nacht); color: var(--gold); }
+.story-ikon svg { width: 20px; height: 20px; }
+.story-kopf .mini-sterne { gap: 2px; }
+.story-kopf .mini-sterne svg { width: 17px; height: 17px; }
+.story-zitat { margin-top: 16px; font-size: 21px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--nacht); text-wrap: pretty; }
+.story-vn { display: grid; gap: 8px; margin: 18px 0 0; }
+.story-vn > div { display: grid; gap: 2px; padding: 12px 16px; border-radius: 10px; }
+.story-vorher { background: var(--periwinkle); }
+.story-jetzt { background: var(--nacht); }
+.story-vn dt { font-size: 13px; font-weight: 600; color: var(--muted); }
+.story-jetzt dt { color: var(--gold); }
 .story-vn dd { font-size: 15px; line-height: 1.55; color: var(--text); }
-.story-fuss { margin-top: auto; padding-top: 18px; font-size: 13px; color: var(--muted); }
+.story-jetzt dd { color: var(--weiss); }
+.story-fuss { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 20px; font-size: 13px; color: var(--muted); }
+.story-initiale { display: grid; flex: none; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--gold); font-size: 17px; font-weight: 700; color: var(--nacht); }
 .story-fuss > div { display: grid; gap: 2px; }
 .story-fuss b { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: 15px; font-weight: 600; color: var(--nacht); }
-.story-fuss .mini-sterne { margin-right: 6px; vertical-align: -1px; }
-.story-verifiziert { font-size: 13px; font-weight: 500; color: var(--muted); }
+.story-verifiziert { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.story-verifiziert svg { width: 14px; height: 14px; color: var(--akzent); }
 .story-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
 .story-cta > div:first-child { flex: 1 1 320px; }
 .bewertung-feld { display: grid; justify-items: start; }
@@ -767,6 +780,9 @@ html.plan-modus #mein-plan { display: grid; }
 .zl-marken, .zl-naechte, .zl-zahlen, .zl-wochen { display: grid; grid-template-columns: repeat(30, minmax(0, 1fr)); column-gap: 3px; }
 .zl-marken { height: 22px; align-items: end; }
 .zl-marke { grid-row: 1; justify-self: center; font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; color: var(--nacht); }
+/* Am Rand bündig, sonst ragt „Tonight“ über Nacht 1 oder 30 aus der Leiste */
+.zl-marke.links { justify-self: start; }
+.zl-marke.rechts { justify-self: end; }
 .zl-marke svg { display: block; width: 18px; height: 18px; color: var(--gold-tief); }
 .zl-naechte { height: 96px; padding-top: 4px; border-bottom: 1px solid var(--linie); background: linear-gradient(var(--linie), var(--linie)) 0 50% / 100% 1px no-repeat; }
 .zl-nacht { display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 4px 4px 0 0; background: none; color: inherit; }
@@ -2070,10 +2086,10 @@ body.chat-offen .chat-fenster { display: flex; }
         <header class="ansicht-kopf"><h1>Customer stories</h1><p>Real reviews from sleepwhale.com: how people slept before, and what changed for them.</p></header>
         <div class="story-filter" role="group" aria-label="Show stories for" data-story-filter>
           <button class="filter-tab" type="button" aria-pressed="true" data-saeule="">All stories</button>
-          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Wind Down">Wind Down</button>
-          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Fall Asleep">Fall Asleep</button>
-          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Stay Asleep">Stay Asleep</button>
-          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Recover Fully">Recover Fully</button>
+          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Wind Down"><svg aria-hidden="true"><use href="#p-wind"/></svg>Wind Down</button>
+          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Fall Asleep"><svg aria-hidden="true"><use href="#p-fall"/></svg>Fall Asleep</button>
+          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Stay Asleep"><svg aria-hidden="true"><use href="#p-stay"/></svg>Stay Asleep</button>
+          <button class="filter-tab" type="button" aria-pressed="false" data-saeule="Recover Fully"><svg aria-hidden="true"><use href="#p-recover"/></svg>Recover Fully</button>
         </div>
         <ol class="story-liste" data-stories="alle"></ol>
         <p class="stimmen-fuss">Reviews from sleepwhale.com, shortened where you see “…”. Everyone sleeps differently: these are individual experiences, not a promise.</p>
@@ -2552,21 +2568,33 @@ body.chat-offen .chat-fenster { display: flex; }
     { name: "Lillian R", sterne: 5, produkt: "Regular Strength", datum: "December 2024", saeule: "Fall Asleep", zitat: "…I never have to compromise on a good night's sleep, even when I'm away from home.", vorher: "I travel frequently for work, and as such sometimes have difficulty falling asleep in new places.", jetzt: "I use it everywhere, and I even bought a second bottle to hand off to coworkers complaining about a poor night’s sleep." },
     { name: "Janine T", sterne: 5, produkt: "Regular Strength", datum: "May 2026", saeule: "Wind Down", zitat: "As a single mom, Sleep whale is crucial.", vorher: "Winding down after chasing the kids all day and thinking about how I’m going to get everything done the next day is almost impossible…", jetzt: "…now 20 minutes after I take a ml of sleep whale I’m drifting off." }
   ];
+  /* Symbol je Säule wie im Quiz (SAEULEN_SD steht weiter unten und ist beim Aufbau hier noch leer) */
+  var STORY_IKON = { "Wind Down": "p-wind", "Fall Asleep": "p-fall", "Stay Asleep": "p-stay", "Recover Fully": "p-recover" };
+  /* Seit 16.11. lebhafter (Niklas: „reviews bitte lebhafter darstellen“): Kopf mit Säule und Sternen, Vorher hell, Jetzt nachtblau, Initiale vor dem Namen */
   function storyElement(s) {
-    var li = element("li", "story"), vn = element("dl", "story-vn");
+    var li = element("li", "story"), kopf = element("div", "story-kopf"), saeule = element("p", "story-saeule"), kreis = element("span", "story-ikon"), vn = element("dl", "story-vn");
     li.dataset.saeule = s.saeule;
-    li.append(element("p", "story-saeule", s.saeule), element("blockquote", "story-zitat", "“" + s.zitat + "”"));
-    [["Before", s.vorher], ["Now", s.jetzt]].forEach(function (z) {
+    kreis.setAttribute("aria-hidden", "true");
+    kreis.appendChild(ikon(STORY_IKON[s.saeule]));
+    saeule.append(kreis, s.saeule);
+    kopf.append(saeule, sterne(s.sterne));
+    li.append(kopf, element("blockquote", "story-zitat", "“" + s.zitat + "”"));
+    [["Before", s.vorher, "story-vorher"], ["Now", s.jetzt, "story-jetzt"]].forEach(function (z) {
       if (!z[1]) return;
-      var zeile = element("div");
+      var zeile = element("div", z[2]);
       zeile.append(element("dt", null, z[0]), element("dd", null, "“" + z[1] + "”"));
       vn.appendChild(zeile);
     });
-    var fuss = element("div", "story-fuss"), wer = element("div"), name = element("b", null, s.name), zeile = element("span");
-    if (s.verifiziert) name.appendChild(element("span", "story-verifiziert", "Verified buyer"));
-    zeile.append(sterne(s.sterne), s.produkt + ", " + s.datum + (s.zeit ? ", using it for " + s.zeit : ""));
-    wer.append(name, zeile);
-    fuss.appendChild(wer);
+    var fuss = element("div", "story-fuss"), initiale = element("span", "story-initiale", s.name.charAt(0).toUpperCase()), wer = element("div"), name = element("b", null, s.name);
+    initiale.setAttribute("aria-hidden", "true");
+    if (s.verifiziert) {
+      var echt = element("span", "story-verifiziert"), haken = ikon("haken");
+      haken.setAttribute("aria-hidden", "true");
+      echt.append(haken, "Verified buyer");
+      name.appendChild(echt);
+    }
+    wer.append(name, element("span", null, s.produkt + ", " + s.datum + (s.zeit ? ", using it for " + s.zeit : "")));
+    fuss.append(initiale, wer);
     li.append(vn, fuss);
     return li;
   }
@@ -3635,7 +3663,7 @@ body.chat-offen .chat-fenster { display: flex; }
     try { d = roh ? JSON.parse(roh) : notizNotfall[k]; } catch (e) { d = null; }
     Object.keys(d && typeof d === "object" ? d : {}).forEach(function (n) {
       var w = d[n];
-      if (/^([1-9]|[12]\d|30)$/.test(n) && typeof w === "number" && w === Math.round(w) && w >= 0 && w <= 10) sauber[n] = w;
+      if (/^(\d|[12]\d|30)$/.test(n) && typeof w === "number" && w === Math.round(w) && w >= 0 && w <= 10) sauber[n] = w;
     });
     return sauber;
   }
@@ -3652,7 +3680,8 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function schnitt(werte) { return werte.length ? Math.round(werte.reduce(function (s, w) { return s + w; }, 0) / werte.length * 10) / 10 : null; }
   function wochenWerte(d, w) { var l = []; for (var n = WOCHEN[w - 1][0]; n <= WOCHEN[w - 1][1]; n++) if (d[n] !== undefined) l.push(d[n]); return l; }
-  function alleWerte(d) { return Object.keys(d).map(function (n) { return d[n]; }); }
+  /* Nacht 0 ist die Nacht vor dem Plan (am Starttag bewertet, Ausgangswert): zählt nicht zu Schnitt, Anzahl und bester Nacht */
+  function alleWerte(d) { return Object.keys(d).filter(function (n) { return n !== "0"; }).map(function (n) { return d[n]; }); }
   function naechteText(z) { return z + (z === 1 ? " night" : " nights"); }
   /* Bewerten lässt sich jede Nacht ab dem Morgen danach: heute Nacht n, also bis n - 1, höchstens 30 */
   function letzteBewertbar(n) { return Math.min(30, n - 1); }
@@ -3772,17 +3801,18 @@ body.chat-offen .chat-fenster { display: flex; }
   }
   function notizNacht(n) { var letzte = letzteBewertbar(n); return sd.notizNacht >= 1 && sd.notizNacht <= letzte ? sd.notizNacht : letzte; }
   /* Das Notizbuch, ruhig (Wunsch Niklas: wirkte überladen): Frage mit Datum in einer Zeile, 11 Knöpfe von 0 bis 10, die beiden Enden kurz,
-     darunter eine Zeile mit dem Stand und „Remind me every morning“. Löschen steht unten im Seitenfuß. Vor der ersten Nacht nur der Hinweis */
+     darunter eine Zeile mit dem Stand und „Remind me every morning“. Löschen steht unten im Seitenfuß. Am Starttag (Nacht 1) fragt es nach der Nacht
+     vor dem Plan (Nacht 0, Niklas 16.11.: „kann man das notizbuch irgendwie nicht anklicken“; vorher stand dort nur „starts tomorrow morning“). Vor dem Start nur der Hinweis */
   function notizKarte(plan, n, d) {
     var box = element("div", "notiz"), kopf = element("div", "notiz-kopf");
     box.appendChild(kopf);
-    if (letzteBewertbar(n) < 1) {
-      kopf.appendChild(element("p", "notiz-frage", n < 1 ? "Your notebook starts after your first night" : "Your notebook starts tomorrow morning"));
+    if (n < 1) {
+      kopf.appendChild(element("p", "notiz-frage", "Your notebook starts after your first night"));
       box.append(element("p", "notiz-hinweis", "Every morning, rate the night before from 0 to 10. After 30 nights you see how your nights went, week by week."), notizFuss(plan, ""));
       return box;
     }
     var nacht = notizNacht(n), wert = d[nacht], frageText = nacht === n - 1 ? "How was last night?" : "How was night " + nacht + "?", skala = element("div", "notiz-skala"), enden = element("p", "notiz-enden");
-    kopf.append(element("p", "notiz-frage", frageText), element("p", "notiz-datum", "Night " + nacht + ", " + tagKurz(plusTage(ausIso(plan.s), nacht - 1))));
+    kopf.append(element("p", "notiz-frage", frageText), element("p", "notiz-datum", (nacht ? "Night " + nacht : "Before your plan") + ", " + tagKurz(plusTage(ausIso(plan.s), nacht - 1))));
     skala.setAttribute("role", "group");
     skala.setAttribute("aria-label", frageText + " From 0 to 10");
     for (var z = 0; z <= 10; z++) (function (z) {
@@ -3792,7 +3822,9 @@ body.chat-offen .chat-fenster { display: flex; }
       skala.appendChild(b);
     })(z);
     enden.append(element("span", null, "Very poor"), element("span", null, "Great"));
-    box.append(skala, enden, notizFuss(plan, wert !== undefined ? "Saved on this phone: " + wert + " of 10." : ""));
+    box.append(skala, enden);
+    if (!nacht) box.appendChild(element("p", "notiz-hinweis", "Your starting point. From tomorrow morning, rate each night of your plan here."));
+    box.appendChild(notizFuss(plan, wert !== undefined ? "Saved on this phone: " + wert + " of 10." : ""));
     return box;
   }
   /* Eine Zeile unter dem Notizbuch: der Stand (gespeichert oder nur auf dem Gerät) und die Erinnerung am Morgen */
@@ -3813,7 +3845,7 @@ body.chat-offen .chat-fenster { display: flex; }
     naechte.setAttribute("role", "group");
     naechte.setAttribute("aria-label", "Your notebook, night by night");
     function marke(nr, inhalt, klasse) {
-      var m = element("span", "zl-marke " + klasse);
+      var m = element("span", "zl-marke " + klasse + (nr <= 2 ? " links" : nr >= 29 ? " rechts" : ""));
       m.style.gridColumn = String(nr);
       if (typeof inhalt === "string") m.textContent = inhalt; else m.appendChild(inhalt);
       marken.appendChild(m);
@@ -3918,8 +3950,8 @@ body.chat-offen .chat-fenster { display: flex; }
       var diff = Math.round((vierte - erste) * 10) / 10;
       satz = "Week 1: " + erste + " on average. Week 4: " + vierte + ". " + (diff >= 0.5 ? "That's " + diff + " points more than in your first week." : diff <= -0.5 ? "That's " + (-diff) + " points less than in your first week." : "About the same as your first week.");
     } else satz = "Your average over " + naechteText(werte.length) + ": " + schnitt(werte) + ".";
-    var beste = Object.keys(d).sort(function (x, y) { return d[y] - d[x] || x - y; })[0];
-    karte.append(saeulen, element("p", "bilanz-text", satz + " Your best night: night " + beste + ", " + d[beste] + " of 10."));
+    var beste = Object.keys(d).filter(function (k) { return k !== "0"; }).sort(function (x, y) { return d[y] - d[x] || x - y; })[0];
+    karte.append(saeulen, element("p", "bilanz-text", satz + " Your best night: night " + beste + ", " + d[beste] + " of 10." + (d[0] !== undefined ? " The night before your plan: " + d[0] + " of 10." : "")));
     if (checks.length) karte.append(element("h3", "bilanz-unter", "Your check-ins"), checkListe);
     if (erste !== null && vierte !== null && vierte < erste) karte.appendChild(element("p", "bilanz-text", "Sleepwhale's advice: “Discuss persistent or changing sleep problems with your healthcare provider.”"));
     karte.appendChild(bilanzKnoepfe("What does my notebook tell me about my 30 nights, and which habits should I keep?"));
@@ -4114,8 +4146,18 @@ body.chat-offen .chat-fenster { display: flex; }
     wochen.append(augenbraue("Your 4 weeks"), wTitel, wochenKarten(plan, n, d),
       element("p", "plan-quelle", (plan.k ? "Your habits were chosen from your answers and explained by ChatGPT. " : "Your habits were chosen from your answers. ") + "Not medical advice. Sleepwhale: “" + DISCLAIMER + "”"));
     planSeite.replaceChildren.apply(planSeite, teile.concat([einfuehrung(plan), radBereich(plan), wochen, kaufKarte(plan), naechteBereich(plan, n), bilanzKarte(plan, n, d)]));
+    einfuehrungPlatz();
     planFuss(plan, f);
   }
+  /* Am Handy (Niklas 16.11.: „how your plan works auf dem smartphone version bitte unter die habits packen“) steht die Einführung unter den 4 Wochen,
+     breiter vor dem Habit-Rad. Wechselt die Breite, wandert sie mit */
+  var HANDY = matchMedia("(max-width: 999px)");
+  function einfuehrungPlatz() {
+    var intro = planSeite.querySelector(".ps-einfuehrung"), ziel = planSeite.querySelector(HANDY.matches ? ".ps-wochen" : ".ps-rad");
+    if (!intro || !ziel) return;
+    if (HANDY.matches) ziel.after(intro); else ziel.before(intro);
+  }
+  HANDY.addEventListener("change", einfuehrungPlatz);
   /* Einführung vor dem Plan (Wunsch Niklas): das Ziel, wie der Plan aufgebaut ist und wie man ihn nutzt, in drei Spalten */
   function einfuehrung(plan) {
     var box = element("section", "ps-einfuehrung"), titel = element("h2", null, "How your plan works"), schritte = element("ol", "pe-schritte"), drops = uhrText(minutenAus(plan.t) - 10);
@@ -4188,17 +4230,51 @@ body.chat-offen .chat-fenster { display: flex; }
     wasser: "https://cdn.klaviyomail.com/company/VCPGP7/images/f9ad5fcd-09ee-4e5f-be26-f1ae866c97ec.jpeg",
     weckzeit: "https://cdn.klaviyomail.com/company/VCPGP7/images/000c8106-9fab-4d1c-9ba6-03a570eb4333.jpeg"
   };
+  /* Symbole der Wochen für die Mails (seit 16.11., Niklas: „die bisherigen habits untereinander als stichpunkte aufzeigen mit passenden icon“): PNG 128 x 128,
+     Symbol aus dem Sprite in Gold auf Nachtblau mit Goldring wie im Habit-Rad, in Sleepwhales Klaviyo-Bildbibliothek („Sleep Guide Mail - Icon …“), Quellen bilder/mail/icon-*.png */
+  var MAIL_ICON = {
+    routine: "https://cdn.klaviyomail.com/company/VCPGP7/images/bdacefa1-b3d3-4c16-ab58-50a5e2c6c9d0.png",
+    abschalten: "https://cdn.klaviyomail.com/company/VCPGP7/images/9bf9d6b4-b62c-414c-ac7c-6ac662b074dc.png",
+    aufstehen: "https://cdn.klaviyomail.com/company/VCPGP7/images/ea8c0800-84f7-4154-961f-481b32b55b27.png",
+    bewegung: "https://cdn.klaviyomail.com/company/VCPGP7/images/47890f4a-6e50-4d7c-af90-6592aad77704.png",
+    blaulicht: "https://cdn.klaviyomail.com/company/VCPGP7/images/28bcc390-84f2-42de-aab9-832c82f887c6.png",
+    dunkel: "https://cdn.klaviyomail.com/company/VCPGP7/images/88d0e4a6-4486-43d2-95af-7195e7cd82c3.png",
+    essen: "https://cdn.klaviyomail.com/company/VCPGP7/images/31f10442-cd45-4d8d-a499-2d2a40d8d8c7.png",
+    koffein: "https://cdn.klaviyomail.com/company/VCPGP7/images/2b8408ff-97ce-439a-b4ec-1ff49d589b0b.png",
+    nickerchen: "https://cdn.klaviyomail.com/company/VCPGP7/images/bdec8307-cb40-490c-95c0-8943f1950fa9.png",
+    reset: "https://cdn.klaviyomail.com/company/VCPGP7/images/d8e40ed4-d244-4422-adb8-2e80f5856b51.png",
+    ruhe: "https://cdn.klaviyomail.com/company/VCPGP7/images/f7ca21c8-6b73-4e1b-b50c-58a3e9a481ee.png",
+    tageslicht: "https://cdn.klaviyomail.com/company/VCPGP7/images/f6ab4da3-89be-411e-b013-d95de68a988c.png",
+    wasser: "https://cdn.klaviyomail.com/company/VCPGP7/images/a51da646-6b39-4f3a-a0d6-42849d870720.png",
+    weckzeit: "https://cdn.klaviyomail.com/company/VCPGP7/images/3a64adee-eecd-466b-94e6-e75c3b67c4fe.png"
+  };
+  /* Produktblock in Mail 6 (seit 16.11., Niklas: „eher eine art product block einbauen mit beiden offern“): Sleepwhales Nachtfoto je Stärke als JPG
+     (bilder/mail/mail-produkt-*.jpg) in der Klaviyo-Bildbibliothek. Preise und Kassen-Links kommen beim Speichern aus STAERKE, wie auf Reorder */
+  var MAIL_PRODUKT = {
+    regular: "https://cdn.klaviyomail.com/company/VCPGP7/images/ab4fb132-2b3e-48e5-8c0b-4bd9cad8eb60.jpeg",
+    extra: "https://cdn.klaviyomail.com/company/VCPGP7/images/e346b479-25a7-4c3a-b3f3-2836fb08db9f.jpeg"
+  };
+  /* Kassen-Links für die Mail: wie auf Reorder (Kennung, REORDER20 beim einmaligen Kauf), Quelle klaviyo. Subscribe & Save immer alle 4 Wochen, wie der Text der Mail */
+  function mailKauf(adresse, stelle) { var u = new URL(mitKennung(adresse, stelle)); u.searchParams.set("utm_source", "klaviyo"); return rabattiert(u.toString()); }
+  function mailAngebote() {
+    var d = STAERKE[staerke], plan4 = (document.querySelector('input[name=drops-rhythmus][data-wochen="4"]') || {}).value || "3193405605";
+    return { product: d.titel, image: MAIL_PRODUKT[staerke], price: dollar(d.einmal), subscribe_price: dollar(d.abo), once_price: dollar(d.kunde),
+      subscribe_url: mailKauf("https://sleepwhale.com/cart/add?id=" + d.variante + "&quantity=1&selling_plan=" + plan4 + "&return_to=/checkout", "mail-abo"),
+      once_url: mailKauf("https://sleepwhale.com/cart/" + d.variante + ":1", "mail-einmal") };
+  }
   /* hub_url: die Adresse des Guides, in dem der Plan gebaut wurde (Demo oder sleepwhale.com, mit ?bottle=extra). Die Mails bauen damit den Link
      zum neuesten Plan aus dem Profil (sleep_plan_code), damit „Change my times“ auch in späteren Mails gilt.
-     weeks[].schedule: wann das Habit dran ist (wie in der Wochen-Karte). Nicht „when“ nennen: Ereignisse mit diesem Feld nimmt Klaviyo mit 202 an und verwirft sie (getestet 15.11.) */
+     weeks[].schedule: wann das Habit dran ist (wie in der Wochen-Karte), weeks[].icon: das Symbol aus MAIL_ICON, reorder: der Produktblock in Mail 6 (mailAngebote).
+     Nicht „when“ nennen: Ereignisse mit diesem Feld nimmt Klaviyo mit 202 an und verwirft sie (getestet 15.11.) */
   function planDaten(plan) {
     var code = planKodieren(plan), habits = plan.g.map(function (x) { return HABITS[x.i].titel; }), s = ausIso(plan.s), bett = minutenAus(plan.t);
     var wochen = WOCHEN.map(function (w, j) {
-      return { week: j + 1, nights: w[0] + " to " + w[1], from: kurzDatum(plusTage(s, w[0] - 1)), title: j ? habits[j - 1] : "Your Sleepwhale routine", text: j ? habitText(plan, j - 1) : routineText(plan), schedule: j ? habitWann(plan, plan.g[j - 1].i) : "Every evening at " + uhrText(bett - 10), image: MAIL_BILD[j ? plan.g[j - 1].i : "routine"] || "" };
+      var id = j ? plan.g[j - 1].i : "routine";
+      return { week: j + 1, nights: w[0] + " to " + w[1], from: kurzDatum(plusTage(s, w[0] - 1)), title: j ? habits[j - 1] : "Your Sleepwhale routine", text: j ? habitText(plan, j - 1) : routineText(plan), schedule: j ? habitWann(plan, id) : "Every evening at " + uhrText(bett - 10), image: MAIL_BILD[id] || "", icon: MAIL_ICON[id] || "" };
     });
     return {
       profil: { sleep_plan_code: code, sleep_plan_start: plan.s, sleep_bedtime: plan.t, sleep_wake_time: plan.u, sleep_habits: habits },
-      ereignis: { plan_code: code, plan_url: planLink(plan) + "&saved=1", hub_url: hubAdresse("#plan=").replace(/#plan=$/, ""), start: plan.s, start_text: datumText(s), bedtime: plan.t, bedtime_text: uhrText(bett), drops_text: uhrText(bett - 10), wake_time: plan.u, wake_text: uhrText(minutenAus(plan.u)), habits: habits, weeks: wochen, written_by_ai: !!plan.k, reorder_date: plan.n }
+      ereignis: { plan_code: code, plan_url: planLink(plan) + "&saved=1", hub_url: hubAdresse("#plan=").replace(/#plan=$/, ""), start: plan.s, start_text: datumText(s), bedtime: plan.t, bedtime_text: uhrText(bett), drops_text: uhrText(bett - 10), wake_time: plan.u, wake_text: uhrText(minutenAus(plan.u)), habits: habits, weeks: wochen, written_by_ai: !!plan.k, reorder_date: plan.n, reorder: mailAngebote() }
     };
   }
   /* Ein Ereignis an Klaviyo: im Shop über klaviyo.js, in der Demo nur für Testadressen über die Client-API. fertig(art) wie oben */
@@ -4737,7 +4813,7 @@ body.chat-offen .chat-fenster { display: flex; }
       teile.push("Week " + (j + 2) + " (nights " + WOCHEN[j + 1][0] + " to 30" + (w === j + 2 ? ", this week" : "") + "): " + h.titel + ", " + habitWann(plan, x.i).toLowerCase() + ". " + (gruende[j] ? "Chosen for their answer: " + antwortZuText(gruende[j]) : "A steady basic, not tied to one answer") + ". Plan text: " + habitText(plan, j).slice(0, 300));
     });
     teile.push("Quiz: last night " + NACHT_TEXT[plan.w] + "; ticked: " + (plan.a.length ? plan.a.map(function (k) { return antwortText(OPTION_SAEULE[k], k); }).join("; ") : "none") + "; biggest impact: " + antwortText("grund", plan.r) + (plan.h ? "; could get in the way: " + HUERDE_TEXT[plan.h] : "") + ".");
-    teile.push(werte.length ? "Notebook (0 to 10): " + naechteText(werte.length) + " rated, average " + schnitt(werte) + "; by night: " + Object.keys(d).map(function (n) { return n + ":" + d[n]; }).join(", ") + "." : "Notebook: no nights rated yet.");
+    teile.push((werte.length ? "Notebook (0 to 10): " + naechteText(werte.length) + " rated, average " + schnitt(werte) + "; by night: " + Object.keys(d).filter(function (n) { return n !== "0"; }).map(function (n) { return n + ":" + d[n]; }).join(", ") + "." : "Notebook: no nights rated yet.") + (d[0] !== undefined ? " The night before the plan: " + d[0] + " of 10." : ""));
     var antw = planAntworten(plan), checks = PLAN_FRAGEN.filter(function (q) { return antw[q.nacht]; }).map(function (q) { return "night " + q.nacht + " (" + q.frage + "): " + antwortLabel(q, antw[q.nacht]); });
     if (checks.length) teile.push("Check-ins: " + checks.join("; ") + ".");
     var abo = aboInfo();
