@@ -2283,7 +2283,7 @@ body.chat-offen .chat-fenster { display: flex; }
   </div>
 </dialog>
 
-<!-- Pop-up zum Sleep Plan (seit 17.11.): nach 60 Sekunden im Guide ohne Plan oder bei Exit Intent, höchstens einmal pro Besuch. Überzeile und Titel je Anlass aus dem Skript -->
+<!-- Pop-up zum Sleep Plan (seit 17.11.): nach 30 Sekunden im Guide ohne Plan oder bei Exit Intent, höchstens einmal pro Besuch. Überzeile und Titel je Anlass aus dem Skript -->
 <dialog class="dialog-hell plan-popup" id="plan-popup" aria-labelledby="plan-popup-titel">
   <div class="pp-himmel" aria-hidden="true"><span class="pp-wal"><img src="bilder/wal.webp" alt=""><svg class="wal-zzz"><use href="#zzz"/></svg></span></div>
   <div class="pp-inhalt">
@@ -5068,11 +5068,11 @@ body.chat-offen .chat-fenster { display: flex; }
   /* ---------- Pop-up zum Sleep Plan (seit 17.11., Niklas: „ein stylisches pop-up … wenn der Kunde länger als 60 Sekunden auf dem Hub ist und noch KEIN Sleep plan hat“
      und „Exit Intent Trigger“, „mit dem Ziel dass Sleepplan ausgefüllt wird“) ----------
      Höchstens einmal pro Besuch (bis zum Neuladen, gespeichert wird nichts). Nur im Guide, nicht auf Start, Plan-Seite und #abo, nie mit Plan
-     und nie über dem offenen Quiz, dem Chat oder einem Dialog. Die 60 Sekunden zählen nur bei sichtbarer Seite; passt es dann gerade nicht,
-     kommt das Pop-up im nächsten passenden Moment. Exit Intent: am Computer die Maus oben aus dem Fenster, am Handy schnell nach oben gewischt.
-     Zum Testen ?popup=5: schon nach 5 Sekunden */
+     und nie über dem offenen Quiz, dem Chat oder einem Dialog. Seit dem Abend des 17.11. nach 30 statt 60 Sekunden (Niklas: „soll bitte bereits nach 30 sekunden kommen“),
+     gezählt nur bei sichtbarer Seite; passt es dann gerade nicht, kommt das Pop-up im nächsten passenden Moment.
+     Exit Intent: am Computer die Maus oben aus dem Fenster, am Handy schnell nach oben gewischt. Zum Testen ?popup=5: schon nach 5 Sekunden */
   var ppDialog = document.getElementById("plan-popup");
-  var PP_MS = Math.min(600, Math.max(3, Number(params.get("popup")) || 60)) * 1000;
+  var PP_MS = Math.min(600, Math.max(3, Number(params.get("popup")) || 30)) * 1000;
   var pp = { gezeigt: false, faellig: false, gezaehlt: 0, seit: 0, uhr: 0, geladen: Date.now() };
   function hatPlan() {
     if (sd.plan) return true;
