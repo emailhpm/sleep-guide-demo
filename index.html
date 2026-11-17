@@ -32,10 +32,17 @@
   /* Linien auf Periwinkle, Text und Linien auf Nachtblau */ --linie-leinwand: rgba(1, 16, 37, .14);
   --auf-nacht: rgba(255, 255, 255, .7); --nacht-linie: rgba(255, 255, 255, .16); --nacht-unterstrich: rgba(223, 230, 251, .55);
   --schatten: rgba(1, 16, 37, .22); --schleier: rgba(1, 16, 37, .5);
+  /* Sleepwhale-Applikationen (seit 17.11., Niklas: „mehr auf sleepwhale anpassen … Applikationen, die zu Sleepwhale typisch passen“), alles von sleepwhale.com:
+     Leinwand im Verlauf wie dort im Kopf, Nachtbänder als Sternenhimmel (ihr Verlauf, darauf ihr Sternenbild), eine weiche Wolke hinter Linien-Symbolen,
+     blauer Schein hinter der Flasche */
+  --periwinkle-hoch: #d3dff9; --periwinkle-hell: #e2edfe; --nacht-hoch: #05142d; --nacht-tiefst: #030b1c; --schein: rgba(67, 138, 244, .3);
+  --nachthimmel: url("bilder/sternenhimmel.webp") center top / 100% auto no-repeat, linear-gradient(180deg, var(--nacht-hoch), var(--nacht-tiefst));
+  --wolke: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='38.5 37.5 45.5 45.5'%3E%3Cpath fill='%23b6c5f5' d='M80.2 49.4C83.5 55.1 82.1 61.7 80.3 67.5C78.5 73 75.5 77.9 70.4 79.9C64.9 82 58.6 81.2 53.1 77.8C47.1 74.2 41.8 68.6 40.5 61.7C39.2 54.6 42 47.8 46.8 43.3C51.2 39 57.7 38 64.1 39.2C70.4 40.3 76.8 43.5 80.2 49.4Z'/%3E%3C/svg%3E");
+  --wolke-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='38.5 37.5 45.5 45.5'%3E%3Cpath fill='%23f4c245' d='M80.2 49.4C83.5 55.1 82.1 61.7 80.3 67.5C78.5 73 75.5 77.9 70.4 79.9C64.9 82 58.6 81.2 53.1 77.8C47.1 74.2 41.8 68.6 40.5 61.7C39.2 54.6 42 47.8 46.8 43.3C51.2 39 57.7 38 64.1 39.2C70.4 40.3 76.8 43.5 80.2 49.4Z'/%3E%3C/svg%3E");
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 84px; }
-body { min-height: 100vh; font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 17px; line-height: 1.6; color: var(--text); background: var(--periwinkle); -webkit-font-smoothing: antialiased; }
+body { min-height: 100vh; font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 17px; line-height: 1.6; color: var(--text); background: linear-gradient(180deg, var(--periwinkle-hoch), var(--periwinkle-hell)) fixed var(--periwinkle); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--akzent); outline-offset: 2px; }
@@ -56,7 +63,7 @@ body:has(.seite:target:not(#start)) #start, body:has(.seite:not(#start) :target)
 .start { grid-template-rows: auto 1fr auto; background: var(--weiss); border-radius: 12px; }
 .start-logo { display: block; height: 22px; width: auto; margin: 34px 0 0 40px; }
 .start-mitte { align-self: center; width: 100%; max-width: 900px; margin: 0 auto; padding: 0 24px 56px; text-align: center; }
-.start-wal { display: block; width: 132px; height: auto; margin: 0 auto; }
+.start-wal { display: block; width: 132px; margin: 0 auto; }
 .start h1 { margin-top: 16px; }
 .hub-unter { max-width: 56ch; margin: 14px auto 0; font-size: 18px; color: var(--muted); text-wrap: balance; }
 .produkt-wahl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 640px; margin: 36px auto 0; text-align: left; }
@@ -1130,6 +1137,70 @@ body.chat-offen .chat-fenster { display: flex; }
 .app-schritte { display: grid; gap: 8px; margin: 14px 0 0 20px; font-size: 16px; }
 .kal-inhalt .knopf { margin-top: 16px; }
 
+/* ---------- Sleepwhale-Applikationen (seit 17.11., Niklas: „das design im tool, auf den plänen usw. nochmal bisschen mehr auf sleepwhale anpassen“) ----------
+   Alles nach sleepwhale.com: Nachtbänder als Sternenhimmel, darüber die Welle mit Sternen, der Wal mit goldenem Zzz,
+   Fotos der Ritual-Schritte mit Nummer in der Ecke, Linien-Symbole auf drei Wolken */
+.abo-held, .ritual-heute, .reise-koerper, .labor, .n7-ergebnis, .rueckkehr, .plan-band, .plan-start, .ps-rad { background: var(--nachthimmel); }
+/* Die Welle sitzt über der Oberkante des wichtigsten Nachtbands jeder Seite: dort ohne Radius und mit Platz nach oben (Höhe 68/1920 der Breite) */
+.ritual-heute, .plan-start:not(.eng), .ps-held, .ps-rad, .abo-held, .labor, .rueckkehr { position: relative; margin-top: 3.6%; border-top-left-radius: 0; border-top-right-radius: 0; }
+.ansicht > * + .ritual-heute, .ansicht > * + .plan-start:not(.eng), .ansicht > * + .labor, .ansicht > * + .rueckkehr { margin-top: calc(36px + 3.6%); }
+.ritual-heute::before, .plan-start:not(.eng)::before, .ps-held::before, .ps-rad::before, .abo-held::before, .labor::before, .rueckkehr::before { content: ""; position: absolute; left: 0; right: 0; bottom: calc(100% - 1px); aspect-ratio: 1920 / 68; border-top-left-radius: 12px; background: url("bilder/stern-welle.webp") center bottom / 100% 100% no-repeat; pointer-events: none; }
+/* Der Wal mit goldenem Zzz: Startseite, Start des Sleep Plans, während der Plan entsteht, und Pop-up */
+.start-wal, .ps-wal, .pp-wal { position: relative; }
+.start-wal img, .ps-wal img, .pp-wal img, .laden-wal img { display: block; width: 100%; height: auto; }
+.plan-laden { position: relative; }
+.laden-wal { position: absolute; top: -8px; right: 24px; display: block; width: 128px; pointer-events: none; }
+.laden-wal .wal-zzz, .start .wal-zzz { color: var(--gold-tief); }
+.wal-zzz { position: absolute; top: -8%; right: -16%; width: 34%; height: auto; aspect-ratio: 1; color: var(--gold); }
+@media (max-width: 999px) { .laden-wal { display: none; } }
+.ps-wal { position: absolute; top: 52px; right: 64px; display: block; width: 124px; pointer-events: none; }
+/* Neben dem Wal bricht der Satz früher um. Unter 1180 px Fensterbreite ist neben dem Titel kein Platz, dann ohne Wal */
+.plan-start.eng .ps-wal { display: none; }
+.plan-start:not(.eng) .plan-start-unter { max-width: min(54ch, calc(100% - 190px)); }
+@media (max-width: 1179px) { .ps-wal { display: none; } .plan-start:not(.eng) .plan-start-unter { max-width: 54ch; } }
+/* Fotos der Ritual-Schritte mit Nummer in der Ecke, wie „Your new sleep ritual“ auf sleepwhale.com */
+.rh-schritte, .ritual { counter-reset: schritt; }
+.rh-schritte li:has(> img), .ritual li { position: relative; counter-increment: schritt; }
+.rh-schritte li:has(> img)::before, .ritual li::before { content: counter(schritt); content: counter(schritt) / ""; position: absolute; top: 0; left: 0; width: 56px; height: 56px; padding: 7px 0 0 15px; border-radius: 8px 0 100% 0; background: var(--periwinkle-hoch); color: var(--nacht); font-size: 22px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.ritual li::before { width: 72px; height: 72px; padding: 10px 0 0 19px; border-radius: 12px 0 100% 0; font-size: 28px; }
+/* Linien-Symbole auf einer weichen Wolke wie die Vorteile auf sleepwhale.com: Periwinkle, die laufende Woche in Gold */
+.wk-ikon, .bilanz .wk-ikon { border-radius: 0; background: var(--wolke) center / 100% 100% no-repeat; color: var(--nacht); }
+.wk.jetzt .wk-ikon { background: var(--wolke-gold) center / 100% 100% no-repeat; color: var(--nacht); }
+/* Blauer Schein hinter der Flasche wie bei „Why we use drops“ auf sleepwhale.com */
+.p-bild img, .kk-flasche { background: radial-gradient(closest-side, var(--schein), transparent); }
+/* Das Rad steht auf dem Sternenhimmel des Bands: der dunkle Grund ist nur fürs Bild in der Mail (radJpg) */
+.ps-rad-bild .rad-grund { display: none; }
+/* Pop-up zum Sleep Plan: links der Nachthimmel mit dem Wal, rechts Text und der goldene Knopf. Unter 700 px untereinander, als Blatt von unten */
+.plan-popup { width: min(94vw, 780px); }
+.plan-popup[open] { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+.pp-himmel { display: grid; place-items: center; padding: 56px 24px 40px; background: var(--nachthimmel); }
+.pp-wal { display: block; width: 168px; }
+.pp-inhalt { padding: 44px 40px 36px; }
+.pp-inhalt h2 { font-size: 30px; }
+.pp-unter { margin-top: 12px; color: var(--muted); }
+.pp-liste { margin-top: 18px; }
+.pp-knoepfe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 26px; }
+.pp-knoepfe .knopf { margin-top: 0; }
+.pp-zu { position: absolute; top: 14px; right: 14px; }
+@media (prefers-reduced-motion: no-preference) {
+  .plan-popup[open] { animation: pp-auf .4s cubic-bezier(.2, .8, .2, 1); }
+  .plan-popup[open]::backdrop { animation: pp-schleier .4s ease-out; }
+}
+@keyframes pp-auf { from { opacity: 0; transform: translateY(18px); } }
+@keyframes pp-schleier { from { opacity: 0; } }
+@media (max-width: 999px) {
+  .rh-schritte li:has(> img) { align-items: start; }
+  .rh-schritte li:has(> img)::before { width: 30px; height: 30px; padding: 3px 0 0 8px; font-size: 15px; }
+  .ansicht > * + .ritual-heute, .ansicht > * + .plan-start:not(.eng), .ansicht > * + .labor, .ansicht > * + .rueckkehr { margin-top: calc(28px + 3.6%); }
+}
+@media (max-width: 699px) {
+  .plan-popup[open] { grid-template-columns: minmax(0, 1fr); }
+  .pp-himmel { padding: 34px 20px 18px; }
+  .pp-wal { width: 104px; }
+  .pp-inhalt { padding: 22px 20px calc(24px + env(safe-area-inset-bottom)); }
+  .pp-inhalt h2 { font-size: 24px; }
+}
+
 /* Niedrige Fenster: Seitenleiste enger */
 @media (min-width: 1000px) and (max-height: 940px) {
   .logo-zeile { padding-bottom: 16px; }
@@ -1352,6 +1423,7 @@ body.chat-offen .chat-fenster { display: flex; }
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="z" viewBox="0 0 8 8"><path fill="currentColor" d="M7.04 6.19V6c0-.38-.3-.69-.68-.69l-2.58-.01c.08-.17.25-.39.34-.48l1.76-1.69c.6-.59 1.06-1.23 1.07-1.74C6.95.6 6.37.09 5.53.09L1.95.07C1.36.07.64.44.64 1.2c0 .38.3.68.68.69l2.66.01c-.06.12-.25.36-.35.46L1.5 4.41C.89 5 .63 5.53.63 5.96c0 .89.69 1.2 1.43 1.2l3.79.02c.67 0 1.19-.47 1.19-.99z"/></symbol>
+  <symbol id="zzz" viewBox="0 0 40 40"><g fill="currentColor"><path transform="translate(1 27) scale(1.4)" d="M7.04 6.19V6c0-.38-.3-.69-.68-.69l-2.58-.01c.08-.17.25-.39.34-.48l1.76-1.69c.6-.59 1.06-1.23 1.07-1.74C6.95.6 6.37.09 5.53.09L1.95.07C1.36.07.64.44.64 1.2c0 .38.3.68.68.69l2.66.01c-.06.12-.25.36-.35.46L1.5 4.41C.89 5 .63 5.53.63 5.96c0 .89.69 1.2 1.43 1.2l3.79.02c.67 0 1.19-.47 1.19-.99z"/><path transform="translate(11 14) scale(1.75)" d="M7.04 6.19V6c0-.38-.3-.69-.68-.69l-2.58-.01c.08-.17.25-.39.34-.48l1.76-1.69c.6-.59 1.06-1.23 1.07-1.74C6.95.6 6.37.09 5.53.09L1.95.07C1.36.07.64.44.64 1.2c0 .38.3.68.68.69l2.66.01c-.06.12-.25.36-.35.46L1.5 4.41C.89 5 .63 5.53.63 5.96c0 .89.69 1.2 1.43 1.2l3.79.02c.67 0 1.19-.47 1.19-.99z"/><path transform="translate(23 0) scale(2.1)" d="M7.04 6.19V6c0-.38-.3-.69-.68-.69l-2.58-.01c.08-.17.25-.39.34-.48l1.76-1.69c.6-.59 1.06-1.23 1.07-1.74C6.95.6 6.37.09 5.53.09L1.95.07C1.36.07.64.44.64 1.2c0 .38.3.68.68.69l2.66.01c-.06.12-.25.36-.35.46L1.5 4.41C.89 5 .63 5.53.63 5.96c0 .89.69 1.2 1.43 1.2l3.79.02c.67 0 1.19-.47 1.19-.99z"/></g></symbol>
   <symbol id="runter" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="plus" viewBox="0 0 18 18"><path d="M9 3v12M3 9h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.2"/><path d="M12 7.8h.01" stroke-width="2.4"/></g></symbol>
@@ -1401,7 +1473,7 @@ body.chat-offen .chat-fenster { display: flex; }
 <section class="seite start" id="start">
   <img class="start-logo" src="bilder/sleepwhale-logo.svg" alt="Sleepwhale">
   <div class="start-mitte">
-    <img class="start-wal" src="bilder/wal.webp" alt="">
+    <span class="start-wal"><img src="bilder/wal.webp" alt=""><svg class="wal-zzz" aria-hidden="true"><use href="#zzz"/></svg></span>
     <h1>Your Sleep Guide</h1>
     <p class="hub-unter">Which Sleepwhale do you have? Pick yours, then build your 30-night sleep plan.</p>
     <div class="produkt-wahl">
@@ -1814,6 +1886,7 @@ body.chat-offen .chat-fenster { display: flex; }
       <section class="ansicht" id="drops-plan" data-bereich="sd-ziel">
         <nav class="saeule-nav" aria-label="How to sleep better"><span class="saeule-name"><b>3</b>How to sleep better</span><a href="#drops-plan" data-ansicht="drops-plan">Your sleep plan</a><a href="#drops-library" data-ansicht="drops-library">Sleep library</a><a href="#drops-stories" data-ansicht="drops-stories">Customer stories</a></nav>
         <header class="plan-start" data-plan-start>
+          <span class="ps-wal" aria-hidden="true"><img src="bilder/wal.webp" alt=""><svg class="wal-zzz"><use href="#zzz"/></svg></span>
           <p class="augenbraue">Start here</p>
           <h1>Your 30-night sleep plan</h1>
           <p class="plan-start-unter">Build your sleep routine in 30 nights: your Sleepwhale ritual, one new habit per week and a notebook for your nights.</p>
@@ -2208,6 +2281,23 @@ body.chat-offen .chat-fenster { display: flex; }
     <ol class="app-schritte" id="app-schritte"></ol>
     <button class="knopf gold" type="button" id="app-installieren" hidden>Install now</button>
   </div>
+</dialog>
+
+<!-- Pop-up zum Sleep Plan (seit 17.11.): nach 60 Sekunden im Guide ohne Plan oder bei Exit Intent, höchstens einmal pro Besuch. Überzeile und Titel je Anlass aus dem Skript -->
+<dialog class="dialog-hell plan-popup" id="plan-popup" aria-labelledby="plan-popup-titel">
+  <div class="pp-himmel" aria-hidden="true"><span class="pp-wal"><img src="bilder/wal.webp" alt=""><svg class="wal-zzz"><use href="#zzz"/></svg></span></div>
+  <div class="pp-inhalt">
+    <p class="augenbraue" data-pp-augenbraue>Your 30-night sleep plan</p>
+    <h2 id="plan-popup-titel" data-pp-titel>Your plan, in 2 minutes</h2>
+    <p class="pp-unter">5 short questions. Your plan opens right here and comes to your inbox.</p>
+    <ul class="z-liste pp-liste">
+      <li><svg><use href="#z"/></svg><span>Your Sleepwhale ritual, timed to your bedtime</span></li>
+      <li><svg><use href="#z"/></svg><span>One small habit a week, chosen for your answers</span></li>
+      <li><svg><use href="#z"/></svg><span>A notebook for your 30 nights</span></li>
+    </ul>
+    <div class="pp-knoepfe"><button class="knopf marke" type="button" data-pp-los autofocus>Build my sleep plan</button><button class="text-link" type="button" data-dialog-zu>Not now</button></div>
+  </div>
+  <button class="dialog-zu pp-zu" type="button" data-dialog-zu aria-label="Close"><svg><use href="#x"/></svg></button>
 </dialog>
 
 <div class="produkt-menue" id="produkt-menue" role="menu" aria-label="Choose your product" hidden></div>
@@ -3361,7 +3451,14 @@ body.chat-offen .chat-fenster { display: flex; }
       liste.appendChild(li);
       return li;
     });
-    laden.append(balken, liste, element("p", "plan-laden-hinweis", "This takes a few seconds."));
+    /* Daneben schläft der Wal mit Zzz (seit 17.11., Sleepwhale-Applikation) */
+    var wal = element("span", "laden-wal"), walBild = element("img"), zzz = ikon("zzz");
+    walBild.src = "bilder/wal.webp";
+    walBild.alt = "";
+    zzz.setAttribute("class", "wal-zzz");
+    wal.setAttribute("aria-hidden", "true");
+    wal.append(walBild, zzz);
+    laden.append(wal, balken, liste, element("p", "plan-laden-hinweis", "This takes a few seconds."));
     sdTeil("koerper").replaceChildren(laden);
     sdTeil("fuss").replaceChildren();
     function setzen() {
@@ -3589,10 +3686,28 @@ body.chat-offen .chat-fenster { display: flex; }
     text.split("").forEach(function (c, i) { if (c === " " && (beste < 0 || Math.abs(i - mitte) < Math.abs(beste - mitte))) beste = i; });
     return [text.slice(0, beste), text.slice(beste + 1)];
   }
+  /* Nachthimmel im Rad (seit 17.11., wie die Nachtbänder): ein Schimmer hinter der Mitte, Sterne in den Ecken und um die Zahl.
+     Fester Startwert, damit jedes Rad und das Bild für die Mail gleich aussehen */
+  function radNachthimmel() {
+    var g = svgEl("g"), defs = svgEl("defs"), glanz = svgEl("radialGradient", { id: "rad-glanz" }), saat = 11;
+    function zufall() { saat = saat * 16807 % 2147483647; return (saat - 1) / 2147483646; }
+    glanz.append(svgEl("stop", { offset: "0", "stop-color": "#172446" }), svgEl("stop", { offset: "1", "stop-color": "#011025" }));
+    defs.appendChild(glanz);
+    g.append(defs, svgEl("circle", { cx: 500, cy: 500, r: RAD.innen, fill: "url(#rad-glanz)" }));
+    for (var i = 0, n = 0; i < 2000 && n < 52; i++) {
+      var x = zufall() * 1000, y = zufall() * 1000, r = Math.sqrt((x - 500) * (x - 500) + (y - 500) * (y - 500));
+      if (r > 494 || r < 192 && !(Math.abs(x - 500) < 124 && y > 316 && y < 608)) {
+        g.appendChild(svgEl("circle", { cx: Math.round(x), cy: Math.round(y), r: (0.9 + zufall() * 1.8).toFixed(1), fill: "#dfe6fb", opacity: (0.3 + zufall() * 0.5).toFixed(2) }));
+        n++;
+      }
+    }
+    return g;
+  }
   function habitRad(plan) {
     var wochen = radWochen(plan), svg = svgEl("svg", { viewBox: "0 0 1000 1000", xmlns: SVG_NS, "font-family": "Onest, sans-serif", role: "img" });
     svg.setAttribute("aria-label", "Your 4 sleep habits: " + wochen.map(function (w, i) { return "week " + (i + 1) + ", " + w.name; }).join("; ") + ".");
-    svg.appendChild(svgEl("rect", { width: 1000, height: 1000, fill: "#011025" }));
+    svg.appendChild(svgEl("rect", { "class": "rad-grund", width: 1000, height: 1000, fill: "#011025" }));
+    svg.appendChild(radNachthimmel());
     wochen.forEach(function (w, i) {
       var f = RAD_FARBE[i], zeilen = radZeilen(w.name), xy = radXY(RAD.mitte, i * 90), y = xy[1] - (118 + 42 * zeilen.length) / 2;
       svg.appendChild(svgEl("path", { d: radStueck(i * 90 - 45, i * 90 + 45), fill: f[0], stroke: "#011025", "stroke-width": 8, "stroke-linejoin": "round" }));
@@ -3615,6 +3730,7 @@ body.chat-offen .chat-fenster { display: flex; }
     mitte.append(svgEl("text", { x: 500, y: 430, fill: "#f4c245", "font-size": 24, "font-weight": 700, "letter-spacing": 3.5 }, "YOUR PLAN"),
       svgEl("text", { x: 500, y: 542, fill: "#ffffff", "font-size": 112, "font-weight": 700, "letter-spacing": -2 }, "30"),
       svgEl("text", { x: 500, y: 590, fill: "rgba(255,255,255,.72)", "font-size": 30 }, "nights"));
+    mitte.appendChild(radSymbol("zzz", 476, 326, 48, "#f4c245"));
     svg.appendChild(mitte);
     return svg;
   }
@@ -4948,6 +5064,70 @@ body.chat-offen .chat-fenster { display: flex; }
   });
   alle("[data-dialog-zu]").forEach(function (b) { b.addEventListener("click", function () { b.closest("dialog").close(); }); });
   appDialog.addEventListener("click", function (e) { if (e.target === appDialog) appDialog.close(); });
+
+  /* ---------- Pop-up zum Sleep Plan (seit 17.11., Niklas: „ein stylisches pop-up … wenn der Kunde länger als 60 Sekunden auf dem Hub ist und noch KEIN Sleep plan hat“
+     und „Exit Intent Trigger“, „mit dem Ziel dass Sleepplan ausgefüllt wird“) ----------
+     Höchstens einmal pro Besuch (bis zum Neuladen, gespeichert wird nichts). Nur im Guide, nicht auf Start, Plan-Seite und #abo, nie mit Plan
+     und nie über dem offenen Quiz, dem Chat oder einem Dialog. Die 60 Sekunden zählen nur bei sichtbarer Seite; passt es dann gerade nicht,
+     kommt das Pop-up im nächsten passenden Moment. Exit Intent: am Computer die Maus oben aus dem Fenster, am Handy schnell nach oben gewischt.
+     Zum Testen ?popup=5: schon nach 5 Sekunden */
+  var ppDialog = document.getElementById("plan-popup");
+  var PP_MS = Math.min(600, Math.max(3, Number(params.get("popup")) || 60)) * 1000;
+  var pp = { gezeigt: false, faellig: false, gezaehlt: 0, seit: 0, uhr: 0, geladen: Date.now() };
+  function hatPlan() {
+    if (sd.plan) return true;
+    var d = speicherLesen();
+    return !!(d && typeof d.code === "string" && planLesen(d.code));
+  }
+  function ppErlaubt() {
+    var z = ziel();
+    if (pp.gezeigt || hatPlan() || document.documentElement.classList.contains("plan-modus")) return false;
+    if (!z || !document.getElementById("sleep-drops").contains(z)) return false;
+    if (aktuellesKapitel() === "drops-plan" && !sd.box.hidden) return false;
+    return !document.body.classList.contains("chat-offen") && !document.querySelector("dialog[open]");
+  }
+  function ppVersuchen(anlass) {
+    if (!ppErlaubt()) return;
+    var weg = anlass === "exit";
+    pp.gezeigt = true;
+    ppDialog.querySelector("[data-pp-augenbraue]").textContent = weg ? "Before you go" : "Your 30-night sleep plan";
+    ppDialog.querySelector("[data-pp-titel]").textContent = weg ? "Take your plan with you" : "Your plan, in 2 minutes";
+    ppDialog.showModal();
+  }
+  function ppUhrStellen() { pp.seit = Date.now(); pp.uhr = setTimeout(ppFaellig, Math.max(0, PP_MS - pp.gezaehlt)); }
+  function ppFaellig() {
+    var takt = setInterval(function () { if (pp.gezeigt || hatPlan()) clearInterval(takt); else ppVersuchen("zeit"); }, 3000);
+    pp.faellig = true;
+    ppVersuchen("zeit");
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (pp.faellig) return;
+    if (document.visibilityState === "visible") { if (!pp.seit) ppUhrStellen(); return; }
+    if (pp.seit) { pp.gezaehlt += Date.now() - pp.seit; pp.seit = 0; clearTimeout(pp.uhr); }
+  });
+  if (document.visibilityState === "visible") ppUhrStellen();
+  /* Exit Intent am Computer: die Maus verlässt das Fenster nach oben, zu Tabs und Adresszeile. Erst 5 Sekunden nach dem Laden */
+  document.addEventListener("mouseout", function (e) {
+    if (!e.relatedTarget && e.clientY < 10 && Date.now() - pp.geladen > 5000) ppVersuchen("exit");
+  });
+  /* Exit Intent am Handy (ohne Maus): schnell nach oben gewischt, nachdem schon etwas gelesen wurde. Kapitelwechsel springen nach oben, das zählt nicht */
+  var ppTippen = matchMedia("(hover: none) and (pointer: coarse)"), ppWisch = { y: 0, t: 0, tiefe: 0, ruhe: 0 };
+  window.addEventListener("hashchange", function () { ppWisch.tiefe = 0; ppWisch.t = 0; ppWisch.ruhe = Date.now() + 1000; });
+  window.addEventListener("scroll", function () {
+    if (pp.gezeigt || !ppTippen.matches) return;
+    var y = window.scrollY, t = Date.now(), tempo = ppWisch.t ? (ppWisch.y - y) / Math.max(1, t - ppWisch.t) : 0;
+    ppWisch.tiefe = Math.max(ppWisch.tiefe, y);
+    if (t > ppWisch.ruhe && tempo > 2.5 && ppWisch.tiefe > 600 && y < ppWisch.tiefe - 400) ppVersuchen("exit");
+    ppWisch.y = y;
+    ppWisch.t = t;
+  }, { passive: true });
+  ppDialog.querySelector("[data-pp-los]").addEventListener("click", function () {
+    ppDialog.close();
+    if (aktuellesKapitel() !== "drops-plan") location.hash = "#drops-plan";
+    startOffen(false);
+    zurBox(true);
+  });
+  ppDialog.addEventListener("click", function (e) { if (e.target === ppDialog) ppDialog.close(); });
 
   /* ---------- Start ---------- */
   staerkeSetzen(staerke, false);
