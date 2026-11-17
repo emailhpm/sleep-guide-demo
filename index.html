@@ -4191,10 +4191,11 @@ body.chat-offen .chat-fenster { display: flex; }
     return karte;
   }
   /* Antworten und Abo-Angaben nur einmal übernehmen, danach aus der Adresse nehmen (Lesezeichen, Home-Bildschirm, „Change answer“ bleibt).
-     Die Seite für Abonnenten (?for=subscriber) braucht ?next und ?every weiter */
+     Die Seite für Abonnenten (?for=subscriber) braucht ?next und ?every weiter. Im Hash fallen nur Werte mit „=“ weg: die Seite selbst (#abo) bleibt
+     (bis 17.11. nahm der Wert „abo“ sie mit, dann zeigte ?for=subscriber die Startseite) */
   var LINK_WERTE = ["q7", "q14", "q23", "abo", "next", "every"];
   function linkWerteEntfernen() {
-    var suche = new URLSearchParams(location.search), hash = location.hash.slice(1).split("&").filter(function (t) { return LINK_WERTE.indexOf(t.split("=")[0]) < 0; }).join("&");
+    var suche = new URLSearchParams(location.search), hash = location.hash.slice(1).split("&").filter(function (t) { return t.indexOf("=") < 0 || LINK_WERTE.indexOf(t.split("=")[0]) < 0; }).join("&");
     if (suche.get("for") !== "subscriber") LINK_WERTE.forEach(function (k) { suche.delete(k); });
     var q = suche.toString(), neu = location.pathname + (q ? "?" + q : "") + (hash ? "#" + hash : "");
     if (neu !== location.pathname + location.search + location.hash) history.replaceState(history.state, "", neu);
