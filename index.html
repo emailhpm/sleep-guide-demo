@@ -1131,7 +1131,8 @@ body.coach-an .app { padding-bottom: 24px; }
 .ganz .chat-kopf, .ganz .nachricht.gruss { display: none; }
 .ganz .chat-verlauf { flex: 1; min-height: 0; padding: 4px 2px 8px; gap: 18px; background: none; }
 .coach-seite:not(.im-gespraech) .ganz .chat-verlauf, .coach-seite:not(.im-gespraech) .ganz .chat-vorschlaege { display: none; }
-.ganz .nachricht { font-size: 16px; line-height: 1.6; }
+/* flex: none, sonst schrumpfen Nachrichten mit min-height im vollen Verlauf und schieben sich übereinander */
+.ganz .nachricht { flex: none; font-size: 16px; line-height: 1.6; }
 .ganz .nachricht.bot { position: relative; max-width: 100%; min-height: 34px; padding: 4px 0 0 46px; border: 0; }
 .ganz .nachricht.bot::before { content: ""; position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--nacht) url("bilder/wal.webp") center / 24px auto no-repeat; }
 .ganz .nachricht.ich { max-width: 78%; padding: 10px 15px; }
@@ -1152,8 +1153,9 @@ body.coach-an .app { padding-bottom: 24px; }
 body.coach-an .chat-fab { display: none; }
 /* Kundengeschichten auf Reorder (seit 18.11.) */
 .reorder-stories > * + * { margin-top: 20px; }
-/* Handy: Bühne bis über die Tab-Leiste (68 px und 8 px Luft). Ohne Gespräch der Gruß in der Mitte, Startfragen zum Wischen,
-   Plan-Hinweis und Eingabe unten wie in der ChatGPT-App. Im Gespräch wird der Plan-Hinweis eine Zeile: Stand und Link */
+/* Handy: Bühne bis über die Tab-Leiste (68 px und 8 px Luft). Ohne Gespräch der Gruß in der Mitte, Startfragen zum Wischen, Eingabe unten wie in der ChatGPT-App.
+   Der Plan-Hinweis steht am Handy unter der Eingabe und ist nur eine Zeile mit Stand und Link (Niklas 18.11.: „bei mobile version der sleep plan hinweis bitte
+   unter den chat wirkt sonst überladen“). order greift, weil das Chatfenster auf der Seite display: contents hat */
 @media (max-width: 999px) {
   .coach-buehne { --unten: calc(76px + env(safe-area-inset-bottom)); min-height: calc(100dvh - var(--oben) - var(--unten)); margin-top: 12px; gap: 10px; }
   .coach-seite.im-gespraech .coach-buehne { height: calc(100dvh - var(--oben) - var(--unten)); min-height: 400px; }
@@ -1166,15 +1168,17 @@ body.coach-an .chat-fab { display: none; }
   .coach-start::-webkit-scrollbar { display: none; }
   .coach-start li { flex: 0 0 236px; scroll-snap-align: start; }
   .coach-start button { padding: 10px 14px; }
-  .coach-plan { display: grid; grid-template-columns: 22px minmax(0, 1fr); align-items: start; gap: 10px 12px; }
-  .coach-plan p { font-size: 14px; }
-  .coach-plan .knopf, .coach-plan .text-link { grid-column: 2; justify-self: start; }
-  .coach-seite.im-gespraech .coach-plan { display: flex; align-items: center; padding: 4px 8px 4px 14px; }
-  .coach-seite.im-gespraech .coach-plan p { display: none; }
-  .coach-seite.im-gespraech .cp-kurz { display: block; flex: 1; font-size: 14px; font-weight: 600; }
-  .coach-seite.im-gespraech .coach-plan .knopf { min-height: 44px; padding: 0 6px; background: none; box-shadow: none; color: var(--gold); font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 3px; }
-  .coach-seite.im-gespraech .coach-plan .text-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
+  /* Folgefragen am Handy in einer Zeile zum Wischen, damit für längere Antworten Platz bleibt */
+  .ganz .chat-vorschlaege { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
+  .coach-plan { order: 1; gap: 8px 10px; padding: 4px 8px 4px 14px; }
+  .ganz .chat-hinweis { order: 2; }
+  .coach-plan p { display: none; }
+  .cp-kurz { display: block; flex: 1; font-size: 14px; font-weight: 600; }
+  .coach-seite .coach-plan .knopf { min-height: 44px; padding: 0 6px; background: none; box-shadow: none; filter: none; color: var(--gold); font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; text-decoration: underline; text-underline-offset: 3px; }
+  .coach-plan .text-link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; }
 }
+/* Sehr schmale Handys (unter 375 px): ohne Symbol, damit „Your 30-night plan“ und der Link in eine Zeile passen */
+@media (max-width: 374px) { .coach-plan > svg { display: none; } }
 /* Niedrige Fenster (unter 800 px, kleine Handys und Laptops): ohne Unterzeile im Gruß und mit kleinerem Wal, damit die Eingabe ohne Scrollen zu sehen ist */
 @media (max-height: 799px) {
   .coach-gruss p:last-child { display: none; }
@@ -2357,7 +2361,7 @@ body.coach-an .chat-fab { display: none; }
   <div class="chat-verlauf" id="chat-verlauf" aria-live="polite"></div>
   <div class="chat-vorschlaege" id="chat-vorschlaege"></div>
   <form class="chat-eingabe" id="chat-form"><input id="chat-feld" autocomplete="off" placeholder="Type your question …" aria-label="Your question"><button type="submit" aria-label="Send"><svg><use href="#senden"/></svg></button></form>
-  <p class="chat-hinweis">Answers by ChatGPT from Sleepwhale's product information. Not medical advice. <a id="chat-mensch" href="mailto:hello@sleepwhale.com?subject=Question%20for%20the%20Sleepwhale%20team">Write to the Sleepwhale team</a></p>
+  <p class="chat-hinweis">Answers by ChatGPT, about your drops from Sleepwhale's product information. Not medical advice. <a id="chat-mensch" href="mailto:hello@sleepwhale.com?subject=Question%20for%20the%20Sleepwhale%20team">Write to the Sleepwhale team</a></p>
 </div>
 
 <dialog class="dialog-hell" id="kalender-dialog" aria-labelledby="kalender-titel">
@@ -5102,7 +5106,10 @@ body.coach-an .chat-fab { display: none; }
       d.appendChild(box);
     }
     verlauf.appendChild(d);
-    verlauf.scrollTop = verlauf.scrollHeight;
+    /* Antworten dürfen seit 18.11. länger sein: dann steht die Frage dazu oben im Verlauf und die Antwort liest sich von Anfang an.
+       Passt beides ins Fenster, begrenzt der Browser den Wert und es geht wie bisher ganz nach unten */
+    var frage = wer === "bot" && d.previousElementSibling && d.previousElementSibling.classList.contains("ich") ? d.previousElementSibling : null;
+    verlauf.scrollTop = frage ? verlauf.scrollTop + frage.getBoundingClientRect().top - verlauf.getBoundingClientRect().top - 12 : verlauf.scrollHeight;
     return d;
   }
   function vorschlaegeSetzen(liste) { vorschlaege.replaceChildren.apply(vorschlaege, liste.map(function (v) { return knopfMit(v, null, function () { fragen(v); }); })); }
